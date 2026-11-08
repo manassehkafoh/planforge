@@ -1,0 +1,15 @@
+%% name: ux-edit-flow
+stateDiagram-v2
+  [*] --> Browsing
+  Browsing --> CellSelected: click or arrow keys
+  CellSelected --> Editing: Enter or F2 or type
+  Editing --> CellSelected: Esc (discard)
+  Editing --> Committing: Enter or Tab (validate locally)
+  Committing --> CellSelected: valid, command applied
+  Committing --> Editing: invalid, inline error
+  CellSelected --> Linking: Ctrl+L or drag handle
+  Linking --> CellSelected: target chosen, addLink
+  Linking --> CellSelected: Esc
+  CellSelected --> Browsing: click outside
+  CellSelected --> Dragging: drag bar
+  Dragging --> CellSelected: drop (constraint or lag command)

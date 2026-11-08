@@ -1,0 +1,7 @@
+%% name: frontend-test-pyramid
+flowchart TB
+  E2E["E2E - Playwright: 25 critical journeys, 3 browsers, runs on every merge to main"]
+  INT["Integration - component + store + mocked API (MSW), accessibility checks: target about 300"]
+  CT["Component and visual regression - Storybook snapshots: target about 400"]
+  UNIT["Unit - reducers, command apply/inverse, formatters, engine bridge: target about 1500, under 60 s"]
+  E2E --- INT --- CT --- UNIT

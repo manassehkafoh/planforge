@@ -1,0 +1,26 @@
+%% name: erd
+erDiagram
+  TENANT ||--o{ APP_USER : has
+  TENANT ||--o{ PROJECT : owns
+  PORTFOLIO ||--o{ PROJECT : groups
+  CALENDAR ||--o{ CALENDAR_EXCEPTION : has
+  CALENDAR ||--o{ PROJECT : "default for"
+  PROJECT ||--o{ TASK : contains
+  PROJECT ||--o{ PROJECT_MEMBER : grants
+  APP_USER ||--o{ PROJECT_MEMBER : is
+  TASK ||--o{ TASK : "parent of"
+  TASK ||--o{ TASK_LINK : "pred of"
+  TASK ||--o{ TASK_LINK : "succ of"
+  TASK ||--o{ ASSIGNMENT : has
+  RESOURCE ||--o{ ASSIGNMENT : performs
+  RESOURCE ||--o{ RESOURCE_RATE : priced_by
+  ASSIGNMENT ||--o{ ASSIGNMENT_TIMEPHASE : "spread over days"
+  PROJECT ||--o{ BASELINE : snapshots
+  BASELINE ||--o{ BASELINE_TASK : records
+  PROJECT ||--o{ SCENARIO : branches
+  PROJECT ||--o{ RISK_RUN : simulates
+  PROJECT ||--o{ PLAN_OP : logs
+  PROJECT ||--o{ COMMENT : discusses
+  PROJECT ||--o{ IMPORT_JOB : "created by"
+  TENANT ||--o{ AUDIT_EVENT : records
+  TENANT ||--o{ WEBHOOK_SUBSCRIPTION : registers

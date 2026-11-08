@@ -1,0 +1,17 @@
+%% name: sync-state-machine
+stateDiagram-v2
+  [*] --> Loading
+  Loading --> Synced: plan loaded
+  Loading --> Error: load failed
+  Synced --> Pending: local command applied
+  Pending --> Synced: server ack, dates match
+  Pending --> Reconciling: ack but dates differ
+  Reconciling --> Synced: adopt server schedule
+  Pending --> Conflict: 409 or 422
+  Conflict --> Synced: user resolves
+  Synced --> Offline: connectivity lost
+  Pending --> Offline: connectivity lost
+  Offline --> Resyncing: connectivity restored
+  Resyncing --> Synced: queue drained
+  Resyncing --> Conflict: queued batch rejected
+  Error --> Loading: retry

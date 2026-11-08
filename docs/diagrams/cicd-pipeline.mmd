@@ -1,0 +1,15 @@
+%% name: cicd-pipeline
+flowchart LR
+  PR["Pull request"] --> L["Lint + type-check + boundary rules"]
+  L --> UT["Unit + property tests: engine, domain"]
+  UT --> CT["Contract: OpenAPI validate, Schemathesis, Pact"]
+  CT --> DB["Schema: apply to Postgres, RLS tests, migration up/down"]
+  DB --> SEC["Security: semgrep, gitleaks, OSV, Trivy, Checkov"]
+  SEC --> IMG["Build image, SBOM, cosign sign"]
+  IMG --> PE["Preview env + Playwright e2e + axe"]
+  PE --> MRG{"Merge gate: all green + 1 approval"}
+  MRG --> MAIN["main: promote to dev via config repo PR"]
+  MAIN --> STG["stage: k6 load, DAST (ZAP), chaos smoke"]
+  STG --> CAN["prod canary 5 percent, SLO watch 30 min"]
+  CAN -->|"burn rate OK"| FULL["progressive rollout 25-50-100"]
+  CAN -->|"burn rate breach"| RB["automatic rollback + incident"]

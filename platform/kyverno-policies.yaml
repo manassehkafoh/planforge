@@ -1,0 +1,54 @@
+# Policy-as-code (Kyverno). Enforced at admission; tested in CI with `kyverno test`.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: { name: require-signed-images }
+spec:
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  rules:
+    - name: verify-cosign-signature
+      match: { any: [{ resources: { kinds: [Pod] } }] }
+      verifyImages:
+        - imageReferences: ["registry.planforge.example/*"]
+          attestors:
+            - entries:
+                - keyless:
+                    issuer: https://token.actions.githubusercontent.com
+                    subject: "https://github.com/planforge/*"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: { name: pod-hardening }
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: non-root-readonly-no-privesc
+      match: { any: [{ resources: { kinds: [Pod], namespaces: [app, edge] } }] }
+      validate:
+        message: "Containers must run as non-root, with a read-only root filesystem, no privilege escalation, and dropped capabilities."
+        pattern:
+          spec:
+            securityContext: { runAsNonRoot: true }
+            containers:
+              - securityContext:
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: true
+                  capabilities: { drop: ["ALL"] }
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: { name: require-finops-labels }
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: cost-allocation-labels
+      match: { any: [{ resources: { kinds: [Deployment, StatefulSet, CronJob] } }] }
+      validate:
+        message: "FinOps labels required: cost-center, team, environment, service."
+        pattern:
+          metadata:
+            labels:
+              cost-center: "?*"
+              team: "?*"
+              environment: "?*"
+              service: "?*"

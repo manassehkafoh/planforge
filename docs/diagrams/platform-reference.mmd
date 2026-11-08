@@ -1,0 +1,43 @@
+%% name: platform-reference
+flowchart TB
+  subgraph Dev["Developer experience - golden paths"]
+    TPL["Service template: Fastify + OTel + Helm + CI"]
+    CLI["pf CLI: scaffold, run-local, preview-env"]
+    PREV["Ephemeral preview environments per PR"]
+  end
+  subgraph Git["Git - single source of truth"]
+    APPREPO["app repo"]
+    INFRA["infra repo - Terraform modules"]
+    CFG["config repo - Helm values per env"]
+  end
+  subgraph CI["CI - build, test, scan, sign"]
+    BUILD["build + unit + property + contract"]
+    SCAN["SAST, SCA, IaC, container scan, SBOM"]
+    SIGN["cosign sign + SLSA provenance"]
+  end
+  subgraph CD["CD - GitOps"]
+    ARGO["Argo CD ApplicationSets"]
+    ROLL["Argo Rollouts - canary + auto-rollback on SLO"]
+  end
+  subgraph K8s["Kubernetes clusters: dev, stage, prod-region-A, prod-region-B"]
+    ADM["Admission: Kyverno policies"]
+    MESH["Service mesh: mTLS + workload identity"]
+    WL["Workloads"]
+    HPA["HPA + KEDA - CPU, queue depth"]
+  end
+  subgraph Obs["Observability"]
+    OT["OpenTelemetry collector"]
+    PROM["Prometheus + Alertmanager"]
+    GRAF["Grafana dashboards"]
+    LOKI["Loki + Tempo"]
+  end
+  TPL --> APPREPO
+  APPREPO --> BUILD --> SCAN --> SIGN --> CFG
+  INFRA -->|"terraform plan/apply via PR"| K8s
+  CFG --> ARGO --> ROLL --> WL
+  ADM -.-> WL
+  MESH -.-> WL
+  HPA -.-> WL
+  WL --> OT --> PROM --> GRAF
+  OT --> LOKI
+  PROM -->|"burn-rate alerts"| ROLL

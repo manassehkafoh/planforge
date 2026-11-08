@@ -1,0 +1,27 @@
+%% name: roadmap-gantt
+gantt
+  title PlanForge delivery roadmap (relative months from kickoff)
+  dateFormat  YYYY-MM-DD
+  axisFormat  M%m
+  section Phase 0 Foundation
+  Legal review and clean-room set-up          :p0a, 2027-01-04, 30d
+  Golden corpus v1 (60 plans) and oracle harness :p0b, 2027-01-04, 60d
+  Platform skeleton, CI/CD, GitOps             :p0c, 2027-01-18, 45d
+  Engine hardening (resource rules, DST edge) :p0d, 2027-01-18, 60d
+  section Release 1 MVP
+  Plan editing API and command path            :r1a, 2027-03-08, 75d
+  React app - grid, Gantt, why-this-date       :r1b, 2027-03-08, 105d
+  Calendars, baselines, EVM                    :r1c, 2027-04-05, 60d
+  MSPDI and CSV import and export, fidelity    :r1d, 2027-04-19, 60d
+  SSO, RBAC, audit chain, hardening            :r1e, 2027-05-03, 60d
+  Beta with design partners                    :milestone, r1m, 2027-07-12, 1d
+  section Release 2 Collaboration and scale
+  Realtime, presence, comments                 :r2a, 2027-07-12, 75d
+  Incremental engine plus shadow verification  :r2b, 2027-07-12, 90d
+  Scenarios, levelling, Monte Carlo            :r2c, 2027-08-23, 90d
+  MPP converter, pod reader, custom fields     :r2d, 2027-09-06, 75d
+  GA                                           :milestone, r2m, 2027-11-29, 1d
+  section Release 3 Portfolio and AI
+  Portfolio roll-ups and capacity              :r3a, 2027-12-06, 75d
+  Data platform Gold marts and dashboards      :r3b, 2027-12-06, 90d
+  AI duration suggestions, plan draft          :r3c, 2028-02-07, 75d

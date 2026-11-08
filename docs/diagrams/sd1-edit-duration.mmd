@@ -1,0 +1,40 @@
+%% name: sd1-edit-duration
+sequenceDiagram
+  autonumber
+  actor U as Scheduler
+  participant SPA as SPA store
+  participant WW as Worker engine
+  participant API as REST API
+  participant APP as ApplyCommands
+  participant DOM as Plan aggregate
+  participant ENG as Engine
+  participant DB as PostgreSQL
+  participant R as Redis pub/sub
+  participant P as Peer clients
+  U->>SPA: edit Duration cell to 5d
+  SPA->>WW: optimistic apply updateTask
+  WW-->>SPA: new dates and float in under 50 ms
+  SPA-->>U: Gantt repaints immediately (pending badge)
+  SPA->>API: POST /commands {clientOpId, expectedPlanVersion, updateTask}
+  API->>API: validate JWT, scope plan.write, schema
+  API->>APP: handle(batch, user, tenant)
+  APP->>DB: BEGIN, SET LOCAL tenant, SELECT project FOR UPDATE
+  APP->>DB: find clientOpId in plan_op
+  alt clientOpId already applied
+    DB-->>APP: stored result
+    APP-->>API: replay stored result
+  else new operation
+    APP->>DB: load tasks, links, assignments (3 set-based queries)
+    APP->>DOM: apply(commands)
+    DOM->>ENG: schedule(plan)
+    ENG-->>DOM: ScheduleResult
+    DOM-->>APP: diff plus domain events
+    APP->>DB: write diff, plan_op, outbox, audit_event, plan_version+1
+    APP->>DB: COMMIT
+    APP->>R: publish plan.changed and schedule.delta
+  end
+  APP-->>API: {planVersion, schedule, changedTaskIds}
+  API-->>SPA: 200
+  SPA->>SPA: reconcile - compare server dates with local result
+  R-->>P: plan.changed
+  P->>P: apply commands, rerun local engine

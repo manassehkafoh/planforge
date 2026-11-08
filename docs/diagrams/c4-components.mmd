@@ -1,0 +1,56 @@
+%% name: c4-components
+flowchart LR
+  subgraph Interface["Interface layer"]
+    CTL["Controllers - OpenAPI generated"]
+    WSH["WebSocket ticket + subscription handler"]
+    AUTHN["JWT validation / tenant resolution"]
+  end
+  subgraph Application["Application layer"]
+    CMD["ApplyCommands handler"]
+    QRY["Query services - read models"]
+    SCN["Scenario service"]
+    BSL["Baseline service"]
+    EVMS["EVM service"]
+    IMPS["Import orchestrator"]
+  end
+  subgraph Domain["Domain layer - pure"]
+    PLAN["Plan aggregate - tasks, links, invariants"]
+    CALD["Calendar value objects"]
+    RES["Resource and Assignment model"]
+    POL["Policies - authorisation, limits"]
+    EVT["Domain events"]
+  end
+  subgraph Engine["Scheduling engine - library"]
+    CPM["CPM passes"]
+    CAL["WorkCalendar"]
+    LVL["Leveller"]
+    EVMX["EVM"]
+    MC["Monte Carlo"]
+  end
+  subgraph Infra["Infrastructure layer"]
+    REPO["Repositories - Postgres"]
+    OPL["Op log + outbox writer"]
+    CACHE["Redis adapter"]
+    STORE["Object storage adapter"]
+    AUD["Audit chain writer"]
+  end
+  CTL --> AUTHN
+  CTL --> CMD
+  CTL --> QRY
+  WSH --> AUTHN
+  CMD --> PLAN
+  CMD --> POL
+  CMD --> REPO
+  CMD --> OPL
+  CMD --> AUD
+  PLAN --> CPM
+  PLAN --> CAL
+  SCN --> PLAN
+  BSL --> REPO
+  EVMS --> EVMX
+  QRY --> REPO
+  QRY --> CACHE
+  IMPS --> STORE
+  CPM --> CAL
+  LVL --> CPM
+  MC --> CPM

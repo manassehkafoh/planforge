@@ -1,0 +1,25 @@
+%% name: sd4-baseline-evm
+sequenceDiagram
+  autonumber
+  actor U as PM
+  participant API as REST API
+  participant BSL as BaselineService
+  participant DB as PostgreSQL
+  participant EVS as EvmService
+  participant ENG as Engine evm()
+  U->>API: POST /baselines {number 0}
+  API->>BSL: save(projectId, 0)
+  BSL->>DB: BEGIN, lock project, check baseline 0 absent
+  BSL->>DB: INSERT baseline, INSERT baseline_task SELECT FROM task
+  BSL->>DB: outbox baseline.saved, audit_event
+  BSL->>DB: COMMIT
+  API-->>U: 201
+  Note over U,DB: weeks later, progress is reported
+  U->>API: GET /evm?statusDate=2026-12-04
+  API->>EVS: compute
+  EVS->>DB: aggregate timephase to status date (PV from baseline, AC actual)
+  DB-->>EVS: bac, pv, ac, percent complete per task
+  EVS->>ENG: evm(bac, pv, ev = pct x bac, ac)
+  ENG-->>EVS: sv, cv, spi, cpi, eac, vac, tcpi (null on divide by zero)
+  EVS-->>API: Evm
+  API-->>U: 200

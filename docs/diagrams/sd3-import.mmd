@@ -1,0 +1,29 @@
+%% name: sd3-import
+sequenceDiagram
+  autonumber
+  actor U as PM
+  participant SPA as SPA
+  participant API as REST API
+  participant OBJ as Object storage (quarantine)
+  participant BUS as Event bus
+  participant IMP as Import worker (sandbox)
+  participant AV as Malware scan
+  participant APP as ApplyCommands
+  participant DB as PostgreSQL
+  U->>SPA: choose plan.mpp
+  SPA->>API: POST /imports {format MPP, fileName}
+  API->>DB: insert import_job QUEUED
+  API-->>SPA: 202 {job, presigned uploadUrl}
+  SPA->>OBJ: PUT file (direct, size capped)
+  OBJ->>BUS: object-created
+  BUS->>IMP: start job
+  IMP->>AV: scan
+  AV-->>IMP: clean
+  IMP->>IMP: parse in sandbox (CPU, memory, time limits, no network)
+  IMP->>IMP: map to commands plus fidelity report
+  IMP->>APP: ApplyCommands as importing user (new project)
+  APP->>DB: commit plan, import_job SUCCEEDED, report
+  APP->>BUS: import.completed
+  SPA->>API: GET /imports/{jobId} (or push)
+  API-->>SPA: report - mapped, approximated, dropped
+  SPA-->>U: show fidelity report, open project

@@ -1,0 +1,27 @@
+%% name: bounded-contexts
+flowchart LR
+  subgraph Core["Core domain"]
+    PLN["Planning - Plan aggregate, calendars, baselines, scenarios"]
+    SCH["Scheduling - engine, domain service, stateless"]
+  end
+  subgraph Supporting["Supporting"]
+    RES["Resources - pool, rates, assignments, levelling"]
+    CST["Cost and EVM"]
+    PRT["Portfolio - programmes, projects, roll-ups"]
+    COL["Collaboration - comments, presence, notifications"]
+  end
+  subgraph Generic["Generic"]
+    IAM["Identity and Tenancy - users, roles, membership"]
+    INT["Integration - import/export, webhooks, API keys"]
+    AUD["Audit and Governance"]
+    ANA["Analytics and AI"]
+  end
+  PLN -- "uses (library call)" --> SCH
+  PLN -- "Customer/Supplier" --> RES
+  RES -- "Customer/Supplier" --> CST
+  PRT -- "Conformist: reads published events" --> PLN
+  COL -- "Open Host: subscribes to events" --> PLN
+  INT -- "Anti-corruption layer" --> PLN
+  IAM -- "Shared Kernel: TenantId, UserId" --> PLN
+  PLN -- "publishes events" --> AUD
+  PLN -- "publishes events" --> ANA

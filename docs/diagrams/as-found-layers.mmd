@@ -1,0 +1,37 @@
+%% name: as-found-layers
+flowchart TB
+  subgraph UI["openproj_ui - Swing"]
+    Main["Main / EclipseMain"] --> GM["GraphicManager - frames, views, file open/save"]
+    GM --> Ribbon["ProjectLibreRibbon - Flamingo ribbon"]
+    GM --> Views["Gantt / Network / RBS / Resource views"]
+    GM --> Dialogs["Dialogs - calendar, assignment, options"]
+  end
+  subgraph CORE["openproj_core - domain"]
+    Project["Project (2,798 LOC) - Task / NormalTask (2,144 / 2,365)"]
+    CP["criticalpath - CriticalPath, TaskSchedule, PredecessorTaskList"]
+    Cal["calendar - WorkingCalendar, WorkDay, WorkWeek"]
+    Asg["assignment - Assignment (2,513 LOC)"]
+    Cost["costing - EarnedValueCalculator, CostRate"]
+    Field["field - Field (2,423 LOC), configuration.xml, view.xml"]
+    Undo["undo - UndoController, *Edit"]
+    Snap["snapshot - baselines"]
+    Sess["session - LocalSession, FileHelper"]
+  end
+  subgraph EXCH["exchange"]
+    Pod["Serializer / ProjectSerializer - .pod"]
+    MS["MSPDI, MPP via vendored MPXJ"]
+  end
+  Views --> Project
+  Dialogs --> Project
+  Project --> CP
+  Project --> Cal
+  Project --> Asg
+  Asg --> Cost
+  Project --> Undo
+  Project --> Snap
+  Views --> Field
+  GM --> Sess
+  Sess --> Pod
+  Sess --> MS
+  Cfg[("ScheduleOption, CalendarOption, ... global singletons")] -.-> Project
+  Cfg -.-> CP

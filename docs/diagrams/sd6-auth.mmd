@@ -1,0 +1,26 @@
+%% name: sd6-auth
+sequenceDiagram
+  autonumber
+  actor U as User
+  participant SPA as SPA
+  participant IDP as OIDC IdP
+  participant GW as API gateway
+  participant API as REST API
+  participant RT as Realtime gateway
+  U->>SPA: open app
+  SPA->>IDP: authorization request (code, PKCE S256, state, nonce)
+  IDP-->>U: login and MFA
+  IDP-->>SPA: authorization code
+  SPA->>IDP: token request with code_verifier
+  IDP-->>SPA: access token (short-lived), refresh token (rotating)
+  SPA->>GW: GET /projects (Bearer)
+  GW->>GW: verify signature via cached JWKS, aud, exp, tenant claim
+  GW->>API: forward with identity headers
+  API->>API: map sub to app_user, membership and role check
+  API-->>SPA: 200
+  SPA->>API: POST /realtime/tickets {projectId}
+  API-->>SPA: ticket (60 s, single use)
+  SPA->>RT: WSS connect with ticket
+  RT->>API: redeem ticket (atomic delete in Redis)
+  API-->>RT: user, tenant, project, role
+  RT-->>SPA: hello {lastSeq}

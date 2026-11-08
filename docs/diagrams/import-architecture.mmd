@@ -1,0 +1,29 @@
+%% name: import-architecture
+flowchart LR
+  subgraph Sources
+    A["MSPDI XML"]
+    B["MPP binary"]
+    C[".pod legacy"]
+    D["CSV / Excel"]
+    E[".plan native"]
+  end
+  subgraph Sandbox["Sandboxed import worker"]
+    P1["MSPDI reader - XXE-safe"]
+    P2["MPP converter - isolated MPXJ container"]
+    P3["POD reader - allow-listed stream grammar"]
+    P4["CSV mapper"]
+    P5["PLAN reader - JSON schema"]
+  end
+  CAN["Canonical Import Model - neutral, versioned"]
+  ACL["Anti-corruption mapper: Canonical to Commands"]
+  VAL["Validation: engine + invariants"]
+  OUT["Commands to ApplyCommands path"]
+  REP["Fidelity report"]
+  A --> P1 --> CAN
+  B --> P2 --> CAN
+  C --> P3 --> CAN
+  D --> P4 --> CAN
+  E --> P5 --> CAN
+  CAN --> ACL --> VAL --> OUT
+  ACL --> REP
+  VAL --> REP

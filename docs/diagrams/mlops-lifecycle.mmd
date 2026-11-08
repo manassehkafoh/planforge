@@ -1,0 +1,13 @@
+%% name: mlops-lifecycle
+flowchart LR
+  D["Data: gold_duration_training_set"] --> V["Validate: schema, leakage, bias slices"]
+  V --> T["Train: quantile GBM, tracked in MLflow"]
+  T --> E["Evaluate: pinball loss, coverage, calibration, fairness slices"]
+  E --> G{"Governance gate: model card complete, approver sign-off"}
+  G -->|"approved"| R["Register: model registry, version tag"]
+  G -->|"rejected"| T
+  R --> C["Canary: 5 percent of tenants, shadow then live"]
+  C --> P["Production serving: batch-scored nightly + online API"]
+  P --> M["Monitor: accuracy, drift, bias, latency"]
+  M -->|"drift or SLO breach"| T
+  M -->|"harm signal"| RB["Rollback to previous version"]

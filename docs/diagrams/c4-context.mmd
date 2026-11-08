@@ -1,0 +1,23 @@
+%% name: c4-context
+flowchart LR
+  PM["Scheduler / Project Manager"]
+  TM["Team Member"]
+  EX["Executive / Sponsor"]
+  AD["Platform Admin / Integrator"]
+  PF(["PlanForge platform"])
+  IDP["Identity Provider - OIDC, SCIM"]
+  MSP["MS Project files - MPP, MSPDI"]
+  ERP["ERP / ITSM / Finance systems"]
+  BI["BI and data platform"]
+  MAIL["Email and chat notifications"]
+  LLM["LLM provider - optional AI features"]
+  PM -->|"plan, baseline, level, simulate"| PF
+  TM -->|"update progress, comment"| PF
+  EX -->|"dashboards, status"| PF
+  AD -->|"configure, audit"| PF
+  PF -->|"authenticate, provision"| IDP
+  MSP -->|"import / export"| PF
+  PF -->|"webhooks, REST"| ERP
+  PF -->|"CDC events, exports"| BI
+  PF -->|"notify"| MAIL
+  PF -.->|"redacted prompts, optional"| LLM

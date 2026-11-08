@@ -1,0 +1,24 @@
+%% name: pipeline-dag
+flowchart LR
+  OBX[("outbox / CDC")] --> K{{"Kafka topics"}}
+  K --> B1["bronze_events (streaming)"]
+  K --> B2["bronze_cdc_tables (streaming)"]
+  B1 --> S1["silver_plan_change"]
+  B2 --> S2["silver_task_snapshot_daily"]
+  B2 --> S3["silver_assignment_day"]
+  B2 --> S4["silver_baseline_task"]
+  S2 --> DQ{"DQ gate: contracts and expectations"}
+  S3 --> DQ
+  S4 --> DQ
+  S1 --> DQ
+  DQ -->|"pass"| G1["gold_portfolio_health"]
+  DQ -->|"pass"| G2["gold_evm_timeseries"]
+  DQ -->|"pass"| G3["gold_resource_capacity"]
+  DQ -->|"pass"| G4["gold_schedule_drift"]
+  DQ -->|"pass"| G5["gold_duration_training_set"]
+  DQ -->|"fail"| QUAR[("quarantine table + alert")]
+  G1 --> SERVE["Serving layer and BI"]
+  G2 --> SERVE
+  G3 --> SERVE
+  G4 --> SERVE
+  G5 --> FS["Feature store"]

@@ -1,0 +1,9 @@
+{
+  "name": "@planforge/scheduling-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Clean-room reference implementation of the PlanForge deterministic scheduling engine (CPM, calendars, constraints, EVM, Monte Carlo).",
+  "scripts": { "test": "node --test test/*.test.ts", "bench": "node bench/bench.ts" },
+  "engines": { "node": ">=22.18" }
+}

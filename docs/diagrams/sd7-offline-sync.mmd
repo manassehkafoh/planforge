@@ -1,0 +1,25 @@
+%% name: sd7-offline-sync
+sequenceDiagram
+  autonumber
+  actor U as Scheduler
+  participant SPA as SPA
+  participant IDB as IndexedDB queue
+  participant API as REST API
+  participant APP as ApplyCommands
+  U->>SPA: edits while offline
+  SPA->>IDB: append command batches with clientOpIds and base version v
+  Note over SPA: UI shows Offline - changes queued
+  SPA->>SPA: connectivity restored
+  SPA->>API: GET /plan (ETag v+k)
+  API-->>SPA: plan at v+k
+  SPA->>SPA: rebase queued batches onto v+k (commute test)
+  loop each queued batch in order
+    SPA->>API: POST /commands {clientOpId, expectedPlanVersion}
+    API->>APP: handle
+    alt applied or replayed
+      APP-->>SPA: 200
+    else VERSION_CONFLICT or CYCLE_DETECTED
+      APP-->>SPA: 409 or 422
+      SPA->>U: conflict dialog - keep mine, take theirs, edit
+    end
+  end

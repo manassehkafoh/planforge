@@ -1,0 +1,48 @@
+# OpenSLO definitions (apiVersion openslo/v1) - error budgets drive release policy (docs/12 section 4)
+apiVersion: openslo/v1
+kind: SLO
+metadata: { name: api-availability, displayName: Core API availability }
+spec:
+  service: core-api
+  indicator:
+    metadata: { name: api-good-requests }
+    spec:
+      ratioMetric:
+        counter: true
+        good:  { metricSource: { type: Prometheus, spec: { query: 'sum(rate(http_server_requests_total{service="core-api",status!~"5..|429"}[{{.window}}]))' } } }
+        total: { metricSource: { type: Prometheus, spec: { query: 'sum(rate(http_server_requests_total{service="core-api"}[{{.window}}]))' } } }
+  timeWindow: [{ duration: 30d, isRolling: true }]
+  budgetingMethod: Occurrences
+  objectives: [{ displayName: 99.9% monthly, target: 0.999 }]
+---
+apiVersion: openslo/v1
+kind: SLO
+metadata: { name: command-latency, displayName: POST /commands under 300 ms }
+spec:
+  service: core-api
+  indicator:
+    metadata: { name: command-fast }
+    spec:
+      ratioMetric:
+        counter: true
+        good:  { metricSource: { type: Prometheus, spec: { query: 'sum(rate(http_server_duration_seconds_bucket{route="/projects/{id}/commands",le="0.3"}[{{.window}}]))' } } }
+        total: { metricSource: { type: Prometheus, spec: { query: 'sum(rate(http_server_duration_seconds_count{route="/projects/{id}/commands"}[{{.window}}]))' } } }
+  timeWindow: [{ duration: 30d, isRolling: true }]
+  budgetingMethod: Occurrences
+  objectives: [{ displayName: 95% under 300ms, target: 0.95 }]
+---
+apiVersion: openslo/v1
+kind: SLO
+metadata: { name: realtime-fanout, displayName: Commit to peer under 250 ms }
+spec:
+  service: realtime-gateway
+  indicator:
+    metadata: { name: fanout-fast }
+    spec:
+      ratioMetric:
+        counter: true
+        good:  { metricSource: { type: Prometheus, spec: { query: 'sum(rate(rt_fanout_latency_seconds_bucket{le="0.25"}[{{.window}}]))' } } }
+        total: { metricSource: { type: Prometheus, spec: { query: 'sum(rate(rt_fanout_latency_seconds_count[{{.window}}]))' } } }
+  timeWindow: [{ duration: 30d, isRolling: true }]
+  budgetingMethod: Occurrences
+  objectives: [{ displayName: 95% under 250ms, target: 0.95 }]

@@ -1,0 +1,46 @@
+%% name: c4-containers
+flowchart TB
+  subgraph Client["Browser / PWA"]
+    SPA["React SPA - canvas Gantt, grids, boards"]
+    WW["Web Worker - scheduling engine, local what-if"]
+    IDB[("IndexedDB - plan cache, offline op queue")]
+    SPA <--> WW
+    SPA <--> IDB
+  end
+  subgraph Edge["Edge"]
+    GW["API Gateway / Ingress - TLS, WAF, rate limit, authN"]
+    RT["Realtime Gateway - WebSocket fan-out"]
+  end
+  subgraph Core["PlanForge Core - modular monolith, N replicas"]
+    API["REST API - controllers, auth, validation"]
+    APP["Application services - command handlers"]
+    DOM["Domain - Plan aggregate, policies"]
+    ENG["Scheduling engine library"]
+    API --> APP --> DOM --> ENG
+  end
+  subgraph Workers["Async workers"]
+    RISK["Risk worker - Monte Carlo"]
+    IMP["Import / export worker - sandboxed"]
+    NOTIF["Notifier and webhook dispatcher"]
+    ANA["Analytics loader"]
+  end
+  PG[("PostgreSQL 16 - RLS, outbox, op log")]
+  RED[("Redis - cache, rate limits, pub/sub")]
+  OBJ[("Object storage - uploads, exports, snapshots")]
+  BUS{{"Event bus - Kafka or equivalent"}}
+  LAKE[("Lakehouse - bronze / silver / gold")]
+  IDP["OIDC IdP"]
+  SPA -->|"HTTPS REST"| GW --> API
+  SPA <-->|"WSS"| RT
+  RT <-->|"subscribe"| RED
+  APP --> PG
+  APP -->|"publish ops"| RED
+  APP -->|"outbox"| PG
+  PG -->|"outbox relay"| BUS
+  BUS --> NOTIF
+  BUS --> ANA --> LAKE
+  APP -->|"enqueue"| BUS
+  BUS --> RISK --> PG
+  BUS --> IMP
+  IMP <--> OBJ
+  API -->|"validate JWT"| IDP

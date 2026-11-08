@@ -1,0 +1,187 @@
+asyncapi: 2.6.0
+info:
+  title: PlanForge Realtime & Event API
+  version: 1.0.0
+  description: |
+    Two asynchronous surfaces:
+    1. **Realtime gateway (WebSocket)** - pushes sequenced plan changes, schedule deltas and presence to connected editors.
+       Writes still go through `POST /projects/{id}/commands` (REST); the socket is a broadcast channel, which keeps a single,
+       authoritative, idempotent write path.
+    2. **Integration events (webhooks + message bus)** - outbox-published domain events for external systems and the analytics pipeline.
+
+    Delivery semantics: realtime = at-most-once with gap detection (`seq`; client re-syncs via `GET /plan` if it sees a gap).
+    Webhooks/bus = at-least-once; consumers must de-duplicate on `eventId`.
+servers:
+  realtime:
+    url: wss://rt.planforge.example/v1
+    protocol: wss
+    description: Realtime gateway (placeholder host). Authenticate with `?ticket=` (60-second single-use ticket obtained from `POST /realtime/tickets`) - bearer tokens never appear in URLs.
+  bus:
+    url: kafka.planforge.internal:9093
+    protocol: kafka-secure
+    description: Internal event bus (topic per event family).
+defaultContentType: application/json
+channels:
+  projects/{projectId}/stream:
+    parameters:
+      projectId: { schema: { type: string, format: uuid } }
+    description: Per-project broadcast channel.
+    subscribe:
+      operationId: onProjectStream
+      summary: Receive plan changes, schedule deltas and presence
+      message:
+        oneOf:
+          - $ref: '#/components/messages/PlanChanged'
+          - $ref: '#/components/messages/ScheduleDelta'
+          - $ref: '#/components/messages/PresenceUpdated'
+    publish:
+      operationId: sendPresence
+      summary: Send cursor / selection presence (ephemeral, never persisted)
+      message: { $ref: '#/components/messages/PresenceUpdate' }
+  events/plan:
+    description: Domain events published through the transactional outbox.
+    subscribe:
+      operationId: onPlanEvent
+      message:
+        oneOf:
+          - $ref: '#/components/messages/DomainPlanChanged'
+          - $ref: '#/components/messages/BaselineSaved'
+          - $ref: '#/components/messages/RiskCompleted'
+          - $ref: '#/components/messages/ImportCompleted'
+components:
+  messages:
+    PlanChanged:
+      name: plan.changed
+      summary: A command batch was applied. Clients apply `commands` in `seq` order and re-run the local engine.
+      payload:
+        type: object
+        required: [type, projectId, seq, planVersion, actorId, commands]
+        properties:
+          type: { type: string, const: plan.changed }
+          projectId: { type: string, format: uuid }
+          seq: { type: integer, format: int64, description: Gapless per-project sequence number }
+          planVersion: { type: integer, format: int64 }
+          actorId: { type: string, format: uuid }
+          clientOpId: { type: string, format: uuid, description: Lets the originating client reconcile its optimistic op }
+          commands: { type: array, items: { type: object } }
+    ScheduleDelta:
+      name: schedule.delta
+      summary: Server-authoritative schedule values for tasks whose dates or float changed (used to verify client engine output).
+      payload:
+        type: object
+        required: [type, projectId, planVersion, tasks]
+        properties:
+          type: { type: string, const: schedule.delta }
+          projectId: { type: string, format: uuid }
+          planVersion: { type: integer, format: int64 }
+          engineVersion: { type: string, example: 1.4.2 }
+          tasks:
+            type: object
+            additionalProperties:
+              type: object
+              properties:
+                es: { type: string }
+                ef: { type: string }
+                totalFloatMin: { type: integer }
+                critical: { type: boolean }
+    PresenceUpdate:
+      name: presence.update
+      payload:
+        type: object
+        required: [type]
+        properties:
+          type: { type: string, const: presence.update }
+          selectedTaskId: { type: string, format: uuid, nullable: true }
+          editingField: { type: string, nullable: true }
+    PresenceUpdated:
+      name: presence.updated
+      payload:
+        type: object
+        required: [type, users]
+        properties:
+          type: { type: string, const: presence.updated }
+          users:
+            type: array
+            items:
+              type: object
+              required: [userId, displayName]
+              properties:
+                userId: { type: string, format: uuid }
+                displayName: { type: string }
+                selectedTaskId: { type: string, format: uuid, nullable: true }
+    EventEnvelope:
+      name: envelope
+      payload:
+        type: object
+        required: [eventId, eventType, occurredAt, tenantId, data]
+        properties:
+          eventId: { type: string, format: uuid }
+          eventType: { type: string }
+          occurredAt: { type: string, format: date-time }
+          tenantId: { type: string, format: uuid }
+          data: { type: object }
+    DomainPlanChanged:
+      name: plan.changed.v1
+      summary: Coarse-grained change notification for integrations (no command bodies, to limit data exposure).
+      payload:
+        type: object
+        required: [eventId, eventType, occurredAt, tenantId, data]
+        properties:
+          eventId: { type: string, format: uuid }
+          eventType: { type: string, const: plan.changed.v1 }
+          occurredAt: { type: string, format: date-time }
+          tenantId: { type: string, format: uuid }
+          data:
+            type: object
+            required: [projectId, planVersion, changedTaskIds]
+            properties:
+              projectId: { type: string, format: uuid }
+              planVersion: { type: integer }
+              changedTaskIds: { type: array, items: { type: string, format: uuid } }
+              finishMovedByMin: { type: integer, description: Positive = slipped }
+    BaselineSaved:
+      name: baseline.saved.v1
+      payload:
+        type: object
+        required: [eventId, eventType, occurredAt, tenantId, data]
+        properties:
+          eventId: { type: string, format: uuid }
+          eventType: { type: string, const: baseline.saved.v1 }
+          occurredAt: { type: string, format: date-time }
+          tenantId: { type: string, format: uuid }
+          data:
+            type: object
+            properties:
+              projectId: { type: string, format: uuid }
+              baselineNumber: { type: integer }
+    RiskCompleted:
+      name: risk.completed.v1
+      payload:
+        type: object
+        required: [eventId, eventType, occurredAt, tenantId, data]
+        properties:
+          eventId: { type: string, format: uuid }
+          eventType: { type: string, const: risk.completed.v1 }
+          occurredAt: { type: string, format: date-time }
+          tenantId: { type: string, format: uuid }
+          data:
+            type: object
+            properties:
+              projectId: { type: string, format: uuid }
+              runId: { type: string, format: uuid }
+              p80: { type: string, format: date-time }
+    ImportCompleted:
+      name: import.completed.v1
+      payload:
+        type: object
+        required: [eventId, eventType, occurredAt, tenantId, data]
+        properties:
+          eventId: { type: string, format: uuid }
+          eventType: { type: string, const: import.completed.v1 }
+          occurredAt: { type: string, format: date-time }
+          tenantId: { type: string, format: uuid }
+          data:
+            type: object
+            properties:
+              jobId: { type: string, format: uuid }
+              status: { type: string, enum: [SUCCEEDED, FAILED] }

@@ -1,0 +1,39 @@
+%% name: deployment
+flowchart TB
+  subgraph Internet
+    U["Users"]
+  end
+  subgraph Cloud["Cloud region - Kubernetes cluster"]
+    subgraph ns_edge["ns: edge"]
+      ING["Ingress controller + WAF"]
+      RTP["realtime-gateway x3"]
+    end
+    subgraph ns_app["ns: app"]
+      CORE["core-api x3-N, HPA on CPU + p95 latency"]
+      WRK["workers - risk, import, notify, analytics"]
+    end
+    subgraph ns_data["managed data services"]
+      PGP[("PostgreSQL primary + 2 replicas, PITR")]
+      RDS[("Redis cluster")]
+      KFK{{"Kafka"}}
+      S3[("Object storage - versioned, KMS-encrypted")]
+    end
+    subgraph ns_ops["ns: platform"]
+      ARGO["Argo CD - GitOps"]
+      OTEL["OpenTelemetry collector"]
+      POLK["Kyverno / OPA policies"]
+      ESO["External Secrets -> vault"]
+    end
+  end
+  U --> ING --> CORE
+  U --> RTP
+  CORE --> PGP
+  CORE --> RDS
+  CORE --> KFK
+  WRK --> PGP
+  WRK --> S3
+  KFK --> WRK
+  ARGO -.->|"sync manifests"| ns_app
+  OTEL -.-> CORE
+  ESO -.-> CORE
+  POLK -.->|"admission control"| ns_app

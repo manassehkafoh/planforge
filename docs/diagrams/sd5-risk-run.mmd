@@ -1,0 +1,26 @@
+%% name: sd5-risk-run
+sequenceDiagram
+  autonumber
+  actor U as PM
+  participant API as REST API
+  participant DB as PostgreSQL
+  participant BUS as Event bus
+  participant W as Risk workers (N)
+  participant ENG as Engine
+  participant RT as Realtime gateway
+  U->>API: POST /risk-runs {iterations 5000, seed}
+  API->>DB: insert risk_run QUEUED with planVersion
+  API-->>U: 202 Location /risk-runs/id
+  API->>BUS: risk.requested
+  BUS->>W: shard 1..N (iterations / N each)
+  loop each iteration in shard
+    W->>ENG: schedule(sampled durations)
+    ENG-->>W: finish, critical set
+  end
+  W->>DB: write shard results
+  W->>DB: last shard merges, computes P50 P80 P90 and criticality, SUCCEEDED
+  W->>BUS: risk.completed
+  BUS->>RT: notify project subscribers
+  RT-->>U: risk.completed push
+  U->>API: GET /risk-runs/id
+  API-->>U: percentiles and criticality index

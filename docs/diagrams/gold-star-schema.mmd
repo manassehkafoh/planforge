@@ -1,0 +1,45 @@
+%% name: gold-star-schema
+erDiagram
+  DIM_PROJECT ||--o{ FACT_TASK_SNAPSHOT_DAILY : has
+  DIM_TASK_SCD2 ||--o{ FACT_TASK_SNAPSHOT_DAILY : describes
+  DIM_DATE ||--o{ FACT_TASK_SNAPSHOT_DAILY : on
+  DIM_RESOURCE ||--o{ FACT_ASSIGNMENT_DAY : works
+  DIM_DATE ||--o{ FACT_ASSIGNMENT_DAY : on
+  DIM_TASK_SCD2 ||--o{ FACT_ASSIGNMENT_DAY : for
+  DIM_PROJECT ||--o{ FACT_EVM_DAILY : measured
+  DIM_DATE ||--o{ FACT_EVM_DAILY : on
+  FACT_TASK_SNAPSHOT_DAILY {
+    uuid tenant_id
+    uuid project_id
+    uuid task_key
+    date snapshot_date
+    timestamp early_start
+    timestamp early_finish
+    int total_float_min
+    boolean is_critical
+    numeric percent_complete
+    int duration_min
+    int baseline0_finish_slip_min
+  }
+  FACT_ASSIGNMENT_DAY {
+    uuid tenant_id
+    uuid resource_key
+    uuid task_key
+    date day
+    int planned_work_min
+    int actual_work_min
+    int capacity_min
+    numeric planned_cost
+    numeric actual_cost
+  }
+  FACT_EVM_DAILY {
+    uuid tenant_id
+    uuid project_id
+    date status_date
+    numeric bac
+    numeric pv
+    numeric ev
+    numeric ac
+    numeric spi
+    numeric cpi
+  }

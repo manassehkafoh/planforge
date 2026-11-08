@@ -1,0 +1,870 @@
+openapi: 3.0.3
+info:
+  title: PlanForge Public API
+  version: 1.0.0
+  description: |
+    REST API of PlanForge (working name), a scheduling-first project and portfolio management platform.
+
+    **Design rules** (see docs/07-api-and-events.md):
+    * Resource-oriented reads; **all plan mutations go through `POST /projects/{projectId}/commands`** so that a batch
+      is atomic, validated by the scheduling engine, idempotent (`clientOpId`) and version-checked (`expectedPlanVersion`).
+    * Errors use RFC 9457 `application/problem+json` with a stable machine `code` (error taxonomy in docs/07 section 5).
+    * Versioning: URL major version (`/v1`). Additive changes are non-breaking; removals require `/v2` and a 12-month sunset
+      announced with `Deprecation` and `Sunset` headers.
+    * Instants in plan data are **naive local date-times in the project's time zone** (`2026-11-09T08:00:00`);
+      audit/system timestamps are RFC 3339 UTC.
+  license:
+    name: Proprietary (licence decision pending - see ADR-011)
+servers:
+  - url: https://api.planforge.example/v1
+    description: Production (placeholder host)
+security:
+  - oidc: [plan.read]
+tags:
+  - name: Projects
+  - name: Plan
+  - name: Resources
+  - name: Baselines & EVM
+  - name: Risk
+  - name: Import & Export
+  - name: Integration
+  - name: Governance
+paths:
+  /projects:
+    get:
+      tags: [Projects]
+      operationId: listProjects
+      summary: List projects visible to the caller
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+        - { name: portfolioId, in: query, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: A page of projects
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/Project' } }
+                  nextCursor: { type: string, nullable: true }
+        default: { $ref: '#/components/responses/Problem' }
+    post:
+      tags: [Projects]
+      operationId: createProject
+      summary: Create a project
+      security: [{ oidc: [plan.write] }]
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/ProjectCreate' } } }
+      responses:
+        '201':
+          description: Created
+          headers: { Location: { schema: { type: string } } }
+          content: { application/json: { schema: { $ref: '#/components/schemas/Project' } } }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    get:
+      tags: [Projects]
+      operationId: getProject
+      summary: Get one project
+      responses:
+        '200': { description: The project, content: { application/json: { schema: { $ref: '#/components/schemas/Project' } } } }
+        default: { $ref: '#/components/responses/Problem' }
+    patch:
+      tags: [Projects]
+      operationId: updateProject
+      summary: Update project settings (name, deadline, status)
+      security: [{ oidc: [plan.write] }]
+      parameters: [{ $ref: '#/components/parameters/IfMatch' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/ProjectPatch' } } }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/Project' } } } }
+        default: { $ref: '#/components/responses/Problem' }
+    delete:
+      tags: [Projects]
+      operationId: archiveProject
+      summary: Archive a project (soft delete, restorable for 30 days)
+      security: [{ oidc: [plan.admin] }]
+      responses:
+        '204': { description: Archived }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/plan:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    get:
+      tags: [Plan]
+      operationId: getPlan
+      summary: Full plan snapshot (tasks, links, calendars, schedule output)
+      description: |
+        Returns the whole Plan aggregate at `planVersion`. Large plans stream as NDJSON when
+        `Accept: application/x-ndjson` is sent (one task/link per line) to keep client memory flat.
+      parameters:
+        - { name: include, in: query, schema: { type: array, items: { type: string, enum: [tasks, links, assignments, calendars, schedule] } }, style: form, explode: false }
+      responses:
+        '200':
+          description: Plan snapshot
+          headers: { ETag: { schema: { type: string }, description: 'Strong ETag = planVersion' } }
+          content:
+            application/json: { schema: { $ref: '#/components/schemas/Plan' } }
+            application/x-ndjson: { schema: { type: string } }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/commands:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    post:
+      tags: [Plan]
+      operationId: applyCommands
+      summary: Apply an atomic batch of plan commands
+      description: |
+        The only write path for plan data. The server (1) checks `expectedPlanVersion`, (2) applies every command to an
+        in-memory copy of the plan, (3) runs the scheduling engine, (4) rejects the whole batch if any command is invalid
+        or introduces a cycle, otherwise (5) persists the diff, appends to the operation log and broadcasts to
+        subscribers. Replaying the same `clientOpId` returns the original result (idempotent).
+      security: [{ oidc: [plan.write] }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CommandBatch' } } }
+      responses:
+        '200':
+          description: Applied
+          content: { application/json: { schema: { $ref: '#/components/schemas/CommandResult' } } }
+        '409': { $ref: '#/components/responses/Problem' }
+        '422': { $ref: '#/components/responses/Problem' }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/tasks:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    get:
+      tags: [Plan]
+      operationId: listTasks
+      summary: Query tasks (filter, sort, page) without loading the whole plan
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+        - { name: critical, in: query, schema: { type: boolean } }
+        - { name: parentId, in: query, schema: { type: string, format: uuid } }
+        - { name: q, in: query, schema: { type: string, maxLength: 200 }, description: Name contains }
+        - { name: finishBefore, in: query, schema: { type: string, format: date-time } }
+      responses:
+        '200':
+          description: A page of tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/Task' } }
+                  nextCursor: { type: string, nullable: true }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/tasks/{taskId}:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+      - { name: taskId, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [Plan]
+      operationId: getTask
+      summary: Get one task including scheduling output
+      responses:
+        '200': { description: The task, content: { application/json: { schema: { $ref: '#/components/schemas/Task' } } } }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/schedule:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    post:
+      tags: [Plan]
+      operationId: previewSchedule
+      summary: What-if - compute the schedule for hypothetical commands without persisting
+      description: Stateless; safe to call at keystroke rate from a client that cannot run the engine locally.
+      requestBody:
+        content: { application/json: { schema: { $ref: '#/components/schemas/CommandBatch' } } }
+      responses:
+        '200': { description: Schedule result, content: { application/json: { schema: { $ref: '#/components/schemas/ScheduleResult' } } } }
+        '422': { $ref: '#/components/responses/Problem' }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/scenarios:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    get:
+      tags: [Plan]
+      operationId: listScenarios
+      summary: List what-if scenarios
+      responses:
+        '200': { description: Scenarios, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Scenario' } } } } }
+        default: { $ref: '#/components/responses/Problem' }
+    post:
+      tags: [Plan]
+      operationId: createScenario
+      summary: Save a named what-if branch
+      security: [{ oidc: [plan.write] }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/ScenarioCreate' } } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Scenario' } } } }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/calendars:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    get:
+      tags: [Plan]
+      operationId: listCalendars
+      summary: Calendars usable by the project
+      responses:
+        '200': { description: Calendars, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Calendar' } } } } }
+        default: { $ref: '#/components/responses/Problem' }
+  /resources:
+    get:
+      tags: [Resources]
+      operationId: listResources
+      summary: Enterprise resource pool
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }]
+      responses:
+        '200':
+          description: A page of resources
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/Resource' } }
+                  nextCursor: { type: string, nullable: true }
+        default: { $ref: '#/components/responses/Problem' }
+    post:
+      tags: [Resources]
+      operationId: createResource
+      summary: Create a resource
+      security: [{ oidc: [resource.write] }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/ResourceCreate' } } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Resource' } } } }
+        default: { $ref: '#/components/responses/Problem' }
+  /resources/{resourceId}/load:
+    get:
+      tags: [Resources]
+      operationId: getResourceLoad
+      summary: Resource utilisation histogram across all projects
+      parameters:
+        - { name: resourceId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: from, in: query, required: true, schema: { type: string, format: date } }
+        - { name: to, in: query, required: true, schema: { type: string, format: date } }
+      responses:
+        '200':
+          description: Daily load; `overallocated` days exceed the resource's maxUnits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [day, plannedMin, capacityMin, overallocated]
+                  properties:
+                    day: { type: string, format: date }
+                    plannedMin: { type: integer }
+                    capacityMin: { type: integer }
+                    overallocated: { type: boolean }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/level:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    post:
+      tags: [Resources]
+      operationId: levelResources
+      summary: Propose resource-levelling delays (dry run unless `apply` is true)
+      security: [{ oidc: [plan.write] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                apply: { type: boolean, default: false }
+                withinFloatOnly: { type: boolean, default: true, description: When true the project finish date will not move }
+                priority: { type: string, enum: [FLOAT, EARLY_START, TASK_PRIORITY], default: FLOAT }
+      responses:
+        '200':
+          description: Proposed delays and resulting finish
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [delays, projectFinish]
+                properties:
+                  delays:
+                    type: array
+                    items:
+                      type: object
+                      required: [assignmentId, delayMin]
+                      properties:
+                        assignmentId: { type: string, format: uuid }
+                        delayMin: { type: integer, minimum: 0 }
+                  projectFinish: { type: string, format: date-time }
+                  unresolved: { type: array, items: { type: string, format: uuid } }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/baselines:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    get:
+      tags: [Baselines & EVM]
+      operationId: listBaselines
+      summary: List saved baselines
+      responses:
+        '200': { description: Baselines, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Baseline' } } } } }
+        default: { $ref: '#/components/responses/Problem' }
+    post:
+      tags: [Baselines & EVM]
+      operationId: saveBaseline
+      summary: Snapshot the current plan as baseline N (immutable once saved)
+      security: [{ oidc: [plan.baseline] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [number]
+              properties:
+                number: { type: integer, minimum: 0, maximum: 10 }
+                label: { type: string, maxLength: 120 }
+      responses:
+        '201': { description: Saved, content: { application/json: { schema: { $ref: '#/components/schemas/Baseline' } } } }
+        '409': { $ref: '#/components/responses/Problem' }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/evm:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    get:
+      tags: [Baselines & EVM]
+      operationId: getEarnedValue
+      summary: Earned value metrics at a status date
+      parameters:
+        - { name: statusDate, in: query, schema: { type: string, format: date } }
+        - { name: baseline, in: query, schema: { type: integer, default: 0 } }
+      responses:
+        '200': { description: EVM metrics, content: { application/json: { schema: { $ref: '#/components/schemas/Evm' } } } }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/risk-runs:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    post:
+      tags: [Risk]
+      operationId: startRiskRun
+      summary: Start a Monte Carlo schedule-risk simulation (asynchronous)
+      security: [{ oidc: [plan.write] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                iterations: { type: integer, minimum: 100, maximum: 100000, default: 5000 }
+                seed: { type: integer, description: 'Optional; same seed + same plan version = identical result' }
+      responses:
+        '202':
+          description: Accepted - poll the Location URL or subscribe to `risk.completed`
+          headers: { Location: { schema: { type: string } } }
+          content: { application/json: { schema: { $ref: '#/components/schemas/RiskRun' } } }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/risk-runs/{runId}:
+    get:
+      tags: [Risk]
+      operationId: getRiskRun
+      summary: Get a risk run and its percentiles
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - { name: runId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200': { description: The run, content: { application/json: { schema: { $ref: '#/components/schemas/RiskRun' } } } }
+        default: { $ref: '#/components/responses/Problem' }
+  /imports:
+    post:
+      tags: [Import & Export]
+      operationId: createImport
+      summary: Start an import job; returns a pre-signed upload URL (file never transits the API tier)
+      security: [{ oidc: [plan.write] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [format, fileName]
+              properties:
+                format: { type: string, enum: [MSPDI, MPP, LEGACY_POD, PLAN, CSV] }
+                fileName: { type: string, maxLength: 255 }
+                targetProjectId: { type: string, format: uuid, description: Omit to create a new project }
+      responses:
+        '202':
+          description: Job created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [job, uploadUrl]
+                properties:
+                  job: { $ref: '#/components/schemas/ImportJob' }
+                  uploadUrl: { type: string, format: uri }
+        default: { $ref: '#/components/responses/Problem' }
+  /imports/{jobId}:
+    get:
+      tags: [Import & Export]
+      operationId: getImport
+      summary: Import status and fidelity report
+      parameters: [{ name: jobId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        '200': { description: Job, content: { application/json: { schema: { $ref: '#/components/schemas/ImportJob' } } } }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/export:
+    get:
+      tags: [Import & Export]
+      operationId: exportProject
+      summary: Export the plan
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - { name: format, in: query, required: true, schema: { type: string, enum: [plan, mspdi, csv, ical, pdf] } }
+      responses:
+        '200':
+          description: File
+          content:
+            application/octet-stream: { schema: { type: string, format: binary } }
+        default: { $ref: '#/components/responses/Problem' }
+  /realtime/tickets:
+    post:
+      tags: [Plan]
+      operationId: createRealtimeTicket
+      summary: Obtain a 60-second single-use ticket for the WebSocket gateway
+      description: Keeps bearer tokens out of URLs and logs. The ticket is bound to the caller, tenant and project.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [projectId]
+              properties:
+                projectId: { type: string, format: uuid }
+      responses:
+        '201':
+          description: Ticket
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ticket, expiresAt]
+                properties:
+                  ticket: { type: string }
+                  expiresAt: { type: string, format: date-time }
+        default: { $ref: '#/components/responses/Problem' }
+  /webhooks:
+    get:
+      tags: [Integration]
+      operationId: listWebhooks
+      summary: List webhook subscriptions
+      security: [{ oidc: [integration.admin] }]
+      responses:
+        '200': { description: Subscriptions, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Webhook' } } } } }
+        default: { $ref: '#/components/responses/Problem' }
+    post:
+      tags: [Integration]
+      operationId: createWebhook
+      summary: Subscribe to events (HTTPS only; payloads signed with HMAC-SHA256)
+      security: [{ oidc: [integration.admin] }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/WebhookCreate' } } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Webhook' } } } }
+        default: { $ref: '#/components/responses/Problem' }
+  /audit-events:
+    get:
+      tags: [Governance]
+      operationId: listAuditEvents
+      summary: Query the immutable audit trail
+      security: [{ oidc: [audit.read] }]
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+        - { name: actorId, in: query, schema: { type: string, format: uuid } }
+        - { name: from, in: query, schema: { type: string, format: date-time } }
+        - { name: to, in: query, schema: { type: string, format: date-time } }
+      responses:
+        '200':
+          description: A page of audit events
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/AuditEvent' } }
+                  nextCursor: { type: string, nullable: true }
+        default: { $ref: '#/components/responses/Problem' }
+components:
+  securitySchemes:
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://idp.example/.well-known/openid-configuration
+      description: |
+        OAuth 2.0 / OIDC bearer tokens (authorization-code + PKCE for the SPA, client-credentials for service integrations).
+        Scopes: plan.read, plan.write, plan.baseline, plan.admin, resource.write, integration.admin, audit.read.
+  parameters:
+    ProjectId: { name: projectId, in: path, required: true, schema: { type: string, format: uuid } }
+    Cursor: { name: cursor, in: query, schema: { type: string, maxLength: 512 }, description: Opaque keyset-pagination cursor }
+    Limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 500, default: 100 } }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      schema: { type: string, format: uuid }
+      description: Replays within 24 h return the original response
+    IfMatch: { name: If-Match, in: header, required: true, schema: { type: string }, description: ETag from the last read }
+  responses:
+    Problem:
+      description: Error (RFC 9457)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Problem:
+      type: object
+      required: [type, title, status, code]
+      properties:
+        type: { type: string, format: uri-reference, example: 'https://docs.planforge.example/errors/CYCLE_DETECTED' }
+        title: { type: string }
+        status: { type: integer }
+        code:
+          type: string
+          description: Stable machine-readable code from the error taxonomy
+          enum: [VALIDATION_FAILED, UNAUTHENTICATED, FORBIDDEN, NOT_FOUND, VERSION_CONFLICT, DUPLICATE_CLIENT_OP,
+                 CYCLE_DETECTED, LINK_TO_SUMMARY, UNKNOWN_TASK, DUPLICATE_ID, CONSTRAINT_UNSATISFIABLE, PLAN_TOO_LARGE,
+                 IMPORT_UNSUPPORTED, IMPORT_REJECTED_UNSAFE, RATE_LIMITED, DEPENDENCY_UNAVAILABLE, INTERNAL]
+        detail: { type: string }
+        instance: { type: string }
+        traceId: { type: string }
+        errors:
+          type: array
+          items:
+            type: object
+            required: [path, message]
+            properties:
+              path: { type: string, example: '/commands/2/durationMin' }
+              message: { type: string }
+        cycle:
+          type: array
+          items: { type: string, format: uuid }
+          description: Present for CYCLE_DETECTED - task ids in order, first id repeated at the end
+    ProjectCreate:
+      type: object
+      required: [name, startDate, calendarId]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 200 }
+        portfolioId: { type: string, format: uuid }
+        startDate: { type: string, format: date-time, description: 'Naive local, e.g. 2026-11-09T08:00:00' }
+        deadline: { type: string, format: date-time }
+        calendarId: { type: string, format: uuid }
+        currency: { type: string, pattern: '^[A-Z]{3}$', default: USD }
+    ProjectPatch:
+      type: object
+      properties:
+        name: { type: string, maxLength: 200 }
+        deadline: { type: string, format: date-time, nullable: true }
+        status: { type: string, enum: [DRAFT, ACTIVE, ON_HOLD, CLOSED] }
+    Project:
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreate'
+        - type: object
+          required: [id, planVersion, status]
+          properties:
+            id: { type: string, format: uuid }
+            planVersion: { type: integer, format: int64 }
+            status: { type: string, enum: [DRAFT, ACTIVE, ON_HOLD, CLOSED, ARCHIVED] }
+            finish: { type: string, format: date-time, description: Scheduled project finish }
+    DepType: { type: string, enum: [FS, SS, FF, SF] }
+    ConstraintType: { type: string, enum: [ASAP, ALAP, MSO, MFO, SNET, SNLT, FNET, FNLT] }
+    Task:
+      type: object
+      required: [id, name, durationMin]
+      properties:
+        id: { type: string, format: uuid }
+        parentId: { type: string, format: uuid, nullable: true }
+        wbs: { type: string, example: '1.2.3', readOnly: true }
+        name: { type: string, minLength: 1, maxLength: 500 }
+        notes: { type: string }
+        durationMin: { type: integer, minimum: 0 }
+        mode: { type: string, enum: [AUTO, MANUAL] }
+        constraint:
+          type: object
+          properties:
+            type: { $ref: '#/components/schemas/ConstraintType' }
+            date: { type: string, format: date-time }
+        calendarId: { type: string, format: uuid, nullable: true }
+        percentComplete: { type: number, minimum: 0, maximum: 1 }
+        estimate:
+          type: object
+          nullable: true
+          properties:
+            optimisticMin: { type: integer }
+            likelyMin: { type: integer }
+            pessimisticMin: { type: integer }
+        custom: { type: object, additionalProperties: true }
+        schedule: { $ref: '#/components/schemas/TaskSchedule' }
+    TaskSchedule:
+      type: object
+      readOnly: true
+      properties:
+        es: { type: string, format: date-time }
+        ef: { type: string, format: date-time }
+        ls: { type: string, format: date-time }
+        lf: { type: string, format: date-time }
+        totalFloatMin: { type: integer }
+        freeFloatMin: { type: integer }
+        critical: { type: boolean }
+        isSummary: { type: boolean }
+    Link:
+      type: object
+      required: [id, predId, succId]
+      properties:
+        id: { type: string, format: uuid }
+        predId: { type: string, format: uuid }
+        succId: { type: string, format: uuid }
+        type: { $ref: '#/components/schemas/DepType' }
+        lagMin: { type: integer, description: Negative = lead }
+    Calendar:
+      type: object
+      required: [id, name, timeZone, week]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        baseId: { type: string, format: uuid, nullable: true }
+        timeZone: { type: string, example: Africa/Accra }
+        week:
+          type: array
+          minItems: 7
+          maxItems: 7
+          items:
+            type: array
+            items:
+              type: object
+              required: [startMin, endMin]
+              properties:
+                startMin: { type: integer, minimum: 0, maximum: 1439 }
+                endMin: { type: integer, minimum: 1, maximum: 1440 }
+        exceptions:
+          type: array
+          items:
+            type: object
+            required: [day]
+            properties:
+              day: { type: string, format: date }
+              label: { type: string }
+              ranges: { type: array, items: { type: object } }
+    Plan:
+      type: object
+      required: [projectId, planVersion]
+      properties:
+        projectId: { type: string, format: uuid }
+        planVersion: { type: integer, format: int64 }
+        tasks: { type: array, items: { $ref: '#/components/schemas/Task' } }
+        links: { type: array, items: { $ref: '#/components/schemas/Link' } }
+        calendars: { type: array, items: { $ref: '#/components/schemas/Calendar' } }
+    Command:
+      description: One plan mutation. `op` selects the shape; unknown ops are rejected.
+      oneOf:
+        - $ref: '#/components/schemas/CmdAddTask'
+        - $ref: '#/components/schemas/CmdUpdateTask'
+        - $ref: '#/components/schemas/CmdMoveTask'
+        - $ref: '#/components/schemas/CmdDeleteTask'
+        - $ref: '#/components/schemas/CmdAddLink'
+        - $ref: '#/components/schemas/CmdRemoveLink'
+      discriminator:
+        propertyName: op
+        mapping:
+          addTask: '#/components/schemas/CmdAddTask'
+          updateTask: '#/components/schemas/CmdUpdateTask'
+          moveTask: '#/components/schemas/CmdMoveTask'
+          deleteTask: '#/components/schemas/CmdDeleteTask'
+          addLink: '#/components/schemas/CmdAddLink'
+          removeLink: '#/components/schemas/CmdRemoveLink'
+    CmdAddTask:
+      type: object
+      required: [op, task]
+      properties:
+        op: { type: string, enum: [addTask] }
+        task: { $ref: '#/components/schemas/Task' }
+        afterId: { type: string, format: uuid, nullable: true }
+    CmdUpdateTask:
+      type: object
+      required: [op, id, patch]
+      properties:
+        op: { type: string, enum: [updateTask] }
+        id: { type: string, format: uuid }
+        patch: { $ref: '#/components/schemas/Task' }
+    CmdMoveTask:
+      type: object
+      required: [op, id]
+      properties:
+        op: { type: string, enum: [moveTask] }
+        id: { type: string, format: uuid }
+        newParentId: { type: string, format: uuid, nullable: true }
+        afterId: { type: string, format: uuid, nullable: true }
+    CmdDeleteTask:
+      type: object
+      required: [op, id]
+      properties:
+        op: { type: string, enum: [deleteTask] }
+        id: { type: string, format: uuid }
+    CmdAddLink:
+      type: object
+      required: [op, link]
+      properties:
+        op: { type: string, enum: [addLink] }
+        link: { $ref: '#/components/schemas/Link' }
+    CmdRemoveLink:
+      type: object
+      required: [op, id]
+      properties:
+        op: { type: string, enum: [removeLink] }
+        id: { type: string, format: uuid }
+    CommandBatch:
+      type: object
+      required: [clientOpId, expectedPlanVersion, commands]
+      properties:
+        clientOpId: { type: string, format: uuid, description: Idempotency key for the batch }
+        expectedPlanVersion: { type: integer, format: int64 }
+        commands: { type: array, minItems: 1, maxItems: 1000, items: { $ref: '#/components/schemas/Command' } }
+    ScheduleResult:
+      type: object
+      required: [start, finish, tasks, criticalPath, conflicts]
+      properties:
+        start: { type: string, format: date-time }
+        finish: { type: string, format: date-time }
+        tasks: { type: object, additionalProperties: { $ref: '#/components/schemas/TaskSchedule' } }
+        criticalPath: { type: array, items: { type: string, format: uuid } }
+        conflicts:
+          type: array
+          items:
+            type: object
+            required: [taskId, code]
+            properties:
+              taskId: { type: string, format: uuid }
+              code: { type: string, enum: [MSO_VIOLATED, MFO_VIOLATED, SNLT_VIOLATED, FNLT_VIOLATED, DEADLINE_MISSED] }
+              detail: { type: string }
+    CommandResult:
+      type: object
+      required: [planVersion, schedule]
+      properties:
+        planVersion: { type: integer, format: int64 }
+        schedule: { $ref: '#/components/schemas/ScheduleResult' }
+        changedTaskIds: { type: array, items: { type: string, format: uuid } }
+    Scenario:
+      type: object
+      required: [id, name, basePlanVersion]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        basePlanVersion: { type: integer, format: int64 }
+        commands: { type: array, items: { $ref: '#/components/schemas/Command' } }
+        result: { $ref: '#/components/schemas/ScheduleResult' }
+    ScenarioCreate:
+      type: object
+      required: [name, commands]
+      properties:
+        name: { type: string, maxLength: 120 }
+        commands: { type: array, items: { $ref: '#/components/schemas/Command' } }
+    ResourceCreate:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, maxLength: 200 }
+        kind: { type: string, enum: [WORK, MATERIAL, COST], default: WORK }
+        maxUnits: { type: number, minimum: 0, default: 1 }
+        calendarId: { type: string, format: uuid }
+        stdRatePerHour: { type: number, minimum: 0 }
+    Resource:
+      allOf:
+        - $ref: '#/components/schemas/ResourceCreate'
+        - type: object
+          required: [id]
+          properties:
+            id: { type: string, format: uuid }
+    Baseline:
+      type: object
+      required: [id, number, savedAt]
+      properties:
+        id: { type: string, format: uuid }
+        number: { type: integer }
+        label: { type: string }
+        planVersion: { type: integer, format: int64 }
+        savedAt: { type: string, format: date-time }
+    Evm:
+      type: object
+      required: [statusDate, bac, pv, ev, ac, sv, cv]
+      properties:
+        statusDate: { type: string, format: date }
+        bac: { type: number }
+        pv: { type: number }
+        ev: { type: number, description: 'percentComplete x BAC - never actual cost' }
+        ac: { type: number }
+        sv: { type: number }
+        cv: { type: number }
+        spi: { type: number, nullable: true, description: 'null when PV = 0 (explicit, never NaN)' }
+        cpi: { type: number, nullable: true }
+        eac: { type: number, nullable: true }
+        etc: { type: number, nullable: true }
+        vac: { type: number, nullable: true }
+        tcpi: { type: number, nullable: true }
+    RiskRun:
+      type: object
+      required: [id, status, iterations]
+      properties:
+        id: { type: string, format: uuid }
+        status: { type: string, enum: [QUEUED, RUNNING, SUCCEEDED, FAILED, CANCELLED] }
+        iterations: { type: integer }
+        seed: { type: integer }
+        planVersion: { type: integer, format: int64 }
+        p50: { type: string, format: date-time }
+        p80: { type: string, format: date-time }
+        p90: { type: string, format: date-time }
+        criticality: { type: object, additionalProperties: { type: number, minimum: 0, maximum: 1 } }
+    ImportJob:
+      type: object
+      required: [id, format, status]
+      properties:
+        id: { type: string, format: uuid }
+        format: { type: string }
+        status: { type: string, enum: [QUEUED, RUNNING, SUCCEEDED, FAILED, CANCELLED] }
+        projectId: { type: string, format: uuid, nullable: true }
+        report:
+          type: object
+          description: Fidelity report
+          properties:
+            mapped: { type: integer }
+            approximated: { type: array, items: { type: object, properties: { field: { type: string }, note: { type: string } } } }
+            dropped: { type: array, items: { type: object, properties: { field: { type: string }, reason: { type: string } } } }
+    WebhookCreate:
+      type: object
+      required: [url, events]
+      properties:
+        url: { type: string, format: uri, pattern: '^https://' }
+        projectId: { type: string, format: uuid }
+        events:
+          type: array
+          items: { type: string, enum: [plan.changed, schedule.changed, baseline.saved, risk.completed, import.completed] }
+    Webhook:
+      allOf:
+        - $ref: '#/components/schemas/WebhookCreate'
+        - type: object
+          required: [id, isActive]
+          properties:
+            id: { type: string, format: uuid }
+            isActive: { type: boolean }
+    AuditEvent:
+      type: object
+      required: [id, occurredAt, action, resource]
+      properties:
+        id: { type: integer, format: int64 }
+        occurredAt: { type: string, format: date-time }
+        actorId: { type: string, format: uuid, nullable: true }
+        action: { type: string, example: plan.commands.applied }
+        resource: { type: string, example: project }
+        resourceId: { type: string, format: uuid, nullable: true }
+        detail: { type: object, additionalProperties: true }

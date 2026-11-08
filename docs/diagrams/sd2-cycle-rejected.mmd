@@ -1,0 +1,23 @@
+%% name: sd2-cycle-rejected
+sequenceDiagram
+  autonumber
+  actor U as Scheduler
+  participant SPA as SPA
+  participant WW as Worker engine
+  participant API as REST API
+  participant APP as ApplyCommands
+  participant ENG as Engine
+  participant DB as PostgreSQL
+  U->>SPA: drag link from C to A
+  SPA->>WW: optimistic addLink
+  WW-->>SPA: ScheduleError CYCLE path A,B,C,A
+  SPA-->>U: link rejected inline, cycle highlighted, no request sent
+  Note over SPA,WW: Client engine catches it first. The server still re-checks - never trust the client.
+  U->>API: (stale or malicious client) POST /commands addLink C to A
+  API->>APP: handle
+  APP->>DB: BEGIN, lock project
+  APP->>ENG: schedule(plan with link)
+  ENG-->>APP: throws CYCLE
+  APP->>DB: ROLLBACK
+  APP-->>API: ScheduleError CYCLE
+  API-->>U: 422 problem+json code CYCLE_DETECTED with cycle path

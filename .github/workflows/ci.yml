@@ -1,0 +1,48 @@
+name: ci
+on: { pull_request: {}, push: { branches: [main] } }
+permissions: { contents: read }
+jobs:
+  engine:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Engine tests (unit + property)
+        working-directory: engine
+        run: npm test
+      - name: Engine benchmark (regression gate)
+        working-directory: engine
+        run: npm run bench
+  contracts:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install openapi-spec-validator pyyaml pglast
+      - name: Validate OpenAPI
+        run: python -c "import yaml,openapi_spec_validator as v; v.validate(yaml.safe_load(open('api/openapi.yaml')))"
+      - name: Parse SQL
+        run: python -c "import pglast; pglast.parse_sql(open('db/schema.sql').read())"
+  schema-exec:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: ci }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply schema
+        run: PGPASSWORD=ci psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f db/schema.sql
+  diagrams:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm i -g @mermaid-js/mermaid-cli
+      - run: python3 tools/render-diagrams.py

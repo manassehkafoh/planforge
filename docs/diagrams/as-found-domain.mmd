@@ -1,0 +1,22 @@
+%% name: as-found-domain
+classDiagram
+  class Project { +startConstraint +end +forward +calendar }
+  class Task { <<abstract>> +name +wbs +duration +constraintType }
+  class NormalTask
+  class Dependency { +type FF 0 FS 1 SF 2 SS 3 +lead }
+  class Assignment { +units +work +cost +levelingDelay }
+  class EnterpriseResource
+  class WorkingCalendar { +baseCalendar +exceptions }
+  class CriticalPath { +calculate() +fastCalc() }
+  class TaskSchedule { +early +late +begin +end }
+  class Snapshottable { +baselines }
+  Project "1" o-- "*" Task
+  Task <|-- NormalTask
+  Task "1" --> "2" TaskSchedule : early and late
+  Dependency "*" --> "2" Task
+  Task "1" o-- "*" Assignment
+  Assignment "*" --> "1" EnterpriseResource
+  Task --> WorkingCalendar
+  EnterpriseResource --> WorkingCalendar
+  Project --> CriticalPath
+  Task ..|> Snapshottable

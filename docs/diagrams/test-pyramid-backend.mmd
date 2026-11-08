@@ -1,0 +1,8 @@
+%% name: test-pyramid-backend
+flowchart TB
+  L5["Exploratory + security: pen test, game days, DAST"]
+  L4["System / E2E: 25 journeys across API + realtime + workers"]
+  L3["Contract + integration: Schemathesis, Pact, Postgres (real, via containers), Redis, Kafka"]
+  L2["Property + corpus: engine invariants, golden corpus, metamorphic, import fuzzing"]
+  L1["Unit: domain, application handlers with in-memory repos, mappers"]
+  L5 --- L4 --- L3 --- L2 --- L1

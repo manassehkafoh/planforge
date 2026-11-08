@@ -1,0 +1,33 @@
+%% name: threat-dfd
+flowchart LR
+  subgraph TB0["TB0 - Untrusted: Internet and user devices"]
+    U["Browser"]
+    F["Uploaded files"]
+    WH["Webhook receivers"]
+  end
+  subgraph TB1["TB1 - Edge: WAF, gateway, realtime"]
+    GW["API gateway"]
+    RT["Realtime gateway"]
+  end
+  subgraph TB2["TB2 - Application: authenticated, tenant-scoped"]
+    API["Core API"]
+    WRK["Workers"]
+  end
+  subgraph TB3["TB3 - Sandbox: no network, resource limits"]
+    SBX["Import sandbox"]
+  end
+  subgraph TB4["TB4 - Data: private network, encrypted"]
+    PG[("PostgreSQL + RLS")]
+    RD[("Redis")]
+    OB[("Object storage")]
+    VT["Vault / KMS"]
+  end
+  U -->|"1 HTTPS + JWT"| GW --> API
+  U -->|"2 WSS + ticket"| RT --> API
+  F -->|"3 pre-signed upload"| OB
+  OB -->|"4 quarantined object"| SBX
+  SBX -->|"5 commands only"| API
+  API --> PG
+  API --> RD
+  WRK -->|"6 signed POST"| WH
+  API -->|"7 secrets"| VT
