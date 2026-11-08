@@ -1,4 +1,4 @@
-# PlanForge — Reverse-Engineering and Solution-Design Pack
+# PlanForge - Reverse-Engineering and Solution-Design Pack
 
 *Working name for a clean-room, web-first successor to **ProjectLibre** (`github.com/smartqubit/projectlibre`).*
 Prepared 2026-11-08. Method: reverse-engineer-anything style — observe → specify → verify — then design the superior product.
