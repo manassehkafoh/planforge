@@ -1,0 +1,12 @@
+{
+  "name": "@planforge/e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Independent end-to-end test campaign for the PlanForge reference server",
+  "scripts": {
+    "test": "node run.ts"
+  },
+  "engines": { "node": ">=22.18" },
+  "devDependencies": { "ajv": "^8.17.1", "ajv-formats": "^3.0.1", "yaml": "^2.6.0", "pg": "^8.13.0", "ws": "^8.18.0" }
+}

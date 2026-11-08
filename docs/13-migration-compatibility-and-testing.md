@@ -67,6 +67,8 @@ flowchart LR
 3. **Decline** with `IMPORT_REJECTED_UNSAFE` until (2) ships.
 The three sample `.pod` files in the legacy repository (`openproj_build/resources/samples/`) are the first fixtures.
 
+> **Status (v0.2):** the corpus does not exist yet — it needs real plans supplied by users. In its place the engine is verified by an independent brute-force oracle and a full-vs-incremental differential test (doc 06 §10). These do not prove parity with ProjectLibre or MS Project; they prove internal consistency. See G-20.
+
 ## 4. Golden corpus — behavioural verification of the rebuild
 
 The **oracle** is observable behaviour, not source code.

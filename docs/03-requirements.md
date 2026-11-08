@@ -64,7 +64,7 @@ Priorities use MoSCoW (**M**ust, **S**hould, **C**ould, **W**on't-now). Phase: R
 |---|---|---|---|
 | NFR-PERF-01 | Engine throughput | Full CPM on **50 k tasks / 100 k links < 1 s** server-side; **10 k tasks < 250 ms** in browser worker | `engine/bench` in CI (reference: 663 ms / 143 ms on build host) |
 | NFR-PERF-02 | Edit latency | p95 command round-trip (client → commit → ack) **< 300 ms** for ≤ 10 k-task plans; local optimistic render **< 50 ms** | Synthetic probe + RUM |
-| NFR-PERF-03 | Incremental recalc | Single-task edit on 50 k plan **< 50 ms** p95 (doc 06 §7) | Benchmark |
+| NFR-PERF-03 | Incremental recalc | Single-task edit on 50 k plan **< 50 ms** p95 (doc 06 §7). *Measured v0.2: p95 1.4 ms for edits that do not move the project finish; critical-path edits cost one backward pass (doc 06 §7, G-18)* | Benchmark |
 | NFR-PERF-04 | UI | LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1; Gantt scroll ≥ 55 fps at 50 k rows | Lighthouse CI, RUM |
 | NFR-AVAIL-01 | Availability | API 99.9 % monthly (≈ 43 min budget); realtime gateway 99.5 % | SLO burn-rate alerts |
 | NFR-DUR-01 | Durability | RPO ≤ 5 min, RTO ≤ 1 h (regional); PITR 35 days | DR drill each quarter |

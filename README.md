@@ -56,7 +56,10 @@ psql -v ON_ERROR_STOP=1 -f db/schema.sql
 
 ## Honest limits
 * **Static analysis only** — ProjectLibre was not compiled or run. About 15 % of first-party code was read closely; the rest was inventoried.
-* The engine implements CPM, calendars, 8 constraints, EVM and Monte Carlo; **resource rules, levelling and incremental recomputation are designed, not built**. Golden-corpus parity (the real proof of compatibility) has **not** been measured — the corpus does not exist yet.
+* The engine (≈ 1 700 lines, 36 tests) implements CPM, calendars with inheritance, 8 constraints, manual mode, status date, resource rules, timephased cost, serial levelling, incremental recomputation, EVM, Monte Carlo and a sandboxed formula language. It is checked against an independent brute-force oracle and a full-vs-incremental differential test. **Not modelled:** overtime, task splits, sub-project links, cross-project levelling (see `docs/17-gap-closure-register.md`).
+* **Incremental recomputation:** single-task edit on 50 k tasks p50 ≈ 1 ms, p95 ≈ 1.4 ms — *for edits that do not move the project finish*. An edit that moves the finish needs a full backward pass.
+* The server (`server/`) is a single-instance reference: auth, RBAC, RLS-backed tenancy, idempotent command path, hash-chained audit, realtime. Imports and webhooks return 501. It has a smoke test, not load or penetration testing.
+* Golden-corpus parity (the real proof of compatibility) has **not** been measured — the corpus does not exist yet. Mutation testing has not been run.
 * Estimates in doc 16 and capacity figures in doc 04 are planning assumptions, not measurements.
 * Competitive statements are limited to public, general capabilities and were not benchmarked.
 * The working name is unsearched; the licence model (ADR-011) and clean-room protocol need **legal review before any build**. This pack is engineering analysis, not legal advice.

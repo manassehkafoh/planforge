@@ -1,8 +1,8 @@
 # 06 · Scheduling Engine Design
 
-The engine is the product's heart and the part of ProjectLibre worth re-specifying carefully (doc 01 §3.2). A **reference implementation** lives in `engine/` (≈ 520 lines of TypeScript, zero runtime dependencies). It implements §3–§5 and §8–§9 (EVM, Monte Carlo); §6 (resource scheduling rules), §7 (incremental recomputation) and the leveller in §6.4 are **designed but not implemented** — each section says which.
+The engine is the product's heart and the part of ProjectLibre worth re-specifying carefully (doc 01 §3.2). A **reference implementation** lives in `engine/` (≈ 1 700 lines of TypeScript, zero runtime dependencies). v0.2 implements everything in this document except the items listed in §11 as consciously deferred.
 
-**Verified state of the reference engine (this build):** 14 tests pass — calendar arithmetic, all four relationship types, lead/lag, 8 constraints, ALAP, milestones, summary roll-up, error taxonomy, EVM regression, seeded Monte Carlo, and a property test over **300 random DAGs** (invariants: early ≤ late, no negative float without constraints, 0 ≤ free ≤ total float, finish = start + working duration, every relationship satisfied, ≥ 1 critical task). The property test caught two real defects in my first draft (a missing project-finish cap on tasks with successors, and minute-granular backtracking that produced 16:59 start times) — evidence for investing in this style of test.
+**Verified state of the reference engine (v0.2):** 36 tests pass in ≈ 5 s — calendar arithmetic and inheritance; all four relationship types, lead/lag and lag calendar basis; 8 constraints, ALAP, milestones, summary roll-up; manual mode; status date / percent complete / completed tasks; explainability; near-critical; resource rules; timephased cost and planned value; serial levelling; the sandboxed formula language; the DST edge adapter; and three oracles: (1) a property test over 300 random DAGs, (2) an **independent brute-force oracle** (separate algorithm, integer working-minute axis, fix-point relaxation) that the engine matches on 400 random networks for dates *and* total float, and (3) a **full-vs-incremental oracle** (150 random edit sequences × 25 edits, deep-equal after every edit). The oracles caught real defects in earlier drafts (missing project-finish cap on tasks with successors; minute-granular backtracking producing 16:59 starts; a levelling livelock where a predecessor of the contending task was delayed forever) — evidence for investing in this style of test.
 
 ## 1. Contract
 
@@ -101,58 +101,65 @@ summary: ES=min(child ES), EF=max(child EF), TF=min(child TF), critical = any(ch
 ### 3.3 Complexity and measured performance
 O(V + E) graph work plus O(1) amortised calendar work per float query and O(days-between) per add/sub. Measured on the build host (Node 22, single thread; synthetic DAG of finish-to-start links, two predecessors per task chosen within a 50-task window, 1–10 day durations):
 
-| Tasks | Links | Time |
+| Tasks | Links | Time (full compute, kernel only) |
 |---:|---:|---:|
-| 1 000 | 1 998 | 20 ms |
-| 10 000 | 19 998 | 143 ms |
-| 50 000 | 99 998 | 663 ms |
+| 1 000 | 1 998 | 28 ms |
+| 10 000 | 19 998 | 115 ms |
+| 50 000 | 99 998 | 436 ms |
 
 Meets NFR-PERF-01 on this synthetic graph; real plans with long lags, many calendars and resource-driven durations will be slower — the benchmark will be extended with the golden corpus.
 
-## 4. Explainability (“why is this date X?”)
-For any task the engine can return the **driving predecessor**: the link whose lower bound equals the chosen start (or finish), or the constraint, or the project start. Chained, this yields the *driving path* to any task, not only the critical path. This is cheap (re-evaluate the max once, keep the arg-max) and is the single most trust-building feature for schedulers. *Designed; the reference engine computes the max but does not yet retain the arg-max.*
+## 4. Explainability (“why is this date X?”) *(implemented)*
+Every leaf task carries a `driver` — the arg-max kept while computing its start: `PROJECT_START`, `LINK {predId, linkType}` (the link whose lower bound set the start or, for FF/SF, the finish), `CONSTRAINT`, `STATUS_DATE`, `LEVELING`, `MANUAL` or `ACTUAL`. Chained through `predId`, this yields the *driving path* to any task, not only the critical path. Ties keep the first candidate in link insertion order (stable and deterministic). The API returns it as `schedule.driver`.
 
-## 5. Near-critical and multiple critical paths
-`critical` means TF ≤ 0. A configurable threshold (default 2 working days) additionally flags *near-critical* tasks. The critical **path** is the set of critical tasks; when several disjoint chains are critical, all are returned (`criticalPath` is a set ordered by early start, not a single chain).
+## 5. Near-critical and multiple critical paths *(implemented)*
+`critical` means total float ≤ 0 and the task is not complete. `nearCritical` means `0 < totalFloat ≤ nearCriticalMin` (project setting, default 960 working minutes = 2 days). Completed tasks are neither. The critical **path** is the set of critical tasks; when several disjoint chains are critical, all are returned (`criticalPath` is a set ordered by early start, then early finish, then id).
 
-## 6. Resource-aware scheduling *(designed, not implemented)*
-### 6.1 Task types (carry over legacy B5)
-Given `Work = Duration × Units × Σ…` per assignment, a change recalculates exactly one of the three:
+## 6. Resource-aware scheduling *(implemented: `engine/src/resources.ts`, `leveling.ts`)*
+### 6.1 Task types and effort
+Each task has a `kind` and an `effortDriven` flag. The engine treats **the entered fields as inputs and derives the rest**, so a plan is a pure function of what users typed:
 
-| Task type | User edits | Recalculated | Effort-driven adds resource ⇒ |
-|---|---|---|---|
-| Fixed units | duration | work = duration × units | work constant, duration shortens |
-| Fixed duration | work or units | units = work / duration | work constant, units split |
-| Fixed work | duration or units | the other of (duration, units) | duration shortens |
+| Task type | Inputs | Derived duration | Derived work per assignment | Adding a resource ⇒ |
+|---|---|---|---|---|
+| FIXED_UNITS (default) | `durationMin`, units | = `durationMin` | `duration × units` | work grows, duration unchanged |
+| FIXED_UNITS + `effortDriven` | `workMin`, units | `ceil(workMin / Σunits)` | `workMin × units / Σunits` | **duration shortens**, work constant |
+| FIXED_DURATION | `durationMin`, units | = `durationMin` | `duration × units` | work grows (units × fixed duration) |
+| FIXED_WORK | `workMin`, units | `ceil(workMin / Σunits)` (always effort-driven) | `workMin × units / Σunits` | **duration shortens**, work constant |
 
-### 6.2 Effective duration with resource calendars
-A task assigned to resources with different calendars uses the **task calendar** for duration; each assignment's *timephased work* is distributed over the intersection of the task's span and the resource's working time. Required invariant: Σ timephased work = assignment work (tested by reconciliation).
+With no assignments a task keeps its entered duration. `FIXED_WORK` and effort-driven tasks require `workMin`. *Deliberate simplification versus a desktop tool:* users do not edit "work" directly on a FIXED_UNITS/FIXED_DURATION task — they edit duration and units, and work is derived. This keeps the model free of circular derivations; direct work/units editing with the full three-way recalculation is listed as deferred in §11.
+
+### 6.2 Calendars
+The **task calendar** measures duration and positions the task. Each assignment's work is spread over the task's working minutes in proportion; where that falls outside the *resource's* own working time the timephase reports an `OFF_RESOURCE_CALENDAR` warning with the minutes (it is surfaced, not silently dropped). Reconciliation invariant (tested): Σ timephased work = assignment work.
 
 ### 6.3 Rates and cost
-`cost = Σ_day(planned_work_day × rate_effective(day))` plus per-use cost at start; rates are effective-dated (`resource_rate`). Fixed task costs accrue at start/prorated/end per accrual setting.
+`cost = Σ_day(planned_work_day × rate_effective(day) / 60)` plus the resource's `perUse` cost on the first scheduled day, plus the task's `fixedCost` (accrued at finish for planned value). Rates are effective-dated; the rate in force on each day is used. `MATERIAL` and `COST` resources carry only per-use cost. Overtime rates are stored but **not modelled** (§11). Granularity is one day.
+**Planned value** at a status date is the timephased cost of all days *strictly before* the day of the status date plus fixed costs of tasks finished by then.
 
 ### 6.4 Resource levelling
-Serial, priority-driven, deterministic:
+Serial and deterministic (`levelResources`). Two options change the outcome: `order` (`PRIORITY_FLOAT` default, `START`, `ID`) and `withinFloatOnly` (the API defaults it to true).
 ```text
-repeat until no over-allocation or no progress:
-  find earliest day d where Σ load(r,d) > capacity(r,d) for some resource r
-  candidates = tasks active on d that use r, not yet fixed
-  victim = argmax(order by: FLOAT descending, then early start descending, then priority ascending, then id)
-  delay = smallest shift (working minutes) that removes the overload on d for victim
-  if withinFloatOnly and delay > victim.totalFloat: mark unresolved, continue
-  apply levelingDelay to victim's assignment ; re-run CPM incrementally
+clear previous levelling delays (unless clearFirst = false)
+repeat until no over-allocation, or only unresolved ones remain, or maxIterations:
+  find the EARLIEST instant t* where Σ units of tasks working at t* > maxUnits(r) for some resource r
+  contenders = tasks working at t* on r
+  candidates = contenders that are OPEN, priority < 1000, not MANUAL, not MSO/MFO, not previously stuck,
+               and NOT a predecessor (transitively) of another contender      # delaying it would drag the contender along
+  order candidates by: priority ascending, total float descending, early start descending, id  (PRIORITY_FLOAT)
+  for the first candidate: hop to the earliest end of another task on r at which it FITS beside everything else on r (first fit)
+  if withinFloatOnly and the hop exceeds its total float: try the next candidate; if none, record `unresolved: WOULD_EXCEED_FLOAT`
+  set levelingDelayMin on the task and re-derive dates INCREMENTALLY (Network.apply) - the §7 machinery is what makes this cheap
 ```
-Tie-breaks are total (ends with task id) so results are reproducible; dry-run returns delays without persisting. Complexity is bounded by `maxIterations = 10 × assignments`. Quality is judged against the corpus (finish-date slip vs a reference leveller).
+Every step strictly moves one task's start later, so the loop terminates; the iteration cap (`max(1000, 50 × tasks)`) is a second guard and, if hit, the report says `converged: false` and an `ITERATION_LIMIT` entry — never a silent partial result. Unresolvable overloads are reported (`NO_MOVABLE_TASK`, `WOULD_EXCEED_FLOAT`, `ITERATION_LIMIT`) and are de-duplicated per (resource, contending task set). Levelling is **per project**; cross-project levelling of a shared resource is not performed (§11). Measured: 600 tasks / 25 resources levelled in ≈ 100 ms with 289 delays.
 
-## 7. Incremental recomputation *(designed, not implemented)*
+## 7. Incremental recomputation *(implemented: `Network.apply`)*
 Goal: single-task edit on 50 k tasks in < 50 ms (NFR-PERF-03).
-1. Keep the topological order as a **dynamic order** (Pearce–Kelly): adding a link reorders only the affected window, and *also* detects a cycle in O(affected) time.
-2. On edit, collect the **dirty set** = edited tasks; forward pass visits dirty tasks in order, adding a successor to the set *only if its start/finish actually changed*; stop propagating at unchanged tasks.
-3. Backward pass is needed only if the project finish changed or the edited task's late dates are affected: re-run over predecessors of changed tasks, bounded by unchanged late dates.
-4. Summary roll-ups update along the parent chain only.
-5. **Correctness oracle:** in tests and in staging shadow mode, every incremental result is compared with a full recompute; any difference fails the build (the property test generator is reused with random edit sequences).
+1. **Dynamic topological order** (Pearce–Kelly): adding a link reorders only the window between the two tasks and detects a cycle in O(affected) time, returning the cycle path; the edit is rejected *before* any state changes.
+2. **Forward dirty-propagation:** edited tasks are queued in topological order; a successor is queued only if the task's early start/finish actually changed, so propagation stops at unchanged tasks.
+3. **Backward pass:** if the project finish (or deadline) did **not** move, only the edited tasks, tasks whose early dates moved, and their predecessors (while late dates keep changing) are re-derived. If the finish moved, every late date is stale and a full backward pass runs. This is the honest limit of the technique: an edit on the critical path is O(V) for the backward pass, not O(affected).
+4. Summary roll-ups and per-task output (float, flags) are derived on read from cached early/late dates, O(V+E) for a full `result()` and O(degree) for `taskRow(id)`.
+5. **Correctness oracle:** `test/incremental.test.ts` applies 150 random edit sequences (duration, constraint, add/remove/modify link, add/remove/move task incl. leaf→summary conversion, progress, deadline, levelling delay) and requires `result()` to deep-equal a from-scratch computation after **every** edit; rejected edits (cycle, link-to-summary) must leave the network byte-identical. The same generator should run in staging shadow mode.
 
-Legacy parallel: the old engine used a global calculation-state counter and an `affectsCriticalPath` shortcut (doc 01 §3.2). The new design makes the dirty set explicit and immutable-in/out, so it is thread-safe and testable.
+Measured (Node 22, single thread, random 3-in-5 mixed-type networks): 50 000 tasks — full compute 402 ms; 200 random duration edits **p50 1.0 ms, p95 1.4 ms, max 4.6 ms** (≈ 12 nodes visited), against 294 ms for a full recompute. 10 000 tasks — p50 0.17 ms, p95 0.67 ms, max 21 ms (one edit moved the finish). Targets met for edits that do not move the project finish; critical-path edits cost one backward pass (tens to hundreds of ms at 50 k tasks).
 
 ## 8. Earned value *(implemented: `engine/src/evm.ts`)*
 ```
@@ -173,21 +180,31 @@ PV/EV/AC are aggregated from `assignment_timephase` up to the status date, per b
 * Parallel by construction (the engine is pure): the worker shards iterations across cores; shards merge by concatenating finish arrays.
 * Known simplification: independent task durations (no correlation) — correlation matrices and PERT-beta sampling are R3 options.
 
-### 9.1 Formula language for custom fields *(designed)*
-A deliberately small, **non-Turing-complete** expression grammar (arithmetic, comparison, `IF`, `MIN/MAX/SUM`, field references, date/duration functions). It is parsed to an AST and interpreted with step and depth limits; no host-language `eval`, reflection or I/O. This replaces legacy Groovy formulas (D-10). Fuzzing and sandbox-escape tests are required before R2.
+### 9.1 Formula language for custom fields *(implemented: `engine/src/formula.ts`)*
+A deliberately small, **non-Turing-complete** expression grammar: numbers, strings, `true/false/null`, field references, `+ - * / %`, comparisons, `&& || !`, `?:`, and `IF MIN MAX ROUND ABS FLOOR CEIL COALESCE CONCAT LEN UPPER LOWER`. It is parsed to an AST and interpreted with limits (source ≤ 2 000 chars, depth ≤ 32, ≤ 5 000 evaluation steps); there is no property access, indexing, assignment, function definition, `eval` or I/O, and field lookup only reads *own* data properties of the supplied record (so `constructor`/`__proto__` are plain null lookups). Escape attempts (`process.exit(1)`, `a.constructor.constructor(...)`, `require`, `eval`, `a[0]`) are syntax errors. This replaces legacy Groovy formulas (D-10). Not yet done: coverage-guided fuzzing (§11).
 
 ## 10. Test strategy for the engine
 | Layer | Technique | Status |
 |---|---|---|
-| Example-based | Hand-computed schedules for each rule | ✅ 13 tests |
-| Property-based | 300 random DAGs × invariants | ✅ (found 2 bugs) → raise to 10 000 in CI nightly |
-| Differential | Incremental vs full recompute (§7); client vs server results | ⬜ with §7 |
-| Golden corpus | ≥ 200 real plans with expected dates from a trusted reference | ⬜ doc 13 |
-| Mutation testing | Stryker, score ≥ 70 % | ⬜ |
-| Performance | Benchmark gate, regression > 20 % fails | ✅ script exists |
+| Example-based | Hand-computed schedules for each rule (14 original + feature tests) | ✅ |
+| Property-based | 300 random DAGs × invariants | ✅ → raise to 10 000 in CI nightly |
+| **Independent oracle** | Separate algorithm on a materialised working-minute axis; 400 random networks, dates and total float | ✅ `test/oracle.test.ts` |
+| **Differential** | Incremental vs full recompute, 150 sequences × 25 edits, deep equality after every edit | ✅ `test/incremental.test.ts` |
+| Levelling | Determinism, idempotence, no over-allocation unless reported, convergence on 25 dense random networks, livelock regression | ✅ `test/leveling.test.ts` |
+| Sandbox | Escape attempts, limit enforcement | ✅ `test/formula.test.ts` |
+| Golden corpus | ≥ 200 real plans with expected dates from a trusted reference | ⬜ no plans yet — requires user-supplied plans (doc 13) |
+| Mutation testing | Stryker, score ≥ 70 % | ⬜ not run |
+| Performance | `engine/bench` (full, incremental, levelling) | ✅ script; CI regression gate (> 20 %) still to wire |
 
 ## 11. Known limits of the reference implementation
-* Single project calendar for lags; task calendars only for durations.
-* No manual-mode tasks, no splits (task interruptions), no status-date rescheduling of remaining work, no sub-project links.
-* Free float for ALAP tasks is reported against their early position.
-* Not yet DST-aware at the edge (the engine is naive-local by design; the edge adapter is not written).
+Closed in v0.2 (see `docs/17-gap-closure-register.md`): lag calendar basis, manual-mode tasks, status-date rescheduling of remaining work, ALAP free float (reported 0, dates reported at the late position), driver retention, near-critical, calendar inheritance, the DST edge adapter, formula language, resource rules, levelling, incremental recomputation.
+
+Consciously **deferred** (each has an ID in the gap register):
+* **Task splits** (interruptions) — a task is one contiguous span of working time.
+* **Sub-project / cross-project links** and cross-project resource levelling.
+* **Overtime** rates and overtime work; **direct work editing** on FIXED_UNITS/FIXED_DURATION tasks (work is derived).
+* **Calendar change as an incremental edit** — editing a calendar rebuilds the network (`new Network`), O(V+E).
+* **Progress model:** an in-progress task resumes at the status date (or after the work already done); there is no per-day actuals ledger, so timephased planned work is not reduced by actuals.
+* **Levelling** is per project, serial, first-fit; it is not optimal and makes no attempt to minimise finish slip beyond the stated ordering. Resource calendars are reported (`OFF_RESOURCE_CALENDAR`) but do not move tasks.
+* **Golden corpus parity, mutation testing and formula fuzzing** have not been run.
+* The DST adapter converts instants at the edge; a project whose calendar is defined in a zone with a DST *gap/fold inside working hours* is handled by the adapter's resolution rules (gap → forward, fold → first occurrence), not by the kernel.
