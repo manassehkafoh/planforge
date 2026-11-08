@@ -1,0 +1,13 @@
+{
+  "name": "@planforge/reference-server",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Reference API server: command path (idempotency, optimistic concurrency, incremental scheduling), PostgreSQL with RLS, hash-chained audit, realtime.",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "start": "node src/main.ts",
+    "test": "node --test test/*.test.ts"
+  },
+  "dependencies": { "pg": "^8.13.0", "ws": "^8.18.0", "zod": "^3.23.8" }
+}

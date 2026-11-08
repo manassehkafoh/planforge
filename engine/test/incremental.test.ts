@@ -32,6 +32,7 @@ test('incremental == full recompute (oracle) over 150 random edit sequences', ()
         if (!preds.length) continue;
         e = { op: 'setLink', pred: preds[0].pred, succ: t, type: preds[0].type, patch: { lagMin: Math.floor(r() * 4) * 60 - 60 } };
       } else if (k < 0.78) e = { op: 'addTask', task: { id: `n${nextId++}`, durationMin: 240 } };
+      else if (k < 0.81) e = { op: 'addTask', task: { id: `n${nextId++}`, durationMin: 120, parentId: pick() } };
       else if (k < 0.84) e = { op: 'removeTask', id: pick() };
       else if (k < 0.9) e = { op: 'setTask', id: pick(), patch: { percentComplete: 0.5, actualStart: MON } };
       else if (k < 0.95) e = { op: 'setProject', patch: { deadline: MON + Math.floor(r() * 40) * 86_400_000 } };
@@ -40,7 +41,7 @@ test('incremental == full recompute (oracle) over 150 random edit sequences', ()
       try { net.apply(e); edits++; }
       catch (err) {
         assert.ok(err instanceof ScheduleError, String(err));
-        assert.equal(err.code, 'CYCLE');
+        assert.ok(['CYCLE', 'LINK_TO_SUMMARY', 'BAD_INPUT'].includes(err.code), err.code);
         cycles++;
         assert.equal(JSON.stringify(net.toProject()), before, 'rejected edit must leave the network unchanged');
       }

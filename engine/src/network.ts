@@ -22,10 +22,11 @@ export type Edit =
   | { op: 'setTask'; id: string; patch: Partial<Omit<TaskIn, 'id' | 'parentId'>> }
   | { op: 'addTask'; task: TaskIn }
   | { op: 'removeTask'; id: string }
+  | { op: 'moveTask'; id: string; newParentId: string | null }
   | { op: 'addLink'; link: LinkIn }
   | { op: 'removeLink'; pred: string; succ: string; type?: DepType }
   | { op: 'setLink'; pred: string; succ: string; type?: DepType; patch: { type?: DepType; lagMin?: number; lagBasis?: LagBasis } }
-  | { op: 'setProject'; patch: { startDate?: number; deadline?: number | null; statusDate?: number | null } };
+  | { op: 'setProject'; patch: { startDate?: number; deadline?: number | null; statusDate?: number | null; nearCriticalMin?: number } };
 
 export interface RecomputeStats {
   forwardVisited: number;
@@ -351,36 +352,41 @@ export class Network {
         if (this.nodes.has(t.id) || this.children.has(t.id)) throw new ScheduleError('DUPLICATE_ID', `duplicate task id ${t.id}`);
         if (this.p.tasks.some((x) => x.id === t.id)) throw new ScheduleError('DUPLICATE_ID', `duplicate task id ${t.id}`);
         this.validateTask(t);
-        if (t.parentId) {
-          if (!this.p.tasks.some((x) => x.id === t.parentId)) throw new ScheduleError('UNKNOWN_TASK', `task ${t.id}: unknown parent ${t.parentId}`);
-          if (!this.children.has(t.parentId)) throw new ScheduleError('BAD_INPUT', `parent ${t.parentId} is a leaf; cannot become a summary through an edit`);
-          this.children.get(t.parentId)!.push(t.id);
-        }
+        let converted = false;
+        if (t.parentId) converted = this.attach(t.id, t.parentId);
         this.p.tasks.push(t);
         const n = this.newNode(t);
         n.pos = this.slots.length;
         this.slots.push(t.id);
         this.nodes.set(t.id, n);
         fwd.add(t.id); bwd.add(t.id);
-        return { rebuild: false, all: false };
+        return { rebuild: converted, all: converted };
       }
       case 'removeTask': {
         const n = this.nodeOrThrow(e.id);
         for (const ed of [...n.preds, ...n.succs]) this.deleteEdge(ed, fwd, bwd);
         this.nodes.delete(e.id);
         this.p.tasks = this.p.tasks.filter((x) => x.id !== e.id);
-        if (n.t.parentId) {
-          const sib = this.children.get(n.t.parentId)!.filter((x) => x !== e.id);
-          if (sib.length) this.children.set(n.t.parentId, sib);
-          else this.children.delete(n.t.parentId); // an emptied summary becomes a leaf
-        }
         fwd.delete(e.id); bwd.delete(e.id);
-        if (n.t.parentId && !this.children.has(n.t.parentId)) {
-          const t = this.p.tasks.find((x) => x.id === n.t.parentId)!;
-          const pn = this.newNode(t); pn.pos = this.slots.length; this.slots.push(t.id);
-          this.nodes.set(t.id, pn); fwd.add(t.id); bwd.add(t.id);
+        if (n.t.parentId) this.detach(e.id, n.t.parentId, fwd, bwd);
+        return { rebuild: true, all: true }; // holes in the order; the project limit may move
+      }
+      case 'moveTask': {
+        const t = this.p.tasks.find((x) => x.id === e.id);
+        if (!t) throw new ScheduleError('UNKNOWN_TASK', `unknown task ${e.id}`);
+        const np = e.newParentId ?? null;
+        if (np !== null) {
+          if (!this.p.tasks.some((x) => x.id === np)) throw new ScheduleError('UNKNOWN_TASK', `unknown parent ${np}`);
+          for (let a: string | null | undefined = np; a; a = this.p.tasks.find((x) => x.id === a)?.parentId)
+            if (a === e.id) throw new ScheduleError('BAD_INPUT', 'a task cannot be moved under itself or its own descendant');
         }
-        return { rebuild: true, all: true }; // holes in the order; limit may move
+        if ((t.parentId ?? null) === np) return { rebuild: false, all: false };
+        if (np !== null) this.attach(e.id, np); // may throw LINK_TO_SUMMARY before anything else changed
+        if (t.parentId) this.detach(e.id, t.parentId, fwd, bwd);
+        t.parentId = np;
+        const nd = this.nodes.get(e.id);
+        if (nd) nd.t = t;
+        return { rebuild: true, all: true };
       }
       case 'addLink': {
         const edge = this.makeEdge(e.link);
@@ -414,9 +420,32 @@ export class Network {
         if (q.startDate !== undefined) this.p.startDate = q.startDate;
         if (q.deadline !== undefined) { if (q.deadline === null) delete this.p.deadline; else this.p.deadline = q.deadline; }
         if (q.statusDate !== undefined) { if (q.statusDate === null) delete this.p.statusDate; else this.p.statusDate = q.statusDate; }
+        if (q.nearCriticalMin !== undefined) this.p.nearCriticalMin = q.nearCriticalMin;
         return { rebuild: false, all: true };
       }
     }
+  }
+
+  /** add `id` under `parentId`; a leaf parent becomes a summary (refused when it carries links). Returns true when converted. */
+  private attach(id: string, parentId: string): boolean {
+    if (!this.p.tasks.some((x) => x.id === parentId)) throw new ScheduleError('UNKNOWN_TASK', `task ${id}: unknown parent ${parentId}`);
+    const kids = this.children.get(parentId);
+    if (kids) { kids.push(id); return false; }
+    const pn = this.nodes.get(parentId)!;
+    if (pn.preds.length || pn.succs.length) throw new ScheduleError('LINK_TO_SUMMARY', `${parentId} has links and cannot become a summary`);
+    this.nodes.delete(parentId);
+    this.children.set(parentId, [id]);
+    return true;
+  }
+
+  /** remove `id` from `parentId`'s children; an emptied summary becomes a leaf again */
+  private detach(id: string, parentId: string, fwd: Set<string>, bwd: Set<string>) {
+    const sib = this.children.get(parentId)!.filter((x) => x !== id);
+    if (sib.length) { this.children.set(parentId, sib); return; }
+    this.children.delete(parentId);
+    const t = this.p.tasks.find((x) => x.id === parentId)!;
+    const pn = this.newNode(t); pn.pos = this.slots.length; this.slots.push(t.id);
+    this.nodes.set(t.id, pn); fwd.add(t.id); bwd.add(t.id);
   }
 
   private replaceTaskObject(t: TaskIn) {

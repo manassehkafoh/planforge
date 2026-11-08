@@ -121,6 +121,8 @@ paths:
       operationId: applyCommands
       summary: Apply an atomic batch of plan commands
       description: |
+        `schedule.tasks` in the response contains only the tasks whose derived dates changed (`changedTaskIds`); `GET .../plan` returns everything.
+
         The only write path for plan data. The server (1) checks `expectedPlanVersion`, (2) applies every command to an
         in-memory copy of the plan, (3) runs the scheduling engine, (4) rejects the whole batch if any command is invalid
         or introduces a cycle, otherwise (5) persists the diff, appends to the operation log and broadcasts to
@@ -273,36 +275,61 @@ paths:
     post:
       tags: [Resources]
       operationId: levelResources
-      summary: Propose resource-levelling delays (dry run unless `apply` is true)
+      summary: Level resources (dry run unless `apply` is true)
+      description: |
+        Serial levelling: repeatedly finds the earliest over-allocation and delays one task (lowest priority, then most float)
+        until the competing work has finished. Priority-1000, started, completed, manual and MSO/MFO tasks are never delayed;
+        a task is never delayed past a successor-dragging predecessor of its contender. Conflicts that cannot be resolved are
+        reported in `unresolved`, never hidden. With `apply: true` the delays are written as `updateTask` commands and the plan
+        version advances (requires `clientOpId` and `expectedPlanVersion`).
       security: [{ oidc: [plan.write] }]
       requestBody:
         content:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 apply: { type: boolean, default: false }
                 withinFloatOnly: { type: boolean, default: true, description: When true the project finish date will not move }
-                priority: { type: string, enum: [FLOAT, EARLY_START, TASK_PRIORITY], default: FLOAT }
+                order: { type: string, enum: [PRIORITY_FLOAT, START, ID], default: PRIORITY_FLOAT }
+                clientOpId: { type: string, format: uuid }
+                expectedPlanVersion: { type: integer, format: int64 }
       responses:
         '200':
-          description: Proposed delays and resulting finish
+          description: Proposed (or applied) delays and the resulting finish
           content:
             application/json:
               schema:
                 type: object
-                required: [delays, projectFinish]
+                required: [delays, projectFinish, converged, applied, planVersion]
                 properties:
                   delays:
                     type: array
                     items:
                       type: object
-                      required: [assignmentId, delayMin]
+                      required: [taskId, delayMin]
                       properties:
-                        assignmentId: { type: string, format: uuid }
-                        delayMin: { type: integer, minimum: 0 }
+                        taskId: { type: string, format: uuid }
+                        delayMin: { type: integer, minimum: 0, description: Total levelling delay in working minutes }
                   projectFinish: { type: string, format: date-time }
-                  unresolved: { type: array, items: { type: string, format: uuid } }
+                  finishBefore: { type: string, format: date-time }
+                  converged: { type: boolean, description: 'false when the iteration cap was hit - the plan is NOT fully levelled' }
+                  steps: { type: integer }
+                  applied: { type: boolean }
+                  planVersion: { type: integer, format: int64 }
+                  unresolved:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        resourceId: { type: string, format: uuid }
+                        at: { type: string, format: date-time }
+                        load: { type: number }
+                        maxUnits: { type: number }
+                        taskIds: { type: array, items: { type: string, format: uuid } }
+                        reason: { type: string, enum: [NO_MOVABLE_TASK, WOULD_EXCEED_FLOAT, ITERATION_LIMIT] }
+        '409': { $ref: '#/components/responses/Problem' }
         default: { $ref: '#/components/responses/Problem' }
   /projects/{projectId}/baselines:
     parameters: [{ $ref: '#/components/parameters/ProjectId' }]
@@ -357,9 +384,12 @@ paths:
             schema:
               type: object
               properties:
-                iterations: { type: integer, minimum: 100, maximum: 100000, default: 5000 }
+                iterations: { type: integer, minimum: 100, maximum: 100000, default: 5000, description: 'Reference server: 100..20000, default 1000, tasks x iterations <= 4,000,000 (else 413 PLAN_TOO_LARGE)' }
                 seed: { type: integer, description: 'Optional; same seed + same plan version = identical result' }
       responses:
+        '201':
+          description: 'Reference server: small plans run synchronously and the finished run is returned'
+          content: { application/json: { schema: { $ref: '#/components/schemas/RiskRun' } } }
         '202':
           description: Accepted - poll the Location URL or subscribe to `risk.completed`
           headers: { Location: { schema: { type: string } } }
@@ -427,6 +457,51 @@ paths:
           description: File
           content:
             application/octet-stream: { schema: { type: string, format: binary } }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/members:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    get:
+      tags: [Projects]
+      operationId: listMembers
+      summary: List project members and roles
+      responses:
+        '200':
+          description: Members
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId: { type: string, format: uuid }
+                        displayName: { type: string }
+                        role: { $ref: '#/components/schemas/Role' }
+        default: { $ref: '#/components/responses/Problem' }
+  /projects/{projectId}/members/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+      - { name: userId, in: path, required: true, schema: { type: string, format: uuid } }
+    put:
+      tags: [Projects]
+      operationId: setMember
+      summary: Add a member or change their role (project manager / org admin)
+      description: Open realtime sockets of that user are closed with code 4403 so they re-subscribe under the new role. Only an ORG_ADMIN can grant ORG_ADMIN.
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [role], additionalProperties: false, properties: { role: { $ref: '#/components/schemas/Role' } } } } }
+      responses:
+        '200': { description: Member set }
+        default: { $ref: '#/components/responses/Problem' }
+    delete:
+      tags: [Projects]
+      operationId: removeMember
+      summary: Remove a member (a project must keep at least one project manager)
+      responses:
+        '204': { description: Removed }
         default: { $ref: '#/components/responses/Problem' }
   /realtime/tickets:
     post:
@@ -536,7 +611,7 @@ components:
           description: Stable machine-readable code from the error taxonomy
           enum: [VALIDATION_FAILED, UNAUTHENTICATED, FORBIDDEN, NOT_FOUND, VERSION_CONFLICT, DUPLICATE_CLIENT_OP,
                  CYCLE_DETECTED, LINK_TO_SUMMARY, UNKNOWN_TASK, DUPLICATE_ID, CONSTRAINT_UNSATISFIABLE, PLAN_TOO_LARGE,
-                 IMPORT_UNSUPPORTED, IMPORT_REJECTED_UNSAFE, RATE_LIMITED, DEPENDENCY_UNAVAILABLE, INTERNAL]
+                 IMPORT_UNSUPPORTED, IMPORT_REJECTED_UNSAFE, RATE_LIMITED, DEPENDENCY_UNAVAILABLE, NOT_IMPLEMENTED, INTERNAL]
         detail: { type: string }
         instance: { type: string }
         traceId: { type: string }
@@ -548,6 +623,7 @@ components:
             properties:
               path: { type: string, example: '/commands/2/durationMin' }
               message: { type: string }
+        currentPlanVersion: { type: integer, format: int64, description: 'Present for VERSION_CONFLICT - the plan version the client must re-sync to' }
         cycle:
           type: array
           items: { type: string, format: uuid }
@@ -578,6 +654,7 @@ components:
             planVersion: { type: integer, format: int64 }
             status: { type: string, enum: [DRAFT, ACTIVE, ON_HOLD, CLOSED, ARCHIVED] }
             finish: { type: string, format: date-time, description: Scheduled project finish }
+    Role: { type: string, enum: [ORG_ADMIN, PORTFOLIO_MANAGER, PROJECT_MANAGER, SCHEDULER, TEAM_MEMBER, VIEWER] }
     DepType: { type: string, enum: [FS, SS, FF, SF] }
     ConstraintType: { type: string, enum: [ASAP, ALAP, MSO, MFO, SNET, SNLT, FNET, FNLT] }
     Task:
@@ -598,6 +675,16 @@ components:
             date: { type: string, format: date-time }
         calendarId: { type: string, format: uuid, nullable: true }
         percentComplete: { type: number, minimum: 0, maximum: 1 }
+        kind: { type: string, enum: [FIXED_UNITS, FIXED_DURATION, FIXED_WORK], default: FIXED_UNITS }
+        effortDriven: { type: boolean, default: false }
+        workMin: { type: integer, minimum: 0, nullable: true, description: 'Total work; required for FIXED_WORK and effort-driven tasks' }
+        priority: { type: integer, minimum: 0, maximum: 1000, default: 500, description: '1000 = never delayed by levelling' }
+        fixedCost: { type: number, minimum: 0, description: 'Omitted from responses for roles without cost visibility' }
+        levelingDelayMin: { type: integer, minimum: 0 }
+        actualStart: { type: string, format: date-time, nullable: true }
+        actualFinish: { type: string, format: date-time, nullable: true }
+        manualStart: { type: string, format: date-time, nullable: true, description: 'Required when mode = MANUAL' }
+        manualFinish: { type: string, format: date-time, nullable: true }
         estimate:
           type: object
           nullable: true
@@ -618,7 +705,17 @@ components:
         totalFloatMin: { type: integer }
         freeFloatMin: { type: integer }
         critical: { type: boolean }
+        nearCritical: { type: boolean, description: 'Positive total float at or below the project near-critical threshold' }
+        state: { type: string, enum: [OPEN, PROGRESS, DONE] }
         isSummary: { type: boolean }
+        driver:
+          type: object
+          nullable: true
+          description: Why the task starts when it does
+          properties:
+            kind: { type: string, enum: [PROJECT_START, LINK, CONSTRAINT, STATUS_DATE, LEVELING, MANUAL, ACTUAL] }
+            predId: { type: string, format: uuid }
+            linkType: { $ref: '#/components/schemas/DepType' }
     Link:
       type: object
       required: [id, predId, succId]
@@ -628,6 +725,7 @@ components:
         succId: { type: string, format: uuid }
         type: { $ref: '#/components/schemas/DepType' }
         lagMin: { type: integer, description: Negative = lead }
+        lagBasis: { $ref: '#/components/schemas/LagBasis' }
     Calendar:
       type: object
       required: [id, name, timeZone, week]
@@ -675,6 +773,11 @@ components:
         - $ref: '#/components/schemas/CmdDeleteTask'
         - $ref: '#/components/schemas/CmdAddLink'
         - $ref: '#/components/schemas/CmdRemoveLink'
+        - $ref: '#/components/schemas/CmdUpdateLink'
+        - $ref: '#/components/schemas/CmdAddAssignment'
+        - $ref: '#/components/schemas/CmdUpdateAssignment'
+        - $ref: '#/components/schemas/CmdRemoveAssignment'
+        - $ref: '#/components/schemas/CmdSetProject'
       discriminator:
         propertyName: op
         mapping:
@@ -684,6 +787,11 @@ components:
           deleteTask: '#/components/schemas/CmdDeleteTask'
           addLink: '#/components/schemas/CmdAddLink'
           removeLink: '#/components/schemas/CmdRemoveLink'
+          updateLink: '#/components/schemas/CmdUpdateLink'
+          addAssignment: '#/components/schemas/CmdAddAssignment'
+          updateAssignment: '#/components/schemas/CmdUpdateAssignment'
+          removeAssignment: '#/components/schemas/CmdRemoveAssignment'
+          setProject: '#/components/schemas/CmdSetProject'
     CmdAddTask:
       type: object
       required: [op, task]
@@ -724,6 +832,66 @@ components:
       properties:
         op: { type: string, enum: [removeLink] }
         id: { type: string, format: uuid }
+    CmdUpdateLink:
+      type: object
+      required: [op, id, patch]
+      properties:
+        op: { type: string, enum: [updateLink] }
+        id: { type: string, format: uuid }
+        patch:
+          type: object
+          additionalProperties: false
+          properties:
+            type: { $ref: '#/components/schemas/DepType' }
+            lagMin: { type: integer }
+            lagBasis: { $ref: '#/components/schemas/LagBasis' }
+    Assignment:
+      type: object
+      required: [id, taskId, resourceId]
+      properties:
+        id: { type: string, format: uuid }
+        taskId: { type: string, format: uuid }
+        resourceId: { type: string, format: uuid }
+        units: { type: number, exclusiveMinimum: true, minimum: 0, maximum: 100, default: 1, description: '1 = 100 %' }
+    CmdAddAssignment:
+      type: object
+      required: [op, assignment]
+      properties:
+        op: { type: string, enum: [addAssignment] }
+        assignment: { $ref: '#/components/schemas/Assignment' }
+    CmdUpdateAssignment:
+      type: object
+      required: [op, id, patch]
+      properties:
+        op: { type: string, enum: [updateAssignment] }
+        id: { type: string, format: uuid }
+        patch:
+          type: object
+          required: [units]
+          additionalProperties: false
+          properties:
+            units: { type: number, exclusiveMinimum: true, minimum: 0, maximum: 100 }
+    CmdRemoveAssignment:
+      type: object
+      required: [op, id]
+      properties:
+        op: { type: string, enum: [removeAssignment] }
+        id: { type: string, format: uuid }
+    CmdSetProject:
+      type: object
+      required: [op, patch]
+      description: Project-level scheduling parameters. `statusDate`/`deadline` accept null to clear.
+      properties:
+        op: { type: string, enum: [setProject] }
+        patch:
+          type: object
+          additionalProperties: false
+          properties:
+            startDate: { type: string, format: date-time }
+            deadline: { type: string, format: date-time, nullable: true }
+            statusDate: { type: string, format: date-time, nullable: true }
+            nearCriticalMin: { type: integer, minimum: 0 }
+    LagBasis: { type: string, enum: [PROJECT, PRED, SUCC], default: PROJECT, description: Which calendar measures the lag }
     CommandBatch:
       type: object
       required: [clientOpId, expectedPlanVersion, commands]
@@ -746,7 +914,7 @@ components:
             required: [taskId, code]
             properties:
               taskId: { type: string, format: uuid }
-              code: { type: string, enum: [MSO_VIOLATED, MFO_VIOLATED, SNLT_VIOLATED, FNLT_VIOLATED, DEADLINE_MISSED] }
+              code: { type: string, enum: [MSO_VIOLATED, MFO_VIOLATED, SNLT_VIOLATED, FNLT_VIOLATED, DEADLINE_MISSED, MANUAL_DATE_CONFLICT] }
               detail: { type: string }
     CommandResult:
       type: object
@@ -755,6 +923,14 @@ components:
         planVersion: { type: integer, format: int64 }
         schedule: { $ref: '#/components/schemas/ScheduleResult' }
         changedTaskIds: { type: array, items: { type: string, format: uuid } }
+        replayed: { type: boolean, description: 'true when the response is the stored result of an earlier identical clientOpId' }
+        stats:
+          type: object
+          description: Work done by the incremental scheduler (diagnostic)
+          properties:
+            forwardVisited: { type: integer }
+            backwardVisited: { type: integer }
+            fullBackward: { type: boolean, description: 'true when the project finish moved and every late date was re-derived' }
     Scenario:
       type: object
       required: [id, name, basePlanVersion]
