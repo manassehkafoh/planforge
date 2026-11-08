@@ -1,4 +1,4 @@
-import type { CalendarDef, TimeRange } from './types.ts';
+import { ScheduleError, type CalendarDef, type TimeRange } from './types.ts';
 
 const DAY = 86_400_000;
 const MIN = 60_000;
@@ -17,7 +17,7 @@ export class WorkCalendar {
     let r = this.cache.get(dayMs);
     if (r) return r;
     const ex = this.def.exceptions?.[key(dayMs)];
-    r = ex ?? this.def.week[new Date(dayMs).getUTCDay()] ?? [];
+    r = ex ?? this.def.week[new Date(dayMs).getUTCDay()] ?? [];  // nulls were resolved by resolveCalendars()
     this.cache.set(dayMs, r);
     return r;
   }
@@ -146,4 +146,36 @@ export class WorkCalendar {
 export function standardCalendar(id = 'std'): CalendarDef {
   const day: TimeRange[] = [{ startMin: 480, endMin: 720 }, { startMin: 780, endMin: 1020 }];
   return { id, week: [[], day, day, day, day, day, []] };
+}
+
+/**
+ * Flatten calendar inheritance. A derived calendar (baseId) takes the base's weekday pattern wherever its own
+ * entry is null, and the union of exception days with its own exceptions winning. Cycles are rejected.
+ */
+export function resolveCalendars(defs: CalendarDef[]): Map<string, WorkCalendar> {
+  const byId = new Map(defs.map((d) => [d.id, d]));
+  const done = new Map<string, CalendarDef>();
+  const visit = (id: string, chain: string[]): CalendarDef => {
+    const hit = done.get(id);
+    if (hit) return hit;
+    const d = byId.get(id);
+    if (!d) throw new ScheduleError('BAD_INPUT', `unknown base calendar ${id}`);
+    if (chain.includes(id)) throw new ScheduleError('BAD_INPUT', `calendar inheritance cycle: ${[...chain, id].join(' -> ')}`);
+    let flat: CalendarDef;
+    if (d.baseId) {
+      const b = visit(d.baseId, [...chain, id]);
+      flat = {
+        id: d.id,
+        week: Array.from({ length: 7 }, (_, i) => d.week[i] ?? b.week[i] ?? []),
+        exceptions: { ...(b.exceptions ?? {}), ...(d.exceptions ?? {}) },
+      };
+    } else {
+      flat = { id: d.id, week: Array.from({ length: 7 }, (_, i) => d.week[i] ?? []), exceptions: d.exceptions };
+    }
+    done.set(id, flat);
+    return flat;
+  };
+  const out = new Map<string, WorkCalendar>();
+  for (const d of defs) out.set(d.id, new WorkCalendar(visit(d.id, [])));
+  return out;
 }
