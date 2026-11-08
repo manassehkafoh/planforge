@@ -1,0 +1,44 @@
+{"kind":"obs","id":"E2E-CONTRACT-ERR-001","key":"observation","value":"fuzz corpus: 352 requests executed","at":"2026-11-08T14:12:09.660Z"}
+{"kind":"obs","id":"E2E-AUTH-011","key":"observation","value":"unknown subject -> HTTP 403 FORBIDDEN; unknown tenant -> HTTP 403 FORBIDDEN","at":"2026-11-08T14:12:10.224Z"}
+{"kind":"obs","id":"E2E-AUTH-RL-001","key":"observation","value":"rate limit 20/min: first 429 at request #21; Retry-After=10s","at":"2026-11-08T14:12:10.773Z"}
+{"kind":"obs","id":"E2E-AUTHZ-OBS-001","key":"observation","value":"ORG_ADMIN: PATCH:200 scenario:400 preview:400 ticket:201 resource:201 archive:204","at":"2026-11-08T14:12:26.799Z"}
+{"kind":"obs","id":"E2E-AUTHZ-OBS-001","key":"observation","value":"PORTFOLIO_MANAGER: PATCH:403 scenario:400 preview:400 ticket:201 resource:403 archive:403","at":"2026-11-08T14:12:26.799Z"}
+{"kind":"obs","id":"E2E-AUTHZ-OBS-001","key":"observation","value":"PROJECT_MANAGER: PATCH:200 scenario:400 preview:400 ticket:201 resource:201 archive:204","at":"2026-11-08T14:12:26.799Z"}
+{"kind":"obs","id":"E2E-AUTHZ-OBS-001","key":"observation","value":"SCHEDULER: PATCH:200 scenario:400 preview:400 ticket:201 resource:201 archive:403","at":"2026-11-08T14:12:26.799Z"}
+{"kind":"obs","id":"E2E-AUTHZ-OBS-001","key":"observation","value":"TEAM_MEMBER: PATCH:403 scenario:400 preview:400 ticket:201 resource:403 archive:403","at":"2026-11-08T14:12:26.800Z"}
+{"kind":"obs","id":"E2E-AUTHZ-OBS-001","key":"observation","value":"VIEWER: PATCH:403 scenario:400 preview:400 ticket:201 resource:403 archive:403","at":"2026-11-08T14:12:26.800Z"}
+{"kind":"obs","id":"E2E-AUTHZ-OBS-001","key":"observation","value":"(non-member): PATCH:404 scenario:400 preview:400 ticket:404 resource:403 archive:404","at":"2026-11-08T14:12:26.800Z"}
+{"kind":"obs","id":"E2E-TENANT-SQL-000","key":"observation","value":"tables with tenant_id: 28","at":"2026-11-08T14:12:28.542Z"}
+{"kind":"obs","id":"E2E-TENANT-SQL-009","key":"observation","value":"pf_app sees 2 tenant rows while acting as tenant A (tenant table is outside RLS)","at":"2026-11-08T14:12:31.329Z"}
+{"kind":"obs","id":"E2E-CMD-VER-002","key":"observation","value":"stale-but-commuting batch: 409 VERSION_CONFLICT (docs/07 section 4 describes rebase; not implemented)","at":"2026-11-08T14:12:32.712Z"}
+{"kind":"obs","id":"E2E-CMD-ARCH-001","key":"observation","value":"command on archived project -> HTTP 403 FORBIDDEN","at":"2026-11-08T14:12:47.852Z"}
+{"kind":"sched.rand.FS-only","id":"E2E-SCHED-RAND-FS-only","key":{"checked":30,"skippedCycle":0},"at":"2026-11-08T14:12:49.604Z"}
+{"kind":"sched.rand.all-types","id":"E2E-SCHED-RAND-all-types","key":{"checked":30,"skippedCycle":0},"at":"2026-11-08T14:12:50.142Z"}
+{"kind":"sched.rand.lags","id":"E2E-SCHED-RAND-lags","key":{"checked":30,"skippedCycle":0},"at":"2026-11-08T14:12:50.722Z"}
+{"kind":"sched.rand.constraints","id":"E2E-SCHED-RAND-constraints","key":{"checked":30,"skippedCycle":0},"at":"2026-11-08T14:12:51.224Z"}
+{"kind":"obs","id":"E2E-SCHED-PREVIEW-BATCH","key":"observation","value":"preview with CommandBatch body -> 400","at":"2026-11-08T14:12:52.613Z"}
+{"kind":"incr.random.core","id":"E2E-INCR-RANDOM-CORE","key":{"projects":12,"editsAttempted":300,"applied":281,"rejected":19,"checks":60,"kinds":{"addLink":58,"constraint":38,"removeLink":16,"deleteTask":24,"addTask":38,"duration":46,"statusDate":11,"moveTask":20,"assign":6,"complete":8,"progress":9,"updateLink":6,"deadline":19,"levelingDelay":1},"rejectedByStatus":{"400":3,"422":16}},"at":"2026-11-08T14:13:14.370Z"}
+{"kind":"obs","id":"E2E-RT-TICKET-001","key":"observation","value":"ticket TTL observed: 30 s (spec: 60 s)","at":"2026-11-08T14:13:18.522Z"}
+{"kind":"rt.latency","id":"E2E-RT-FANOUT-LAT","key":{"p50":8.035988000000089,"p95":11.614397000000054,"max":16.32763},"at":"2026-11-08T14:13:19.826Z"}
+{"kind":"obs","id":"E2E-RT-REVOKE-ROLE","key":"observation","value":"socket after role change SCHEDULER->VIEWER: closed 4403","at":"2026-11-08T14:13:20.726Z"}
+{"kind":"rt.cap","id":"E2E-RT-CAP","key":{"openedBeforeRefusal":3,"firstRefusal":3},"at":"2026-11-08T14:13:21.403Z"}
+{"kind":"audit.paging","id":"E2E-AUDIT-ORDER","key":{"total":2835,"seen":2835,"pages":15},"at":"2026-11-08T14:13:25.329Z"}
+{"kind":"obs","id":"E2E-AUDIT-TAMPER-TRAILINGDELETE","key":"observation","value":"trailing delete: verify ok=true. docs/10 T13 relies on an anchored head hash (WORM storage) that the reference server does not implement; the chain alone cannot detect truncation.","at":"2026-11-08T14:13:28.610Z"}
+{"kind":"obs","id":"E2E-AUDIT-AUTHN","key":"observation","value":"events after one authenticated read and one invalid-token request: none","at":"2026-11-08T14:13:29.423Z"}
+{"kind":"perf.build","id":"E2E-PERF-BUILD","key":{"tasks":2000,"links":3934,"batches":12,"batchMs":[286,219,208,301,212,235,189,187,165,167,165,139]},"at":"2026-11-08T14:13:32.501Z"}
+{"kind":"perf.build.total","id":"E2E-PERF-BUILD","key":{"ms":2648},"at":"2026-11-08T14:13:32.502Z"}
+{"kind":"perf.read","id":"E2E-PERF-READ","key":{"plan_p50":49.668191000000206,"plan_p95":74.60650399999986,"plan_bytes":2356061,"tasks_ms":25.90810300000021},"at":"2026-11-08T14:13:33.652Z"}
+{"kind":"perf.edit","id":"E2E-PERF-EDIT","key":{"n":100,"p50":9.601717999999892,"p95":68.15342200000032,"p99":84.06475499999942,"max":84.06475499999942,"min":7.182071999999607,"stats_sample":{"forwardVisited":1,"backwardVisited":7,"fullBackward":false}},"at":"2026-11-08T14:13:35.139Z"}
+{"kind":"perf.mix","id":"E2E-PERF-INCR","key":{"offCriticalCandidates":1712,"critical":192},"at":"2026-11-08T14:13:35.183Z"}
+{"kind":"perf.incr","id":"E2E-PERF-INCR","key":{"off":{"p50":7.322516999999607,"p95":11.928313999999773},"crit":{"p50":54.508248000000094,"p95":87.59075099999973}},"at":"2026-11-08T14:13:37.310Z"}
+{"kind":"perf.conc","id":"E2E-PERF-CONC","key":{"n":200,"p50":1689.5567230000006,"p95":2829.827085},"at":"2026-11-08T14:13:40.238Z"}
+{"kind":"obs","id":"E2E-PERF-CONC","key":"observation","value":"200 concurrent reads: p50 1690 ms, p95 2830 ms (no read-latency target exists in the specification)","at":"2026-11-08T14:13:40.238Z"}
+{"kind":"perf.cold","id":"E2E-PERF-COLD","key":{"firstReadMs":93.33637099999942,"firstEditMs":210.39830799999982},"at":"2026-11-08T14:13:40.760Z"}
+{"kind":"perf.level","id":"E2E-PERF-LEVEL","key":{"tasks":300,"ms":193.72289600000113,"delays":295,"steps":295,"converged":true},"at":"2026-11-08T14:13:41.143Z"}
+{"kind":"perf.risk","id":"E2E-PERF-RISK","key":{"status":201,"ms":24057.557426},"at":"2026-11-08T14:14:05.201Z"}
+{"kind":"perf.neighbour","id":"E2E-PERF-RISK-NEIGHBOUR","key":{"riskStatus":201,"riskMs":22681.854704000005,"otherStatus":0,"otherMs":21981.230088000004},"at":"2026-11-08T14:14:27.899Z"}
+{"kind":"robust.rawhttp","id":"E2E-ROBUST-RAWHTTP","key":{"garbage":"HTTP/1.1 400 Bad Request","binary":"HTTP/1.1 400 Bad Request","long url":"HTTP/1.1 431 Request Header Fields Too Large","many headers":"HTTP/1.1 200 OK","huge header":"HTTP/1.1 431 Request Header Fields Too Large","CL+TE":"HTTP/1.1 400 Bad Request","negative CL":"HTTP/1.1 400 Bad Request","http/0.9":"HTTP/1.1 401 Unauthorized","bad version":"HTTP/1.1 400 Bad Request","absolute URI":"HTTP/1.1 200 OK","CRLF in path":"HTTP/1.1 404 Not Found"},"at":"2026-11-08T14:14:31.013Z"}
+{"kind":"robust.pgconns","id":"E2E-ROBUST-ABORT-BODY","key":{"afterAborts":1},"at":"2026-11-08T14:14:32.383Z"}
+{"kind":"obs","id":"E2E-ROBUST-PGKILL-IDLE","key":"observation","value":"backends terminated: 20","at":"2026-11-08T14:14:37.095Z"}
+{"kind":"robust.pgkill.idle","id":"E2E-ROBUST-PGKILL-IDLE","key":{"killed":"20","codes":[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],"recoveredMs":-1},"at":"2026-11-08T14:14:47.200Z"}
+{"kind":"robust.sigterm","id":"E2E-ROBUST-SIGTERM","key":{"code":0,"ms":8},"at":"2026-11-08T14:14:47.449Z"}

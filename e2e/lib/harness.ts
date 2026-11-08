@@ -37,7 +37,7 @@ export function mint(claims: Record<string, unknown>, opts: { secret?: string; h
 }
 export const tokenFor = (u: UserKey, over: Record<string, unknown> = {}) => mint({ sub: USERS[u].sub, tid: USERS[u].tid, ...over });
 
-export interface Res { status: number; body: any; headers: Headers; text: string; ms: number }
+export interface Res { status: number; body: any; headers: Headers; text: string; ms: number; req: string }
 export interface Server {
   base: string; port: number; proc: ChildProcess; logs: string[];
   stop(): Promise<void>;
@@ -66,7 +66,7 @@ export async function startServer(opts: { rate?: number; port?: number; env?: Re
     const r = await fetch(base + path, { method, headers: init.headers, body: init.body as any });
     const text = await r.text();
     let body: any; try { body = text ? JSON.parse(text) : undefined; } catch { body = text; }
-    return { status: r.status, body, headers: r.headers, text, ms: performance.now() - t0 };
+    return { status: r.status, body, headers: r.headers, text, ms: performance.now() - t0, req: `${method} ${path}${init.body && typeof init.body === 'string' ? ' ' + init.body.slice(0, 300) : ''}` };
   }
   async function call(who: UserKey | string | null, method: string, path: string, body?: unknown, headers: Record<string, string> = {}) {
     const h: Record<string, string> = { ...headers };
@@ -134,7 +134,8 @@ export async function newProject(s: Server, owner: UserKey = 'pm', over: Record<
       return r;
     },
     async ok(commands: any[], who: UserKey | string = owner) {
-      const r = await api.cmd(commands, who);
+      let r = await api.cmd(commands, who);
+      if (r.status === 400 && /unknown resource/.test(r.text)) r = await api.cmd(commands, who); // workaround for the stale-resource-cache defect (see E2E-CMD-ASSIGN-FRESHRES)
       if (r.status !== 200) throw new Error('commands failed: ' + r.text);
       return r;
     },
@@ -180,3 +181,15 @@ export function openWs(s: Server, ticket: string) {
     opened: () => new Promise<boolean>((r) => { ws.on('open', () => r(true)); ws.on('error', () => r(false)); ws.on('close', () => r(false)); ws.on('unexpected-response', () => r(false)); }) };
 }
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Out-of-band provisioning (the API offers no way to mint the first ORG_ADMIN - see defect register). */
+export function makeMember(projectId: string, user: UserKey | { id: string }, role: string) {
+  const uid = typeof user === 'string' ? USERS[user].id : user.id;
+  const tid = typeof user === 'string' ? USERS[user].tid : TENANT_A;
+  su(`INSERT INTO pf.project_member (project_id, user_id, tenant_id, role) VALUES ('${projectId}','${uid}','${tid}','${role}') ON CONFLICT (project_id,user_id) DO UPDATE SET role = EXCLUDED.role`);
+}
+export const OUTSIDER = { sub: 'outsider-a', id: 'a1000000-0000-4000-8000-0000000000ff', tid: TENANT_A };
+export function ensureOutsider() {
+  su(`INSERT INTO pf.app_user (id, tenant_id, oidc_subject, email, display_name) VALUES ('${OUTSIDER.id}','${TENANT_A}','${OUTSIDER.sub}','outsider@acme.test','Otto Outsider') ON CONFLICT DO NOTHING`);
+}
+export const outsiderToken = (over: Record<string, unknown> = {}) => mint({ sub: OUTSIDER.sub, tid: OUTSIDER.tid, ...over });
