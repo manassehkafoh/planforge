@@ -85,3 +85,19 @@ test('ALAP: placed late with zero free float; dependants unaffected', () => {
   assert.equal(r.tasks.B.freeFloatMin, 0);
   assert.equal(r.tasks.C.es, at(2026, 11, 16, 8));
 });
+
+test('summary is never both critical and nearCritical; constraint dates at end of day compare on the working-time axis', () => {
+  const day = [{ startMin: 480, endMin: 720 }, { startMin: 780, endMin: 1020 }];
+  const cal = { id: 'c', week: [[], day, day, day, day, day, []] };
+  const MON = Date.UTC(2026, 10, 9);
+  const at = (d: number, h: number, m = 0) => MON + d * 86_400_000 + (h * 60 + m) * 60_000;
+  const r = schedule({
+    startDate: at(0, 8), calendar: cal,
+    tasks: [{ id: 'S', durationMin: 0 }, { id: 'A', durationMin: 480, parentId: 'S' }, { id: 'B', durationMin: 120, parentId: 'S' }, { id: 'C', durationMin: 480 }],
+    links: [],
+  });
+  assert.equal(r.tasks.S.critical && r.tasks.S.nearCritical, false);
+  // MSO exactly at end of Wednesday (17:00) == start of Thursday on the working-time axis: no conflict
+  const r2 = schedule({ startDate: at(0, 8), calendar: cal, tasks: [{ id: 'T', durationMin: 480, constraint: { type: 'MSO', date: at(2, 17) } }], links: [] });
+  assert.deepEqual(r2.conflicts, []);
+});

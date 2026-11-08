@@ -57,3 +57,14 @@ CREATE POLICY tenant_isolation ON realtime_ticket
 
 -- Risk runs executed by the reference server keep their result inline
 ALTER TABLE risk_run ADD COLUMN IF NOT EXISTS result jsonb;
+
+-- Defect PF-003: partitions are reachable directly, so each needs its own RLS (the parent's policy does not apply to direct access).
+DO $$ DECLARE p text; BEGIN
+  FOR p IN SELECT c.relname FROM pg_inherits i JOIN pg_class c ON c.oid = i.inhrelid JOIN pg_class pa ON pa.oid = i.inhparent
+           WHERE pa.relname = 'assignment_timephase' LOOP
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', p);
+    EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', p);
+    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation ON %I', p);
+    EXECUTE format($f$CREATE POLICY tenant_isolation ON %I USING (tenant_id = current_setting('pf.tenant_id', true)::uuid) WITH CHECK (tenant_id = current_setting('pf.tenant_id', true)::uuid)$f$, p);
+  END LOOP;
+END $$;

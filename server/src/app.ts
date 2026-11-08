@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { PoolClient } from 'pg';
 import { ZodError, type ZodTypeAny, type z } from 'zod';
@@ -13,7 +13,7 @@ import { Problem, problemBody } from './errors.ts';
 import { fromMs, newId, toMs, type TaskRec } from './model.ts';
 import { can, MATRIX, type Role } from './rbac.ts';
 import * as S from './schemas.ts';
-import { applyBatch, inProject, liveEntry, resourcesFor, scheduleApi, taskOutApi, toNetwork, type Deps } from './service.ts';
+import { applyBatch, runRisk, inProject, liveEntry, resourcesFor, scheduleApi, taskOutApi, toNetwork, type Deps } from './service.ts';
 import { loadModel } from './store.ts';
 
 interface Req { raw: IncomingMessage; url: URL; params: string[]; claims: { sub: string; tid: string }; body: unknown; ip: string | null; traceId: string }
@@ -30,6 +30,18 @@ const parse = <T extends ZodTypeAny>(schema: T, v: unknown): z.infer<T> => {
 const ok = (body: unknown, status = 200, headers?: Record<string, string>) => ({ status, body, headers });
 const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const needUuid = (s: string, what = 'resource') => { if (!uuidRe.test(s)) throw new Problem('NOT_FOUND', `${what} not found`); return s; };
+
+/** limit 1..1000 (400 outside), cursor = opaque base64 offset; PF-026 */
+function page(qp: URLSearchParams, total: number): { limit: number; offset: number; next: string | null } {
+  const lim = qp.get('limit');
+  let limit = 200;
+  if (lim !== null) { limit = Number(lim); if (!Number.isInteger(limit) || limit < 1 || limit > 500) throw new Problem('VALIDATION_FAILED', 'limit must be an integer 1..500'); }
+  let offset = Math.max(0, Number(qp.get('offset') ?? 0) || 0);
+  const cur = qp.get('cursor');
+  if (cur) { const n = Number(Buffer.from(cur, 'base64url').toString('utf8')); if (!Number.isInteger(n) || n < 0) throw new Problem('VALIDATION_FAILED', 'invalid cursor'); offset = n; }
+  const end = offset + limit;
+  return { limit, offset, next: end < total ? Buffer.from(String(end)).toString('base64url') : null };
+}
 
 // ------------------------------------------------------------------------------------------ views
 function taskView(r: Record<string, any>, costVisible: boolean, wbs: string) { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -84,10 +96,12 @@ route('GET', '/readyz', async (_r, d) => { try { await d.pool.query('SELECT 1');
 
 // ------------------------------------------------------------------------------------------ projects
 route('GET', '/projects', async (r, d) => tx(d.pool, r.claims.tid, async (c) => {
+  const pf = r.url.searchParams.get('portfolioId');
+  if (pf !== null && !uuidRe.test(pf)) throw new Problem('VALIDATION_FAILED', 'portfolioId must be a uuid');
   const uid = await currentUser(c, r.claims.sub);
   const rows = (await c.query(
     `SELECT p.*, (SELECT max(ef_local) FROM task t WHERE t.project_id = p.id AND NOT t.is_summary) AS finish
-       FROM project p JOIN project_member m ON m.project_id = p.id WHERE m.user_id = $1 AND p.status <> 'ARCHIVED' ORDER BY p.created_at, p.id LIMIT 500`, [uid])).rows;
+       FROM project p JOIN project_member m ON m.project_id = p.id WHERE m.user_id = $1 AND p.status <> 'ARCHIVED' AND ($2::uuid IS NULL OR p.portfolio_id = $2) ORDER BY p.created_at, p.id LIMIT 500`, [uid, pf])).rows;
   return ok({ items: rows.map((x) => projectView(x, x.finish)) });
 }));
 
@@ -96,6 +110,7 @@ route('POST', '/projects', async (r, d) => {
   return tx(d.pool, r.claims.tid, async (c) => {
     const uid = await currentUser(c, r.claims.sub);
     if (!(await c.query('SELECT 1 FROM calendar WHERE id = $1', [b.calendarId])).rowCount) throw new Problem('VALIDATION_FAILED', 'unknown calendarId', { errors: [{ path: '/calendarId', message: 'not found' }] });
+    if (b.portfolioId && !(await c.query('SELECT 1 FROM portfolio WHERE id = $1', [b.portfolioId])).rowCount) throw new Problem('VALIDATION_FAILED', 'unknown portfolioId', { errors: [{ path: '/portfolioId', message: 'not found' }] });
     const row = (await c.query(
       `INSERT INTO project (tenant_id, name, calendar_id, start_local, deadline_local, currency, created_by)
        VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
@@ -113,12 +128,23 @@ route('GET', '/projects/:id', async (r, d) => inProject(d, r.claims, r.params[0]
 
 route('PATCH', '/projects/:id', async (r, d) => {
   const b = parse(S.ProjectPatch, r.body);
-  return inProject(d, r.claims, r.params[0], 'plan.structure', r.ip, async (c, a) => {
+  const ifMatch = r.raw.headers['if-match'];
+  if (ifMatch === undefined) throw new Problem('PRECONDITION_REQUIRED', 'If-Match with the plan ETag is required');
+  const out = await inProject(d, r.claims, r.params[0], 'plan.structure', r.ip, async (c, a) => {
+    const cur = (await c.query('SELECT plan_version FROM project WHERE id = $1', [a.projectId])).rows[0];
+    if (ifMatch !== '*' && ifMatch !== `"${cur.plan_version}"`) throw new Problem('VERSION_CONFLICT', 'plan changed since the ETag was issued', { currentPlanVersion: cur.plan_version });
+    let commit = () => {};
+    if (b.deadline !== undefined) {
+      const batch = await applyBatch(d, c, a, { clientOpId: randomUUID(), expectedPlanVersion: cur.plan_version, commands: [{ op: 'setProject', patch: { deadline: b.deadline } }] }, 'project.update');
+      commit = batch.commit;
+    }
     const row = (await c.query('UPDATE project SET name = coalesce($2, name), status = coalesce($3, status), updated_at = now() WHERE id = $1 AND status <> \'ARCHIVED\' RETURNING *', [a.projectId, b.name ?? null, b.status ?? null])).rows[0];
     if (!row) throw new Problem('FORBIDDEN', 'project is archived');
     await audit(c, { tenantId: a.tenantId, actorId: a.userId, action: 'project.update', resource: 'project', resourceId: a.projectId, ip: r.ip, detail: { fields: Object.keys(b) } });
-    return ok(projectView(row));
+    return { res: ok(projectView(row)), commit };
   });
+  out.commit();
+  return out.res;
 });
 
 route('DELETE', '/projects/:id', async (r, d) => inProject(d, r.claims, r.params[0], 'project.archive', r.ip, async (c, a) => {
@@ -138,6 +164,12 @@ route('PUT', '/projects/:id/members/:userId', async (r, d) => {
   return inProject(d, r.claims, r.params[0], 'members.manage', r.ip, async (c, a) => {
     needUuid(r.params[1], 'user');
     if (!(await c.query('SELECT 1 FROM app_user WHERE id = $1 AND is_active', [r.params[1]])).rowCount) throw new Problem('VALIDATION_FAILED', 'unknown user');
+    if (b.role === 'ORG_ADMIN' && a.role !== 'ORG_ADMIN') throw new Problem('FORBIDDEN', 'only an org admin can grant ORG_ADMIN');
+    const cur = (await c.query('SELECT role FROM project_member WHERE project_id = $1 AND user_id = $2', [a.projectId, r.params[1]])).rows[0];
+    if (cur?.role === 'PROJECT_MANAGER' && b.role !== 'PROJECT_MANAGER') {
+      const others = (await c.query("SELECT count(*)::int AS n FROM project_member WHERE project_id = $1 AND role = 'PROJECT_MANAGER' AND user_id <> $2", [a.projectId, r.params[1]])).rows[0].n;
+      if (others === 0) throw new Problem('VALIDATION_FAILED', 'a project must keep at least one project manager');
+    }
     if (b.role === 'ORG_ADMIN' && a.role !== 'ORG_ADMIN') throw new Problem('FORBIDDEN', 'only an org admin can grant ORG_ADMIN');
     await c.query('INSERT INTO project_member (project_id, user_id, tenant_id, role) VALUES ($1,$2,$3,$4) ON CONFLICT (project_id, user_id) DO UPDATE SET role = EXCLUDED.role', [a.projectId, r.params[1], a.tenantId, b.role]);
     await audit(c, { tenantId: a.tenantId, actorId: a.userId, action: 'member.set', resource: 'project', resourceId: a.projectId, ip: r.ip, detail: { userId: r.params[1], role: b.role } });
@@ -178,8 +210,13 @@ route('GET', '/projects/:id/tasks', async (r, d) => inProject(d, r.claims, r.par
   let list = all;
   if (qp.get('critical') === 'true') list = list.filter((t) => (t.schedule as { critical?: boolean } | null)?.critical);
   if (qp.get('parentId')) list = list.filter((t) => t.parentId === qp.get('parentId'));
-  const limit = Math.min(1000, Math.max(1, Number(qp.get('limit') ?? 200) || 200)), offset = Math.max(0, Number(qp.get('offset') ?? 0) || 0);
-  return ok({ items: list.slice(offset, offset + limit), total: list.length, offset, limit });
+  const q = qp.get('q');
+  if (q) list = list.filter((t) => String(t.name).toLowerCase().includes(q.toLowerCase()));
+  const fb = qp.get('finishBefore');
+  if (fb) { const ms = Date.parse(`${fb.length === 10 ? fb + 'T23:59:59' : fb}Z`); if (Number.isNaN(ms)) throw new Problem('VALIDATION_FAILED', 'finishBefore must be a date or naive local date-time');
+    list = list.filter((t) => { const s = t.schedule as { ef: string } | null; return s !== null && Date.parse(`${s.ef}Z`) <= ms; }); }
+  const { limit, offset, next } = page(qp, list.length);
+  return ok({ items: list.slice(offset, offset + limit), total: list.length, offset, limit, nextCursor: next });
 }));
 
 route('GET', '/projects/:id/tasks/:taskId', async (r, d) => inProject(d, r.claims, r.params[0], 'plan.read', r.ip, async (c, a) => {
@@ -198,7 +235,8 @@ route('POST', '/projects/:id/commands', async (r, d) => {
 });
 
 route('POST', '/projects/:id/schedule', async (r, d) => {
-  const body = parse(S.ScenarioCreate.pick({ commands: true }).partial().strict(), r.body ?? {});
+  const body = parse(S.PreviewRequest, r.body ?? {});
+  if ((body.commands?.length ?? 0) > 1000) throw new Problem('PLAN_TOO_LARGE', 'at most 1000 commands per batch');
   return inProject(d, r.claims, r.params[0], 'plan.read', r.ip, async (c) => {
     const { model } = await loadModel(c, r.params[0]);
     const scratch = model.clone();
@@ -240,13 +278,17 @@ route('POST', '/resources', async (r, d) => {
   return tx(d.pool, r.claims.tid, async (c) => {
     const uid = await currentUser(c, r.claims.sub);
     if (!(await tenantRoles(c, uid)).some((x) => can(x, 'resource.write'))) throw new Problem('FORBIDDEN', 'creating resources requires the project-manager or admin role');
-    if (b.rates && !(await tenantRoles(c, uid)).some((x) => can(x, 'cost.read'))) throw new Problem('FORBIDDEN', 'rates require a cost-visible role');
+    if (b.calendarId && !(await c.query('SELECT 1 FROM calendar WHERE id = $1', [b.calendarId])).rowCount) throw new Problem('VALIDATION_FAILED', 'unknown calendarId or userId');
+    if (b.userId && !(await c.query('SELECT 1 FROM app_user WHERE id = $1', [b.userId])).rowCount) throw new Problem('VALIDATION_FAILED', 'unknown calendarId or userId');
     const row = (await c.query('INSERT INTO resource (tenant_id, name, kind, max_units, calendar_id, user_id) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id',
       [r.claims.tid, b.name, b.kind ?? 'WORK', b.maxUnits ?? 1, b.calendarId ?? null, b.userId ?? null]).catch((e) => { if (e.code === '23503') throw new Problem('VALIDATION_FAILED', 'unknown calendarId or userId'); throw e; })).rows[0];
-    for (const rt of b.rates ?? [])
+    const rates = [...(b.rates ?? []), ...(b.stdRatePerHour !== undefined || b.perUseCost !== undefined ? [{ effectiveFrom: '1970-01-01', stdPerHour: b.stdRatePerHour ?? 0, perUse: b.perUseCost }] : [])];
+    if (rates.length && !(await tenantRoles(c, uid)).some((x) => can(x, 'cost.read'))) throw new Problem('FORBIDDEN', 'rates require a cost-visible role');
+    for (const rt of rates)
       await c.query('INSERT INTO resource_rate (resource_id, tenant_id, effective_from, std_rate_per_hour, per_use_cost) VALUES ($1,$2,$3,$4,$5)', [row.id, r.claims.tid, rt.effectiveFrom, rt.stdPerHour, rt.perUse ?? 0]);
+    d.cache.clear();   // PF-015: cached engine inputs embed the resource list
     await audit(c, { tenantId: r.claims.tid, actorId: uid, action: 'resource.create', resource: 'resource', resourceId: row.id, ip: r.ip });
-    return ok({ id: row.id, name: b.name, kind: b.kind ?? 'WORK', maxUnits: b.maxUnits ?? 1 }, 201);
+    return ok({ id: row.id, name: b.name, kind: b.kind ?? 'WORK', maxUnits: b.maxUnits ?? 1, calendarId: b.calendarId ?? null, isActive: true, ...(b.stdRatePerHour !== undefined ? { stdRatePerHour: b.stdRatePerHour } : {}), ...(b.perUseCost !== undefined ? { perUseCost: b.perUseCost } : {}) }, 201);
   });
 });
 route('GET', '/resources', async (r, d) => tx(d.pool, r.claims.tid, async (c) => {
@@ -267,7 +309,9 @@ route('GET', '/resources/:id/load', async (r, d) => tx(d.pool, r.claims.tid, asy
   if (!res) throw new Problem('NOT_FOUND', 'resource not found');
   const from = r.url.searchParams.get('from'), to = r.url.searchParams.get('to');
   const day = /^\d{4}-\d{2}-\d{2}$/;
-  if ((from && !day.test(from)) || (to && !day.test(to))) throw new Problem('VALIDATION_FAILED', 'from/to must be YYYY-MM-DD');
+  const real = (v: string) => day.test(v) && new Date(`${v}T00:00:00Z`).toISOString().slice(0, 10) === v;
+  if (!from || !to || !real(from) || !real(to)) throw new Problem('VALIDATION_FAILED', 'from and to are required and must be real YYYY-MM-DD dates');
+  if (from > to) throw new Problem('VALIDATION_FAILED', 'from must not be after to');
   // projects the caller can read that contain assignments of this resource
   const projects = (await c.query(
     `SELECT DISTINCT a.project_id FROM assignment a JOIN project_member m ON m.project_id = a.project_id AND m.user_id = $1 WHERE a.resource_id = $2`, [uid, res.id])).rows;
@@ -336,7 +380,7 @@ route('POST', '/projects/:id/baselines', async (r, d) => {
     const cost = new Map<string, number>(), work = new Map<string, number>();
     for (const x of tp.assignments) { cost.set(x.taskId, (cost.get(x.taskId) ?? 0) + x.cost); work.set(x.taskId, (work.get(x.taskId) ?? 0) + x.workMin); }
     const num = b.number ?? 0;
-    await c.query('DELETE FROM baseline WHERE project_id = $1 AND number = $2', [a.projectId, num]);
+    if ((await c.query('SELECT 1 FROM baseline WHERE project_id = $1 AND number = $2', [a.projectId, num])).rowCount) throw new Problem('BASELINE_EXISTS', `baseline ${num} is already saved and immutable`);
     const bl = (await c.query('INSERT INTO baseline (tenant_id, project_id, number, label, plan_version, saved_by) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id, saved_at', [a.tenantId, a.projectId, num, b.label ?? null, e.version, a.userId])).rows[0];
     const leaves = [...e.model.tasks.values()].filter((t) => !e.model.isSummary(t.id));
     await c.query(
@@ -354,15 +398,15 @@ route('GET', '/projects/:id/baselines', async (r, d) => inProject(d, r.claims, r
   const cur = e.net.result();
   const rows = (await c.query(
     `SELECT b.id, b.number, b.label, b.plan_version AS "planVersion", b.saved_at AS "savedAt", max(t.finish_local) AS finish, sum(t.cost) AS cost, count(*)::int AS "taskCount"
-       FROM baseline b JOIN baseline_task t ON t.baseline_id = b.id WHERE b.project_id = $1 GROUP BY b.id ORDER BY b.number`, [a.projectId])).rows;
-  return ok({ items: rows.map((x) => ({ id: x.id, number: x.number, label: x.label, planVersion: x.planVersion, savedAt: x.savedAt, finish: fromMs(x.finish), taskCount: x.taskCount,
-    finishVarianceMin: Math.round((cur.finish - x.finish) / 60000), ...(costs ? { cost: x.cost } : {}) })) });
+       FROM baseline b LEFT JOIN baseline_task t ON t.baseline_id = b.id WHERE b.project_id = $1 GROUP BY b.id ORDER BY b.number`, [a.projectId])).rows;
+  return ok({ items: rows.map((x) => ({ id: x.id, number: x.number, label: x.label, planVersion: x.planVersion, savedAt: x.savedAt, finish: x.finish === null ? null : fromMs(x.finish), taskCount: x.taskCount,
+    finishVarianceMin: x.finish === null ? null : Math.round((cur.finish - x.finish) / 60000), ...(costs ? { cost: x.cost } : {}) })) });
 }));
 
 route('GET', '/projects/:id/evm', async (r, d) => inProject(d, r.claims, r.params[0], 'cost.read', r.ip, async (c, a) => {
   const e = await liveEntry(d, c, a.projectId);
   const sd = r.url.searchParams.get('statusDate');
-  const status = sd ? toMs(sd.length === 10 ? `${sd}T00:00` : sd) : e.model.project.statusDate;
+  const status = sd ? toMs(sd.length === 10 ? `${sd}T00:00` : sd) : e.model.project.statusDate ?? Date.parse(`${new Date().toISOString().slice(0, 10)}T00:00:00Z`);
   if (status === undefined || Number.isNaN(status)) throw new Problem('VALIDATION_FAILED', 'statusDate query parameter (or a project status date) is required');
   const acQ = r.url.searchParams.get('ac');
   const ac = acQ === null ? null : Number(acQ);
@@ -375,8 +419,27 @@ route('GET', '/projects/:id/evm', async (r, d) => inProject(d, r.claims, r.param
   for (const x of tp.assignments) budget.set(x.taskId, (budget.get(x.taskId) ?? 0) + x.cost);
   let ev = 0;
   for (const t of e.model.tasks.values()) if (!e.model.isSummary(t.id)) ev += ((budget.get(t.id) ?? 0) + (t.fixedCost ?? 0)) * (t.percentComplete ?? 0);
-  const bac = tp.totalCost, pv = plannedValueAt(eff, res, tp, status);
-  const base = { statusDate: fromMs(status), bac, pv, ev: Math.round(ev * 100) / 100, sv: Math.round((ev - pv) * 100) / 100, spi: pv > 0 ? ev / pv : null, pvBasis: 'cost of working days before the status date' };
+  let bac = tp.totalCost, pv = plannedValueAt(eff, res, tp, status);
+  const bq = r.url.searchParams.get('baseline');
+  let pvBasis = 'cost of working days before the status date';
+  if (bq !== null) {
+    const bn = Number(bq);
+    if (!Number.isInteger(bn) || bn < 0 || bn > 10) throw new Problem('VALIDATION_FAILED', 'baseline must be an integer 0..10');
+    const bl = (await c.query('SELECT id FROM baseline WHERE project_id = $1 AND number = $2', [a.projectId, bn])).rows[0];
+    if (!bl) throw new Problem('NOT_FOUND', `baseline ${bn} not found`);
+    const bt = (await c.query('SELECT task_id, start_local, finish_local, cost FROM baseline_task WHERE baseline_id = $1', [bl.id])).rows;
+    bac = 0; pv = 0;
+    for (const t of bt) {
+      const cost = Number(t.cost), s0 = t.start_local as number, f0 = t.finish_local as number;
+      bac += cost;
+      pv += status >= f0 ? cost : status <= s0 || f0 <= s0 ? 0 : cost * ((status - s0) / (f0 - s0));
+    }
+    pvBasis = `baseline ${bn}: cost spread linearly over elapsed time between baseline start and finish`;
+    // EV against the baseline budget of each task
+    ev = 0;
+    for (const t of bt) ev += Number(t.cost) * (e.model.tasks.get(t.task_id)?.percentComplete ?? 0);
+  }
+  const base = { statusDate: fromMs(status), bac, pv, ev: Math.round(ev * 100) / 100, sv: Math.round((ev - pv) * 100) / 100, spi: pv > 0 ? ev / pv : null, pvBasis };
   if (ac === null) return ok({ ...base, ac: null, cpi: null, cv: null, note: 'actual cost is not tracked by the reference server; pass ?ac= to compute cost indices' });
   return ok({ ...base, ac, ...evm({ bac, pv, ev, ac }) });
 }));
@@ -388,7 +451,7 @@ route('POST', '/projects/:id/risk-runs', async (r, d) => {
     const iterations = b.iterations ?? 1000, seed = b.seed ?? 42;
     const n = [...e.model.tasks.keys()].length;
     if (n * iterations > 4_000_000) throw new Problem('PLAN_TOO_LARGE', 'tasks x iterations exceeds the synchronous quota (4,000,000); reduce iterations');
-    const result = simulate(e.model.engineProject(), iterations, seed);
+    const result = await runRisk<ReturnType<typeof simulate>>(a.tenantId, e.model.engineProject(), iterations, seed);
     const out = { p50: fromMs(result.p50), p80: fromMs(result.p80), p90: fromMs(result.p90), iterations, seed, criticalityIndex: result.criticalityIndex };
     const row = (await c.query(
       `INSERT INTO risk_run (tenant_id, project_id, plan_version, iterations, seed, status, p50_local, p80_local, p90_local, criticality, requested_by, finished_at, result)
@@ -419,7 +482,7 @@ route('GET', '/projects/:id/export', async (r, d) => inProject(d, r.claims, r.pa
 route('POST', '/realtime/tickets', async (r, d) => {
   const b = parse(S.TicketRequest, r.body);
   return inProject(d, r.claims, b.projectId, 'plan.read', r.ip, async (c, a) => {
-    const row = (await c.query("INSERT INTO realtime_ticket (tenant_id, project_id, user_id, expires_at) VALUES ($1,$2,$3, now() + interval '30 seconds') RETURNING id, expires_at", [a.tenantId, a.projectId, a.userId])).rows[0];
+    const row = (await c.query("INSERT INTO realtime_ticket (tenant_id, project_id, user_id, expires_at) VALUES ($1,$2,$3, now() + interval '60 seconds') RETURNING id, expires_at", [a.tenantId, a.projectId, a.userId])).rows[0];
     return ok({ ticket: `${a.tenantId}.${row.id}`, expiresAt: row.expires_at, url: '/realtime' }, 201);
   });
 });
@@ -429,9 +492,14 @@ route('GET', '/audit-events', async (r, d) => tx(d.pool, r.claims.tid, async (c)
   if (!(await tenantRoles(c, uid)).some((x) => can(x, 'audit.read'))) throw new Problem('FORBIDDEN', 'audit trail requires the org-admin role');
   const limit = Math.min(500, Math.max(1, Number(r.url.searchParams.get('limit') ?? 100) || 100));
   const before = Number(r.url.searchParams.get('beforeId') ?? 0) || null;
+  const qs = r.url.searchParams, actor = qs.get('actorId'), from = qs.get('from'), to = qs.get('to');
+  const ts = (v: string | null) => { if (v === null) return null; const ms = Date.parse(v); if (Number.isNaN(ms) || !/^\d{4}-\d{2}-\d{2}/.test(v) || new Date(ms).toISOString().slice(0, 10) !== v.slice(0, 10)) throw new Problem('VALIDATION_FAILED', 'from/to must be RFC 3339 date-times'); return new Date(ms).toISOString(); };
+  if (actor !== null && !uuidRe.test(actor)) throw new Problem('VALIDATION_FAILED', 'actorId must be a uuid');
+  const fromTs = ts(from), toTs = ts(to);
   const rows = (await c.query(
     `SELECT id, occurred_at AS "occurredAt", actor_id AS "actorId", action, resource, resource_id AS "resourceId", detail FROM audit_event
-      WHERE ($2::bigint IS NULL OR id < $2) ORDER BY id DESC LIMIT $1`, [limit, before])).rows;
+      WHERE ($2::bigint IS NULL OR id < $2) AND ($3::uuid IS NULL OR actor_id = $3) AND ($4::timestamptz IS NULL OR occurred_at >= $4) AND ($5::timestamptz IS NULL OR occurred_at <= $5)
+      ORDER BY id DESC LIMIT $1`, [limit, before, actor, fromTs, toTs])).rows;
   return ok({ items: rows, nextBeforeId: rows.length === limit ? rows[rows.length - 1].id : null });
 }));
 route('GET', '/audit-events/verify', async (r, d) => tx(d.pool, r.claims.tid, async (c) => {
@@ -459,20 +527,33 @@ function limited(key: string, perMin: number): boolean {
   return false;
 }
 
-const MAX_BODY = 5_000_000;
+const idem = new Map<string, { hash: string; status: number; body: unknown; headers?: Record<string, string>; at: number }>();
+function wellFormed(v: unknown, depth = 0): boolean {
+  if (typeof v === 'string') return v.isWellFormed() && !v.includes('\u0000');
+  if (depth > 64) return false;
+  if (Array.isArray(v)) return v.every((x) => wellFormed(x, depth + 1));
+  if (v && typeof v === 'object') return Object.entries(v).every(([k, x]) => wellFormed(k, depth + 1) && wellFormed(x, depth + 1));
+  return true;
+}
+const MAX_BODY = 2_000_000;
 async function readBody(req: IncomingMessage): Promise<unknown> {
   if (req.method === 'GET' || req.method === 'DELETE') return undefined;
   const ct = req.headers['content-type'] ?? '';
+  const declared = Number(req.headers['content-length'] ?? 0);
+  if (declared > MAX_BODY) throw new Problem('PLAN_TOO_LARGE', 'request body exceeds 2 MB');
   const chunks: Buffer[] = [];
   let n = 0;
   for await (const ch of req) {
     n += (ch as Buffer).length;
-    if (n > MAX_BODY) throw new Problem('PLAN_TOO_LARGE', 'request body exceeds 5 MB');
+    if (n > MAX_BODY) throw new Problem('PLAN_TOO_LARGE', 'request body exceeds 2 MB');
     chunks.push(ch as Buffer);
   }
   if (!n) return undefined;
   if (!/^application\/json(\s*;|$)/i.test(ct)) throw new Problem('VALIDATION_FAILED', 'Content-Type must be application/json');
-  try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { throw new Problem('VALIDATION_FAILED', 'body is not valid JSON'); }
+  let v: unknown;
+  try { v = JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { throw new Problem('VALIDATION_FAILED', 'body is not valid JSON'); }
+  if (!wellFormed(v)) throw new Problem('VALIDATION_FAILED', 'strings must be valid Unicode (lone surrogate or NUL found)');
+  return v;
 }
 
 const SEC_HEADERS = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'", 'Cross-Origin-Resource-Policy': 'same-origin' };
@@ -489,7 +570,7 @@ export function createHandler(d: Deps, log: (line: string) => void = () => {}) {
     try {
       const hit = routes.find((x) => x.method === req.method && x.re.test(url.pathname));
       if (!hit) {
-        if (routes.some((x) => x.re.test(url.pathname))) return send(405, problemBody(new Problem('VALIDATION_FAILED', 'method not allowed'), url.pathname, traceId), {}, true);
+        { const allow = [...new Set(routes.filter((x) => x.re.test(url.pathname)).map((x) => x.method))]; if (allow.length) return send(405, { ...problemBody(new Problem('VALIDATION_FAILED', 'method not allowed'), url.pathname, traceId), status: 405 }, { Allow: allow.join(', ') }, true); }
         throw new Problem('NOT_FOUND', 'no such route');
       }
       let claims = { sub: 'anonymous', tid: '00000000-0000-0000-0000-000000000000' };
@@ -500,15 +581,33 @@ export function createHandler(d: Deps, log: (line: string) => void = () => {}) {
       } else if (limited(`ip:${req.socket.remoteAddress}`, d.rateLimitPerMin * 2)) throw new Problem('RATE_LIMITED');
       const body = await readBody(req);
       const m = hit.re.exec(url.pathname)!;
+      // Idempotency-Key (docs/07 section 1.6): same key+body replays the stored response, same key+different body is 409. In-process, 24 h, single instance (G-22).
+      const ik = req.method === 'POST' && hit.auth ? req.headers['idempotency-key'] : undefined;
+      let ikKey = '', ikHash = '';
+      if (typeof ik === 'string' && ik.length >= 8 && ik.length <= 128) {
+        ikKey = `${claims.tid}:${claims.sub}:${url.pathname}:${ik}`;
+        ikHash = createHash('sha256').update(JSON.stringify(body ?? null)).digest('hex');
+        const prev = idem.get(ikKey);
+        if (prev && Date.now() - prev.at < 86_400_000) {
+          if (prev.hash !== ikHash) throw new Problem('DUPLICATE_CLIENT_OP', 'Idempotency-Key was already used with a different request body');
+          send(prev.status, prev.body, { ...(prev.headers ?? {}), 'Idempotent-Replayed': 'true' });
+          return;
+        }
+      }
       const out = await hit.h({ raw: req, url, params: m.slice(1).map((s) => decodeURIComponent(s)), claims, body, ip: req.socket.remoteAddress ?? null, traceId }, d);
+      if (ikKey && out.status < 300) { if (idem.size > 20_000) idem.clear(); idem.set(ikKey, { hash: ikHash, status: out.status, body: out.body, headers: out.headers, at: Date.now() }); }
       send(out.status, out.body, out.headers);
       log(`${req.method} ${url.pathname} ${out.status} ${Date.now() - t0}ms ${traceId}`);
     } catch (e) {
       let p: Problem;
       if (e instanceof Problem) p = e;
       else if (e instanceof ZodError) p = new Problem('VALIDATION_FAILED', 'validation failed');
+      else if (e instanceof URIError) p = new Problem('NOT_FOUND', 'no such route');
+      else if (typeof (e as { code?: unknown })?.code === 'string' && /^(22|23)/.test((e as { code: string }).code)) p = new Problem('VALIDATION_FAILED', 'value rejected by data constraints'); // PF-012: client-caused DB errors are 4xx
+      else if (/^(57P0|08)/.test((e as { code?: string })?.code ?? '') || /terminat|Connection (closed|ended)|ECONNRESET/i.test((e as Error)?.message ?? '')) p = new Problem('DEPENDENCY_UNAVAILABLE', 'database connection lost; retry');
+      else if ((e as { code?: string })?.code === '57014') p = new Problem('DEPENDENCY_UNAVAILABLE', 'request timed out');
       else { p = new Problem('INTERNAL'); log(`ERROR ${req.method} ${url.pathname} ${traceId} ${(e as Error)?.stack ?? e}`); }
-      const extra: Record<string, string> = p.code === 'RATE_LIMITED' ? { 'Retry-After': '10' } : {};
+      const extra: Record<string, string> = p.code === 'RATE_LIMITED' ? { 'Retry-After': '10' } : p.code === 'UNAUTHENTICATED' ? { 'WWW-Authenticate': 'Bearer' } : {};
       send(p.status, problemBody(p, url.pathname, traceId), extra, true);
       if (p.code !== 'INTERNAL') log(`${req.method} ${url.pathname} ${p.status} ${p.code} ${Date.now() - t0}ms ${traceId}`);
     }

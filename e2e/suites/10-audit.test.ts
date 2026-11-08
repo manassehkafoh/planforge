@@ -17,7 +17,7 @@ tc('E2E-AUDIT-COV', ['docs/10 §7 (every applied batch, membership changes, expo
   const p = await newProject(s, 'pm'); const r = await createResource(s, 'pm', { name: 'aud' }); const a = T('a', 480), b = T('b', 480);
   const steps: Array<[string, () => Promise<any>, string[], string]> = [
     ['createProject', async () => (await s.call('pm', 'POST', '/projects', { name: 'aud-proj', startDate: '2026-11-09T08:00:00', calendarId: 'ca000000-0000-4000-8000-000000000001' })), ['pm'], 'project'],
-    ['updateProject', () => s.call('pm', 'PATCH', `/projects/${p.id}`, { name: 'renamed' }), ['pm'], p.id],
+    ['updateProject', () => s.call('pm', 'PATCH', `/projects/${p.id}`, { name: 'renamed' }, { 'If-Match': '*' }), ['pm'], p.id],
     ['applyCommands', () => p.cmd([addTask(a), addTask(b), addLink(L(a.id, b.id))]), ['pm'], p.id],
     ['setMember', () => s.call('pm', 'PUT', `/projects/${p.id}/members/${USERS.viewer.id}`, { role: 'VIEWER' }), ['pm'], p.id],
     ['removeMember', () => s.call('pm', 'DELETE', `/projects/${p.id}/members/${USERS.viewer.id}`), ['pm'], p.id],

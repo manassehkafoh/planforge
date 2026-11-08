@@ -96,6 +96,7 @@ export async function applyBatch(d: Deps, c: PoolClient, a: Access, body: BatchB
   if (pr.status === 'ARCHIVED') throw new Problem('FORBIDDEN', 'project is archived');
   if (pr.plan_version !== body.expectedPlanVersion)
     throw new Problem('VERSION_CONFLICT', `expected plan version ${body.expectedPlanVersion} but the plan is at ${pr.plan_version}`, { currentPlanVersion: pr.plan_version });
+  if (body.commands.length > 1000) throw new Problem('PLAN_TOO_LARGE', 'at most 1000 commands per batch');
   await authorizeCommands(c, a, body.commands);
 
   const entry = await liveEntry(d, c, a.projectId);
@@ -162,3 +163,23 @@ export async function inProject<T>(d: Deps, claims: { sub: string; tid: string }
 }
 
 export const newOpId = (): string => randomUUID();
+
+// ---- risk-run bulkhead (docs/10 T12/T20): simulations run in worker threads; one per tenant, a small global cap
+const riskRunning = new Map<string, number>();
+let riskTotal = 0;
+const RISK_GLOBAL_MAX = 2, RISK_TIMEOUT_MS = 120_000;
+export async function runRisk<T>(tenantId: string, project: unknown, iterations: number, seed: number): Promise<T> {
+  if ((riskRunning.get(tenantId) ?? 0) >= 1 || riskTotal >= RISK_GLOBAL_MAX)
+    throw new Problem('RATE_LIMITED', 'a risk run is already in progress for this tenant (or the server is at capacity); retry shortly');
+  riskRunning.set(tenantId, 1); riskTotal++;
+  const { Worker } = await import('node:worker_threads');
+  try {
+    return await new Promise<T>((resolve, reject) => {
+      const w = new Worker(new URL('./riskworker.ts', import.meta.url), { workerData: { project, iterations, seed } });
+      const timer = setTimeout(() => { void w.terminate(); reject(new Problem('DEPENDENCY_UNAVAILABLE', 'risk run timed out')); }, RISK_TIMEOUT_MS);
+      w.once('message', (m) => { clearTimeout(timer); resolve(m as T); });
+      w.once('error', (e) => { clearTimeout(timer); reject(e); });
+      w.once('exit', (code) => { clearTimeout(timer); if (code !== 0) reject(new Problem('INTERNAL')); });
+    });
+  } finally { riskRunning.delete(tenantId); riskTotal--; }
+}

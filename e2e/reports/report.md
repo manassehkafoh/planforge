@@ -1,6 +1,6 @@
 # PlanForge reference server - e2e test report
 
-- Generated: 2026-11-08T14:15:12.636Z (run started 2026-11-08T14:12:02.943Z)
+- Generated: 2026-11-08T14:30:33.330Z (run started 2026-11-08T14:26:44.240Z)
 - Node v22.23.4; database `planforge_e2e`; server: child process `server/src/main.ts`
 - Re-run: `cd /home/claude/planforge/e2e && npm test`
 
@@ -8,30 +8,30 @@
 
 | Total | Pass | Fail | Skip |
 |---:|---:|---:|---:|
-| 575 | 503 | 72 | 0 |
+| 575 | 552 | 23 | 0 |
 
-Engine unit tests (author's `cd engine && npm test`, recorded once): 36 pass / 0 fail of 36 (exit 0).
+Engine unit tests (author's `cd engine && npm test`, recorded once): 37 pass / 0 fail of 37 (exit 0).
 
 ## Suites
 
 | Suite | Name | Pass | Fail | Skip | Time (s) |
 |---|---|---:|---:|---:|---:|
-| CONTRACT | API contract and error hygiene | 29 | 26 | 0 | 1.6 |
-| AUTH | Authentication | 18 | 2 | 0 | 12.0 |
-| AUTHZ | Authorisation (RBAC matrix) | 207 | 3 | 0 | 4.8 |
-| TENANT | Multi-tenancy and RLS | 14 | 5 | 0 | 4.4 |
-| CMD | Command path | 122 | 10 | 0 | 16.2 |
-| SCHED | Scheduling correctness | 32 | 4 | 0 | 4.6 |
-| RES | Resources, levelling and analytics | 30 | 8 | 0 | 14.7 |
-| INCR | Incremental equals full, restart | 5 | 1 | 0 | 10.5 |
-| RT | Realtime (WebSocket) | 15 | 5 | 0 | 6.3 |
-| AUDIT | Audit trail | 15 | 1 | 0 | 4.7 |
-| PERF | Non-functional smoke | 8 | 1 | 0 | 58.2 |
-| ROBUST | Robustness | 8 | 6 | 0 | 19.4 |
+| CONTRACT | API contract and error hygiene | 42 | 13 | 0 | 1.7 |
+| AUTH | Authentication | 19 | 1 | 0 | 11.9 |
+| AUTHZ | Authorisation (RBAC matrix) | 208 | 2 | 0 | 4.0 |
+| TENANT | Multi-tenancy and RLS | 18 | 1 | 0 | 3.1 |
+| CMD | Command path | 132 | 0 | 0 | 14.1 |
+| SCHED | Scheduling correctness | 36 | 0 | 0 | 5.5 |
+| RES | Resources, levelling and analytics | 37 | 1 | 0 | 6.4 |
+| INCR | Incremental equals full, restart | 6 | 0 | 0 | 12.0 |
+| RT | Realtime (WebSocket) | 17 | 3 | 0 | 6.3 |
+| AUDIT | Audit trail | 15 | 1 | 0 | 4.5 |
+| PERF | Non-functional smoke | 9 | 0 | 0 | 138.4 |
+| ROBUST | Robustness | 13 | 1 | 0 | 14.4 |
 
 ## Defects
 
-Reproduced: 35 (S1: 1, S2: 19, S3: 14, S4: 1). Registered but not reproduced this run: PF-002.
+Reproduced: 11 (S1: 0, S2: 5, S3: 6, S4: 0). Registered but not reproduced this run: PF-001, PF-002, PF-003, PF-004, PF-006, PF-009, PF-012, PF-013, PF-014, PF-015, PF-017, PF-020, PF-021, PF-022, PF-024, PF-026, PF-027, PF-029, PF-030, PF-032, PF-033, PF-034, PF-036, PF-037, PF-038.
 
 | ID | Sev | Title |
 |---|---|---|
@@ -81,23 +81,23 @@ Full detail: `defects.md`.
 - `E2E-CONTRACT-ERR-001`: fuzz corpus: 352 requests executed
 - `E2E-AUTH-011`: unknown subject -> HTTP 403 FORBIDDEN; unknown tenant -> HTTP 403 FORBIDDEN
 - `E2E-AUTH-RL-001`: rate limit 20/min: first 429 at request #21; Retry-After=10s
-- `E2E-AUTHZ-OBS-001`: ORG_ADMIN: PATCH:200 scenario:400 preview:400 ticket:201 resource:201 archive:204
-- `E2E-AUTHZ-OBS-001`: PORTFOLIO_MANAGER: PATCH:403 scenario:400 preview:400 ticket:201 resource:403 archive:403
-- `E2E-AUTHZ-OBS-001`: PROJECT_MANAGER: PATCH:200 scenario:400 preview:400 ticket:201 resource:201 archive:204
-- `E2E-AUTHZ-OBS-001`: SCHEDULER: PATCH:200 scenario:400 preview:400 ticket:201 resource:201 archive:403
-- `E2E-AUTHZ-OBS-001`: TEAM_MEMBER: PATCH:403 scenario:400 preview:400 ticket:201 resource:403 archive:403
-- `E2E-AUTHZ-OBS-001`: VIEWER: PATCH:403 scenario:400 preview:400 ticket:201 resource:403 archive:403
-- `E2E-AUTHZ-OBS-001`: (non-member): PATCH:404 scenario:400 preview:400 ticket:404 resource:403 archive:404
+- `E2E-AUTHZ-OBS-001`: ORG_ADMIN: PATCH:428 scenario:400 preview:200 ticket:201 resource:201 archive:204
+- `E2E-AUTHZ-OBS-001`: PORTFOLIO_MANAGER: PATCH:428 scenario:400 preview:200 ticket:201 resource:403 archive:403
+- `E2E-AUTHZ-OBS-001`: PROJECT_MANAGER: PATCH:428 scenario:400 preview:200 ticket:201 resource:201 archive:204
+- `E2E-AUTHZ-OBS-001`: SCHEDULER: PATCH:428 scenario:400 preview:200 ticket:201 resource:201 archive:403
+- `E2E-AUTHZ-OBS-001`: TEAM_MEMBER: PATCH:428 scenario:400 preview:200 ticket:201 resource:403 archive:403
+- `E2E-AUTHZ-OBS-001`: VIEWER: PATCH:428 scenario:400 preview:200 ticket:201 resource:403 archive:403
+- `E2E-AUTHZ-OBS-001`: (non-member): PATCH:428 scenario:400 preview:404 ticket:404 resource:403 archive:404
 - `E2E-TENANT-SQL-000`: tables with tenant_id: 28
 - `E2E-TENANT-SQL-009`: pf_app sees 2 tenant rows while acting as tenant A (tenant table is outside RLS)
 - `E2E-CMD-VER-002`: stale-but-commuting batch: 409 VERSION_CONFLICT (docs/07 section 4 describes rebase; not implemented)
 - `E2E-CMD-ARCH-001`: command on archived project -> HTTP 403 FORBIDDEN
-- `E2E-SCHED-PREVIEW-BATCH`: preview with CommandBatch body -> 400
-- `E2E-RT-TICKET-001`: ticket TTL observed: 30 s (spec: 60 s)
+- `E2E-SCHED-PREVIEW-BATCH`: preview with CommandBatch body -> 200
+- `E2E-RT-TICKET-001`: ticket TTL observed: 60 s (spec: 60 s)
 - `E2E-RT-REVOKE-ROLE`: socket after role change SCHEDULER->VIEWER: closed 4403
 - `E2E-AUDIT-TAMPER-TRAILINGDELETE`: trailing delete: verify ok=true. docs/10 T13 relies on an anchored head hash (WORM storage) that the reference server does not implement; the chain alone cannot detect truncation.
 - `E2E-AUDIT-AUTHN`: events after one authenticated read and one invalid-token request: none
-- `E2E-PERF-CONC`: 200 concurrent reads: p50 1690 ms, p95 2830 ms (no read-latency target exists in the specification)
+- `E2E-PERF-CONC`: 200 concurrent reads: p50 1653 ms, p95 3049 ms (no read-latency target exists in the specification)
 - `E2E-ROBUST-PGKILL-IDLE`: backends terminated: 20
 
 ## Test-code corrections
@@ -134,24 +134,24 @@ Changes made to the test code (never the product) after a first run to correct m
 | FR-PL-01 | PASS |
 | FR-PL-02 | PASS |
 | FR-PL-03 | PASS |
-| FR-PL-04 | FAIL |
+| FR-PL-04 | PASS |
 | FR-PL-05 | PASS |
 | FR-PL-06 | PASS |
 | FR-PL-07 | PASS |
 | FR-PL-08 | PASS |
-| FR-PL-09 | FAIL |
+| FR-PL-09 | PASS |
 | FR-PL-10 | NOT COVERED - Custom-field formulas are not exposed by the reference server API |
 | FR-PL-11 | NOT COVERED - Attachments/labels not in the reference API (notes/custom only) |
 | FR-RS-01 | PASS |
-| FR-RS-02 | FAIL |
+| FR-RS-02 | PASS |
 | FR-RS-03 | PASS - Effective-dated rate tables cannot be set through the API (see PF-016); rates were provisioned via SQL only |
-| FR-RS-04 | FAIL |
+| FR-RS-04 | PASS |
 | FR-RS-05 | PASS |
-| FR-RS-06 | FAIL |
-| FR-CT-01 | FAIL |
+| FR-RS-06 | PASS |
+| FR-CT-01 | PASS |
 | FR-CT-02 | FAIL |
 | FR-CT-03 | PASS |
-| FR-CT-04 | FAIL |
+| FR-CT-04 | PASS |
 | FR-CT-05 | NOT COVERED - Portfolio roll-up not exposed |
 | FR-CT-06 | NOT COVERED - AI features not in scope of reference server |
 | FR-CO-01 | FAIL |
@@ -167,7 +167,7 @@ Changes made to the test code (never the product) after a first run to correct m
 | FR-GV-03 | NOT COVERED - Residency/retention/erase not implemented |
 | NFR-PERF-01 | PASS - Full-CPM 50k-task bench not run through the API; e2e covers a 2,000-task plan only |
 | NFR-PERF-02 | PASS |
-| NFR-PERF-03 | FAIL - Measured on 2,000 tasks (not 50k) |
+| NFR-PERF-03 | PASS - Measured on 2,000 tasks (not 50k) |
 | NFR-PERF-04 | PASS - UI metric (no UI in scope) |
 | NFR-AVAIL-01 | NOT COVERED - Not measurable in a short e2e run |
 | NFR-DUR-01 | NOT COVERED - DR/PITR is an operations drill |
@@ -176,7 +176,7 @@ Changes made to the test code (never the product) after a first run to correct m
 | NFR-SEC-03 | NOT COVERED - Sandboxed import not built |
 | NFR-ACC-01 | NOT COVERED - UI metric (no UI in scope) |
 | NFR-SCAL-01 | NOT COVERED - Load test at 5k concurrent editors out of scope |
-| NFR-OBS-01 | FAIL |
+| NFR-OBS-01 | PASS |
 | NFR-MAINT-01 | NOT COVERED - Engine coverage/mutation score are CI metrics |
 | NFR-COMP-01 | NOT COVERED - Golden corpus does not exist yet |
 

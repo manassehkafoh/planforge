@@ -135,7 +135,7 @@ export class Network {
         totalFloatMin: Math.min(...ks.map((k) => k.totalFloatMin)),
         freeFloatMin: Math.min(...ks.map((k) => k.freeFloatMin)),
         critical: ks.some((k) => k.critical),
-        nearCritical: ks.some((k) => k.nearCritical),
+        nearCritical: !ks.some((k) => k.critical) && ks.some((k) => k.nearCritical),
         state: states.every((s) => s === 'DONE') ? 'DONE' : states.every((s) => s === 'OPEN') ? 'OPEN' : 'PROGRESS',
       };
       return out[id];
@@ -537,17 +537,17 @@ export class Network {
     }
 
     if (c?.type === 'MSO') {
-      if (start > c.date!) conflicts.push({ taskId: id, code: 'MSO_VIOLATED', detail: 'predecessors push start past the fixed date' });
+      if (start > snapStart(cal, c.date!, d)) conflicts.push({ taskId: id, code: 'MSO_VIOLATED', detail: 'predecessors push start past the fixed date' });
       start = snapStart(cal, c.date!, d);
     }
     let fin = d > 0 ? cal.addWork(start, d) : start;
     if (c?.type === 'MFO') {
-      if (fin > c.date!) conflicts.push({ taskId: id, code: 'MFO_VIOLATED', detail: 'predecessors push finish past the fixed date' });
+      if (fin > cal.prevWorkEnd(c.date!)) conflicts.push({ taskId: id, code: 'MFO_VIOLATED', detail: 'predecessors push finish past the fixed date' });
       fin = cal.prevWorkEnd(c.date!);
       start = d > 0 ? cal.subWork(fin, d) : fin;
     }
-    if (c?.type === 'SNLT' && start > c.date!) conflicts.push({ taskId: id, code: 'SNLT_VIOLATED', detail: 'start later than limit' });
-    if (c?.type === 'FNLT' && fin > c.date!) conflicts.push({ taskId: id, code: 'FNLT_VIOLATED', detail: 'finish later than limit' });
+    if (c?.type === 'SNLT' && start > snapStart(cal, c.date!, d)) conflicts.push({ taskId: id, code: 'SNLT_VIOLATED', detail: 'start later than limit' });
+    if (c?.type === 'FNLT' && fin > cal.prevWorkEnd(c.date!)) conflicts.push({ taskId: id, code: 'FNLT_VIOLATED', detail: 'finish later than limit' });
     return { es: start, ef: fin, driver, conflicts };
   }
 

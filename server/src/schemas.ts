@@ -2,7 +2,8 @@ import { z } from 'zod';
 
 const uuid = z.string().uuid();
 /** naive local date-time: 2026-11-09T08:00[:00] (no zone designator by contract) */
-export const localDt = z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/, 'expected naive local date-time, e.g. 2026-11-09T08:00:00');
+export const localDt = z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/, 'expected naive local date-time, e.g. 2026-11-09T08:00:00')
+  .refine((v) => { const ms = Date.parse(`${v}Z`); return !Number.isNaN(ms) && new Date(ms).toISOString().slice(0, 10) === v.slice(0, 10); }, 'not a real calendar date/time');
 const mins = z.number().int().min(0).max(10_000_000);
 const constraint = z.object({ type: z.enum(['ASAP', 'ALAP', 'MSO', 'MFO', 'SNET', 'SNLT', 'FNET', 'FNLT']), date: localDt.optional() }).strict();
 
@@ -51,27 +52,29 @@ export type Cmd = z.infer<typeof Command>;
 export const CommandBatch = z.object({
   clientOpId: uuid,
   expectedPlanVersion: z.number().int().min(0),
-  commands: z.array(Command).min(1).max(1000),
+  commands: z.array(Command).min(1),
 }).strict();
 
 export const ProjectCreate = z.object({
   name: z.string().min(1).max(200), startDate: localDt, calendarId: uuid, deadline: localDt.optional(),
   currency: z.string().regex(/^[A-Z]{3}$/).optional(), portfolioId: uuid.optional(),
 }).strict();
-export const ProjectPatch = z.object({ name: z.string().min(1).max(200).optional(), status: z.enum(['DRAFT', 'ACTIVE', 'ON_HOLD', 'CLOSED']).optional() }).strict();
+export const ProjectPatch = z.object({ name: z.string().min(1).max(200).optional(), deadline: localDt.nullable().optional(), status: z.enum(['DRAFT', 'ACTIVE', 'ON_HOLD', 'CLOSED']).optional() }).strict();
 
 export const ResourceCreate = z.object({
-  name: z.string().min(1).max(200), kind: z.enum(['WORK', 'MATERIAL', 'COST']).optional(),
-  maxUnits: z.number().positive().max(10_000).optional(), calendarId: uuid.optional(), userId: uuid.optional(),
+  name: z.string().min(1).max(200).refine((v) => !v.includes('\u0000'), 'NUL not allowed'), kind: z.enum(['WORK', 'MATERIAL', 'COST']).optional(),
+  maxUnits: z.number().positive().max(10_000).optional(), calendarId: uuid.optional(), userId: uuid.optional(), stdRatePerHour: z.number().min(0).max(1e9).optional(), perUseCost: z.number().min(0).max(1e9).optional(),
   rates: z.array(z.object({ effectiveFrom: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), stdPerHour: z.number().min(0).max(1e9), perUse: z.number().min(0).max(1e9).optional() }).strict()).max(50).optional(),
 }).strict();
 
+export const PreviewRequest = z.object({ clientOpId: uuid.optional(), expectedPlanVersion: z.number().int().min(0).optional(), commands: z.array(Command).optional() }).strict();
+export const MAX_COMMANDS = 1000;
 export const LevelRequest = z.object({
   apply: z.boolean().optional(), withinFloatOnly: z.boolean().optional(), order: z.enum(['PRIORITY_FLOAT', 'START', 'ID']).optional(),
   clientOpId: uuid.optional(), expectedPlanVersion: z.number().int().min(0).optional(),
 }).strict();
 export const RiskRequest = z.object({ iterations: z.number().int().min(100).max(20_000).optional(), seed: z.number().int().min(0).max(2 ** 31).optional() }).strict();
 export const BaselineCreate = z.object({ number: z.number().int().min(0).max(10).optional(), label: z.string().max(120).optional() }).strict();
-export const ScenarioCreate = z.object({ name: z.string().min(1).max(120), commands: z.array(Command).min(1).max(1000) }).strict();
+export const ScenarioCreate = z.object({ name: z.string().min(1).max(120), commands: z.array(Command).min(1) }).strict();
 export const TicketRequest = z.object({ projectId: uuid }).strict();
 export const MemberRole = z.object({ role: z.enum(['ORG_ADMIN', 'PORTFOLIO_MANAGER', 'PROJECT_MANAGER', 'SCHEDULER', 'TEAM_MEMBER', 'VIEWER']) }).strict();

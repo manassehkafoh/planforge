@@ -70,6 +70,7 @@ export class Hub {
         w.uid = info.userId; w.alive = true; w.last = Date.now();
         this.perUser.set(info.userId, n + 1);
         (this.subs.get(info.projectId) ?? this.subs.set(info.projectId, new Set()).get(info.projectId)!).add(ws);
+        ws.on('error', () => ws.terminate());                               // PF-001: oversize/invalid frame closes this socket only
         ws.on('pong', () => { w.alive = true; });
         ws.on('message', () => { w.last = Date.now(); });                  // clients send nothing meaningful; any frame counts as activity
         ws.on('close', () => {

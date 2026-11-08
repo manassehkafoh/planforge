@@ -23,6 +23,8 @@ export async function tx<T>(pool: pg.Pool, tenantId: string, fn: (c: pg.PoolClie
   if (!isUuid(tenantId)) throw new Problem('UNAUTHENTICATED');
   let c: pg.PoolClient;
   try { c = await pool.connect(); } catch { throw new Problem('DEPENDENCY_UNAVAILABLE', 'database unavailable'); }
+  const onErr = () => { /* PF-038: a dead backend must fail this request, not the process */ };
+  c.on('error', onErr);
   try {
     await c.query('BEGIN');
     await c.query("SELECT set_config('pf.tenant_id', $1, true)", [tenantId]);
@@ -33,5 +35,5 @@ export async function tx<T>(pool: pg.Pool, tenantId: string, fn: (c: pg.PoolClie
   } catch (e) {
     try { await c.query('ROLLBACK'); } catch { /* connection already gone */ }
     throw e;
-  } finally { c.release(); }
+  } finally { c.off('error', onErr); c.release(); }
 }

@@ -136,6 +136,7 @@ export class PlanCache {
   get(id: string, version: number): CacheEntry | undefined { const e = this.m.get(id); return e && e.version === version ? e : undefined; }
   set(id: string, e: CacheEntry) { this.m.delete(id); this.m.set(id, e); if (this.m.size > this.max) this.m.delete(this.m.keys().next().value as string); }
   evict(id: string) { this.m.delete(id); }
+  clear() { this.m.clear(); }
 }
 
 export function snapshotOf(res: ScheduleResult): Map<string, string> {

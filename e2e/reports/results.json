@@ -1,62 +1,62 @@
 {
-  "generatedAt": "2026-11-08T14:15:12.636Z",
-  "startedAt": "2026-11-08T14:12:02.943Z",
+  "generatedAt": "2026-11-08T14:30:33.330Z",
+  "startedAt": "2026-11-08T14:26:44.240Z",
   "node": "v22.23.4",
   "totals": {
     "total": 575,
-    "pass": 503,
-    "fail": 72,
+    "pass": 552,
+    "fail": 23,
     "skip": 0
   },
-  "durationMsSum": 157407,
+  "durationMsSum": 222214,
   "engineUnitTests": {
     "exit": 0,
-    "tests": 36,
-    "pass": 36,
+    "tests": 37,
+    "pass": 37,
     "fail": 0,
     "skipped": 0
   },
   "defectsReproduced": [
-    "PF-001",
-    "PF-003",
-    "PF-004",
     "PF-005",
-    "PF-006",
     "PF-007",
     "PF-008",
-    "PF-009",
     "PF-010",
     "PF-011",
+    "PF-016",
+    "PF-018",
+    "PF-019",
+    "PF-023",
+    "PF-025",
+    "PF-028",
+    "PF-031",
+    "PF-035"
+  ],
+  "defectsNotReproduced": [
+    "PF-001",
+    "PF-002",
+    "PF-003",
+    "PF-004",
+    "PF-006",
+    "PF-009",
     "PF-012",
     "PF-013",
     "PF-014",
     "PF-015",
-    "PF-016",
     "PF-017",
-    "PF-018",
-    "PF-019",
     "PF-020",
     "PF-021",
     "PF-022",
-    "PF-023",
     "PF-024",
-    "PF-025",
     "PF-026",
     "PF-027",
-    "PF-028",
     "PF-029",
     "PF-030",
-    "PF-031",
     "PF-032",
     "PF-033",
     "PF-034",
-    "PF-035",
     "PF-036",
     "PF-037",
     "PF-038"
-  ],
-  "defectsNotReproduced": [
-    "PF-002"
   ],
   "untriagedFailures": [],
   "suites": [
@@ -64,82 +64,82 @@
       "id": "CONTRACT",
       "name": "API contract and error hygiene",
       "total": 55,
-      "pass": 29,
-      "fail": 26,
+      "pass": 42,
+      "fail": 13,
       "skip": 0,
-      "ms": 1595
+      "ms": 1695
     },
     {
       "id": "AUTH",
       "name": "Authentication",
       "total": 20,
-      "pass": 18,
-      "fail": 2,
+      "pass": 19,
+      "fail": 1,
       "skip": 0,
-      "ms": 12032
+      "ms": 11861
     },
     {
       "id": "AUTHZ",
       "name": "Authorisation (RBAC matrix)",
       "total": 210,
-      "pass": 207,
-      "fail": 3,
+      "pass": 208,
+      "fail": 2,
       "skip": 0,
-      "ms": 4801
+      "ms": 3957
     },
     {
       "id": "TENANT",
       "name": "Multi-tenancy and RLS",
       "total": 19,
-      "pass": 14,
-      "fail": 5,
+      "pass": 18,
+      "fail": 1,
       "skip": 0,
-      "ms": 4356
+      "ms": 3088
     },
     {
       "id": "CMD",
       "name": "Command path",
       "total": 132,
-      "pass": 122,
-      "fail": 10,
+      "pass": 132,
+      "fail": 0,
       "skip": 0,
-      "ms": 16205
+      "ms": 14075
     },
     {
       "id": "SCHED",
       "name": "Scheduling correctness",
       "total": 36,
-      "pass": 32,
-      "fail": 4,
+      "pass": 36,
+      "fail": 0,
       "skip": 0,
-      "ms": 4575
+      "ms": 5522
     },
     {
       "id": "RES",
       "name": "Resources, levelling and analytics",
       "total": 38,
-      "pass": 30,
-      "fail": 8,
+      "pass": 37,
+      "fail": 1,
       "skip": 0,
-      "ms": 14738
+      "ms": 6403
     },
     {
       "id": "INCR",
       "name": "Incremental equals full, restart",
       "total": 6,
-      "pass": 5,
-      "fail": 1,
+      "pass": 6,
+      "fail": 0,
       "skip": 0,
-      "ms": 10480
+      "ms": 12030
     },
     {
       "id": "RT",
       "name": "Realtime (WebSocket)",
       "total": 20,
-      "pass": 15,
-      "fail": 5,
+      "pass": 17,
+      "fail": 3,
       "skip": 0,
-      "ms": 6300
+      "ms": 6320
     },
     {
       "id": "AUDIT",
@@ -148,25 +148,25 @@
       "pass": 15,
       "fail": 1,
       "skip": 0,
-      "ms": 4713
+      "ms": 4463
     },
     {
       "id": "PERF",
       "name": "Non-functional smoke",
       "total": 9,
-      "pass": 8,
-      "fail": 1,
+      "pass": 9,
+      "fail": 0,
       "skip": 0,
-      "ms": 58212
+      "ms": 138395
     },
     {
       "id": "ROBUST",
       "name": "Robustness",
       "total": 14,
-      "pass": 8,
-      "fail": 6,
+      "pass": 13,
+      "fail": 1,
       "skip": 0,
-      "ms": 19399
+      "ms": 14405
     }
   ],
   "tests": [
@@ -178,7 +178,7 @@
         "OAS inventory"
       ],
       "status": "pass",
-      "ms": 365,
+      "ms": 317,
       "defects": []
     },
     {
@@ -190,7 +190,7 @@
         "docs/07 §1.5"
       ],
       "status": "pass",
-      "ms": 17,
+      "ms": 22,
       "defects": []
     },
     {
@@ -201,7 +201,7 @@
         "OAS createProject"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 10,
       "defects": []
     },
     {
@@ -212,7 +212,7 @@
         "OAS getProject"
       ],
       "status": "pass",
-      "ms": 8,
+      "ms": 6,
       "defects": []
     },
     {
@@ -224,7 +224,7 @@
         "docs/07 §1.7"
       ],
       "status": "pass",
-      "ms": 18,
+      "ms": 15,
       "defects": []
     },
     {
@@ -235,11 +235,11 @@
         "OAS ProjectPatch.deadline (nullable)"
       ],
       "status": "fail",
-      "ms": 11,
+      "ms": 16,
       "defects": [
         "PF-023"
       ],
-      "message": " expected HTTP 200, got 400\n  request:  PATCH /projects/10a585fe-76d2-4fea-bd22-ff2f3d064997 {\"deadline\":\"2027-01-29T17:00:00\"}\n  response: HTTP 400 {\"type\":\"https://docs.planforge.example/errors/VALIDATION_FAILED\",\"title\":\"Validation failed\",\"status\":400,\"code\":\"VALIDATION_FAILED\",\"detail\":\"request body failed validation\",\"instance\":\"/projects/10a585fe-76d2-4fea-bd22-ff2f3d064997\",\"traceId\":\"c06d5c20-8264-40fe-be13-2a5bf146ec11\",\"errors\":[{\"path\":\"/\",\"message\":\"Unrecognized key(s) in object: 'deadline'\"}]}"
+      "message": " expected HTTP 200, got 409\n  request:  PATCH /projects/072f9087-5173-467c-9f92-c62c3afe338e {\"deadline\":null}\n  response: HTTP 409 {\"type\":\"https://docs.planforge.example/errors/VERSION_CONFLICT\",\"title\":\"Plan version conflict\",\"status\":409,\"code\":\"VERSION_CONFLICT\",\"detail\":\"plan changed since the ETag was issued\",\"instance\":\"/projects/072f9087-5173-467c-9f92-c62c3afe338e\",\"traceId\":\"b134778f-cfbd-4099-950e-c53001ad0498\",\"currentPlanVersion\":1}"
     },
     {
       "id": "E2E-CONTRACT-OP-archiveProject",
@@ -249,7 +249,7 @@
         "OAS archiveProject"
       ],
       "status": "pass",
-      "ms": 16,
+      "ms": 12,
       "defects": []
     },
     {
@@ -261,7 +261,7 @@
         "docs/07 §1.7"
       ],
       "status": "pass",
-      "ms": 27,
+      "ms": 15,
       "defects": []
     },
     {
@@ -272,11 +272,11 @@
         "OAS getPlan (application/x-ndjson)"
       ],
       "status": "fail",
-      "ms": 9,
+      "ms": 8,
       "defects": [
         "PF-028"
       ],
-      "message": "content-type must be application/x-ndjson\n  request:  GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/plan\n  response: HTTP 200 {\"projectId\":\"f77a538f-e743-4e82-b669-c83544d4f567\",\"planVersion\":1,\"tasks\":[{\"id\":\"f6e2efe1-ede8-402f-96be-6ad92530e8cc\",\"parentId\":null,\"wbs\":\"1\",\"sortKey\":\"i\",\"name\":\"A\",\"durationMin\":480,\"mode\":\"AUTO\",\"kind\":\"FIXED_UNITS\",\"effortDriven\":false,\"constraint\":{\"type\":\"ASAP\"},\"calendarId\":null,\"percentComplete\":0,\"priority\":500,\"levelingDelayMin\":0,\"workMin\":null,\"custom\":{},\"schedule\":{\"es\":\"2026-11-09T08:00:00\",\"ef\":\"2026-11-09T17:00:00\",\"ls\":\"2026-11-09T08:00:00\",\"lf\":\"2026-11-09T17:00:00\",\"totalFloatMin\":0,\"freeFloatMin\":0,\"critical\":true,\"nearCritical\":false,\"isSummary\":false,\"state\":\"OPEN\",\"driver\":{\"kind\":\"PROJECT_START\"}},\"fixedCost\":0},{\"id\":\"4a6c5605-e172-42bc-98b6-279cdd7d2556\",\"pa...(2094 chars)"
+      "message": "content-type must be application/x-ndjson\n  request:  GET /projects/4c9a69a5-4851-4ebb-a369-f637e2559614/plan\n  response: HTTP 200 {\"projectId\":\"4c9a69a5-4851-4ebb-a369-f637e2559614\",\"planVersion\":1,\"tasks\":[{\"id\":\"0e784a03-1e5c-4406-9349-94486ae8599f\",\"parentId\":null,\"wbs\":\"1\",\"sortKey\":\"i\",\"name\":\"A\",\"durationMin\":480,\"mode\":\"AUTO\",\"kind\":\"FIXED_UNITS\",\"effortDriven\":false,\"constraint\":{\"type\":\"ASAP\"},\"calendarId\":null,\"percentComplete\":0,\"priority\":500,\"levelingDelayMin\":0,\"workMin\":null,\"custom\":{},\"schedule\":{\"es\":\"2026-11-09T08:00:00\",\"ef\":\"2026-11-09T17:00:00\",\"ls\":\"2026-11-09T08:00:00\",\"lf\":\"2026-11-09T17:00:00\",\"totalFloatMin\":0,\"freeFloatMin\":0,\"critical\":true,\"nearCritical\":false,\"isSummary\":false,\"state\":\"OPEN\",\"driver\":{\"kind\":\"PROJECT_START\"}},\"fixedCost\":0},{\"id\":\"67738ed6-b699-41b9-86d8-8f6c5c22683f\",\"pa...(2094 chars)"
     },
     {
       "id": "E2E-CONTRACT-OP-getPlan-include",
@@ -286,7 +286,7 @@
         "OAS getPlan include"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 3,
       "defects": []
     },
     {
@@ -297,7 +297,7 @@
         "OAS applyCommands"
       ],
       "status": "pass",
-      "ms": 28,
+      "ms": 14,
       "defects": []
     },
     {
@@ -308,7 +308,7 @@
         "OAS listTasks"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 6,
       "defects": []
     },
     {
@@ -318,12 +318,11 @@
       "refs": [
         "OAS listTasks q (name contains)"
       ],
-      "status": "fail",
-      "ms": 21,
+      "status": "pass",
+      "ms": 27,
       "defects": [
         "PF-025"
-      ],
-      "message": "case-insensitive contains\n+ actual - expected\n\n  [\n    'Foundation',\n    'Roof FOUNDATION trim',\n+   'Walls'\n  ]\n"
+      ]
     },
     {
       "id": "E2E-CONTRACT-FILTER-critical",
@@ -333,11 +332,11 @@
         "OAS listTasks critical"
       ],
       "status": "fail",
-      "ms": 31,
+      "ms": 24,
       "defects": [
         "PF-025"
       ],
-      "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   '77b6d163-c1dd-438a-853a-ee22e8844d3d',\n    '9c073e5f-4192-42c0-9878-e16856e23413'\n  ]\n"
+      "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   'ac016f0a-8833-49d1-9e2e-85eef207e68d',\n    'd63d40dd-5a2d-48cd-9896-66d9f58b6ae7'\n  ]\n"
     },
     {
       "id": "E2E-CONTRACT-FILTER-parent",
@@ -347,7 +346,7 @@
         "OAS listTasks parentId"
       ],
       "status": "pass",
-      "ms": 22,
+      "ms": 23,
       "defects": []
     },
     {
@@ -357,12 +356,11 @@
       "refs": [
         "OAS listTasks finishBefore"
       ],
-      "status": "fail",
-      "ms": 21,
+      "status": "pass",
+      "ms": 16,
       "defects": [
         "PF-025"
-      ],
-      "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    '033ae494-1c59-4cf9-85d4-b1ae9e03a7cf',\n+   '7a3fafc4-9602-4b6a-9598-5cb1c968f7a7'\n  ]\n"
+      ]
     },
     {
       "id": "E2E-CONTRACT-OP-getTask",
@@ -372,7 +370,7 @@
         "OAS getTask"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 8,
       "defects": []
     },
     {
@@ -382,12 +380,11 @@
       "refs": [
         "OAS previewSchedule (requestBody CommandBatch)"
       ],
-      "status": "fail",
-      "ms": 4,
+      "status": "pass",
+      "ms": 8,
       "defects": [
         "PF-017"
-      ],
-      "message": " expected HTTP 200, got 400\n  request:  POST /projects/f77a538f-e743-4e82-b669-c83544d4f567/schedule {\"clientOpId\":\"bd4543a2-f649-4c56-94f2-6fc6d78d4f42\",\"expectedPlanVersion\":1,\"commands\":[{\"op\":\"updateTask\",\"id\":\"f6e2efe1-ede8-402f-96be-6ad92530e8cc\",\"patch\":{\"durationMin\":960}}]}\n  response: HTTP 400 {\"type\":\"https://docs.planforge.example/errors/VALIDATION_FAILED\",\"title\":\"Validation failed\",\"status\":400,\"code\":\"VALIDATION_FAILED\",\"detail\":\"request body failed validation\",\"instance\":\"/projects/f77a538f-e743-4e82-b669-c83544d4f567/schedule\",\"traceId\":\"b5becaf9-a1d9-4547-96c0-1446b9c6fe15\",\"errors\":[{\"path\":\"/\",\"message\":\"Unrecognized key(s) in object: 'clientOpId', 'expectedPlanVersion'\"}]}"
+      ]
     },
     {
       "id": "E2E-CONTRACT-OP-listScenarios",
@@ -397,7 +394,7 @@
         "OAS listScenarios"
       ],
       "status": "fail",
-      "ms": 21,
+      "ms": 28,
       "defects": [
         "PF-018"
       ],
@@ -411,11 +408,11 @@
         "OAS createScenario"
       ],
       "status": "fail",
-      "ms": 12,
+      "ms": 16,
       "defects": [
         "PF-018"
       ],
-      "message": "POST /projects/{projectId}/scenarios -> 201 violates OpenAPI schema:\n  /result must have required property 'tasks' {\"missingProperty\":\"tasks\"}\n  body: {\"id\":\"574348a6-d8d0-44fd-b9b8-45c86bb6796c\",\"name\":\"what-if\",\"basePlanVersion\":1,\"result\":{\"start\":\"2026-11-09T08:00:00\",\"finish\":\"2026-11-12T17:00:00\",\"criticalPath\":[\"f6e2efe1-ede8-402f-96be-6ad92530e8cc\",\"4a6c5605-e172-42bc-98b6-279cdd7d2556\"],\"conflicts\":[]}}\n\n1 !== 0\n"
+      "message": "POST /projects/{projectId}/scenarios -> 201 violates OpenAPI schema:\n  /result must have required property 'tasks' {\"missingProperty\":\"tasks\"}\n  body: {\"id\":\"c1ed3b1d-4b74-4d7b-a884-9d510553f14a\",\"name\":\"what-if\",\"basePlanVersion\":1,\"result\":{\"start\":\"2026-11-09T08:00:00\",\"finish\":\"2026-11-12T17:00:00\",\"criticalPath\":[\"0e784a03-1e5c-4406-9349-94486ae8599f\",\"67738ed6-b699-41b9-86d8-8f6c5c22683f\"],\"conflicts\":[]}}\n\n1 !== 0\n"
     },
     {
       "id": "E2E-CONTRACT-OP-listCalendars",
@@ -439,11 +436,11 @@
         "OAS listResources"
       ],
       "status": "fail",
-      "ms": 7,
+      "ms": 12,
       "defects": [
         "PF-016"
       ],
-      "message": "GET /resources -> 200 violates OpenAPI schema:\n  /items/0/calendarId must be string {\"type\":\"string\"}\n  body: {\"items\":[{\"id\":\"eeb9a8e5-4c8b-413c-95eb-d5d9f480ce61\",\"name\":\"Contract res\",\"kind\":\"WORK\",\"maxUnits\":1,\"calendarId\":null,\"isActive\":true,\"rates\":[]}]}\n\n1 !== 0\n"
+      "message": "GET /resources -> 200 violates OpenAPI schema:\n  /items/0/calendarId must be string {\"type\":\"string\"}\n  body: {\"items\":[{\"id\":\"fcc391a7-e961-4c75-89ed-67d4ede670f1\",\"name\":\"Contract res\",\"kind\":\"WORK\",\"maxUnits\":1,\"calendarId\":null,\"isActive\":true,\"rates\":[]}]}\n\n1 !== 0\n"
     },
     {
       "id": "E2E-CONTRACT-OP-createResource",
@@ -452,12 +449,11 @@
       "refs": [
         "OAS createResource (ResourceCreate)"
       ],
-      "status": "fail",
-      "ms": 2,
+      "status": "pass",
+      "ms": 9,
       "defects": [
         "PF-016"
-      ],
-      "message": " expected HTTP 201, got 400\n  request:  POST /resources {\"name\":\"Full\",\"kind\":\"WORK\",\"maxUnits\":2,\"calendarId\":\"ca000000-0000-4000-8000-000000000001\",\"stdRatePerHour\":85.5}\n  response: HTTP 400 {\"type\":\"https://docs.planforge.example/errors/VALIDATION_FAILED\",\"title\":\"Validation failed\",\"status\":400,\"code\":\"VALIDATION_FAILED\",\"detail\":\"request body failed validation\",\"instance\":\"/resources\",\"traceId\":\"168dbe5f-f0ad-4af4-a32d-50116ca4897c\",\"errors\":[{\"path\":\"/\",\"message\":\"Unrecognized key(s) in object: 'stdRatePerHour'\"}]}"
+      ]
     },
     {
       "id": "E2E-CONTRACT-OP-getResourceLoad",
@@ -471,7 +467,7 @@
       "defects": [
         "PF-018"
       ],
-      "message": "GET /resources/{resourceId}/load -> 200 violates OpenAPI schema:\n  / must be array {\"type\":\"array\"}\n  body: {\"resourceId\":\"eeb9a8e5-4c8b-413c-95eb-d5d9f480ce61\",\"maxUnits\":1,\"days\":[{\"day\":\"2026-11-09\",\"workMin\":480,\"capacityMin\":480,\"overallocated\":false}]}\n\n1 !== 0\n"
+      "message": "GET /resources/{resourceId}/load -> 200 violates OpenAPI schema:\n  / must be array {\"type\":\"array\"}\n  body: {\"resourceId\":\"fcc391a7-e961-4c75-89ed-67d4ede670f1\",\"maxUnits\":1,\"days\":[{\"day\":\"2026-11-09\",\"workMin\":480,\"capacityMin\":480,\"overallocated\":false}]}\n\n1 !== 0\n"
     },
     {
       "id": "E2E-CONTRACT-OP-levelResources",
@@ -492,11 +488,11 @@
         "OAS saveBaseline"
       ],
       "status": "fail",
-      "ms": 29,
+      "ms": 17,
       "defects": [
         "PF-018"
       ],
-      "message": "POST /projects/{projectId}/baselines -> 201 violates OpenAPI schema:\n  / must have required property 'savedAt' {\"missingProperty\":\"savedAt\"}\n  body: {\"id\":\"809360a1-d569-4c83-95f6-d2c74012753c\",\"number\":0,\"label\":\"BL0\",\"planVersion\":1,\"taskCount\":1,\"finish\":\"2026-11-09T17:00:00\"}\n\n1 !== 0\n"
+      "message": "POST /projects/{projectId}/baselines -> 201 violates OpenAPI schema:\n  / must have required property 'savedAt' {\"missingProperty\":\"savedAt\"}\n  body: {\"id\":\"0d8579c8-9d6a-433d-a176-3dc0d4a0f3cf\",\"number\":0,\"label\":\"BL0\",\"planVersion\":1,\"taskCount\":1,\"finish\":\"2026-11-09T17:00:00\"}\n\n1 !== 0\n"
     },
     {
       "id": "E2E-CONTRACT-OP-listBaselines",
@@ -506,11 +502,11 @@
         "OAS listBaselines"
       ],
       "status": "fail",
-      "ms": 22,
+      "ms": 21,
       "defects": [
         "PF-018"
       ],
-      "message": "GET /projects/{projectId}/baselines -> 200 violates OpenAPI schema:\n  / must be array {\"type\":\"array\"}\n  body: {\"items\":[{\"id\":\"d87fc50e-6549-4f00-937b-932c5c0a5bab\",\"number\":2,\"label\":\"x\",\"planVersion\":1,\"savedAt\":\"2026-11-08T14:12:08.821Z\",\"finish\":\"2026-11-09T17:00:00\",\"taskCount\":1,\"finishVarianceMin\":0,\"cost\":0}]}\n\n1 !== 0\n"
+      "message": "GET /projects/{projectId}/baselines -> 200 violates OpenAPI schema:\n  / must be array {\"type\":\"array\"}\n  body: {\"items\":[{\"id\":\"c5419111-d408-4bdb-9096-9ddbe3a82a43\",\"number\":2,\"label\":\"x\",\"planVersion\":1,\"savedAt\":\"2026-11-08T14:26:49.946Z\",\"finish\":\"2026-11-09T17:00:00\",\"taskCount\":1,\"finishVarianceMin\":0,\"cost\":0}]}\n\n1 !== 0\n"
     },
     {
       "id": "E2E-CONTRACT-OP-getEarnedValue",
@@ -521,7 +517,7 @@
         "FR-CT-02"
       ],
       "status": "fail",
-      "ms": 26,
+      "ms": 23,
       "defects": [
         "PF-019"
       ],
@@ -535,11 +531,11 @@
         "OAS getEarnedValue (statusDate optional)"
       ],
       "status": "fail",
-      "ms": 26,
+      "ms": 18,
       "defects": [
         "PF-019"
       ],
-      "message": " expected HTTP 200, got 400\n  request:  GET /projects/423526c9-c2e2-443d-8d4f-c943007cd7bd/evm\n  response: HTTP 400 {\"type\":\"https://docs.planforge.example/errors/VALIDATION_FAILED\",\"title\":\"Validation failed\",\"status\":400,\"code\":\"VALIDATION_FAILED\",\"detail\":\"statusDate query parameter (or a project status date) is required\",\"instance\":\"/projects/423526c9-c2e2-443d-8d4f-c943007cd7bd/evm\",\"traceId\":\"e080f0ce-3199-447f-b231-90fb5f5499fe\"}"
+      "message": "GET /projects/{projectId}/evm -> 200 violates OpenAPI schema:\n  /statusDate must match format \"date\" {\"format\":\"date\"}\n  /ac must be number {\"type\":\"number\"}\n  /cv must be number {\"type\":\"number\"}\n  body: {\"statusDate\":\"2026-11-08T00:00:00\",\"bac\":100,\"pv\":0,\"ev\":0,\"sv\":0,\"spi\":null,\"pvBasis\":\"cost of working days before the status date\",\"ac\":null,\"cpi\":null,\"cv\":null,\"note\":\"actual cost is not tracked by the reference server; pass ?ac= to compute cost indices\"}\n\n3 !== 0\n"
     },
     {
       "id": "E2E-CONTRACT-OP-startRiskRun",
@@ -550,7 +546,7 @@
         "FR-CT-04"
       ],
       "status": "pass",
-      "ms": 20,
+      "ms": 78,
       "defects": []
     },
     {
@@ -562,7 +558,7 @@
         "FR-IN-02"
       ],
       "status": "pass",
-      "ms": 7,
+      "ms": 4,
       "defects": []
     },
     {
@@ -574,11 +570,11 @@
         "FR-IN-02"
       ],
       "status": "fail",
-      "ms": 5,
+      "ms": 4,
       "defects": [
         "PF-028"
       ],
-      "message": "format=csv must return CSV, got content-type application/json body {\"format\":\"planforge-plan/1\",\"project\":{\"id\":\"f77a538f-e743-4e82-b669-c83544d4f5"
+      "message": "format=csv must return CSV, got content-type application/json body {\"format\":\"planforge-plan/1\",\"project\":{\"id\":\"4c9a69a5-4851-4ebb-a369-f637e25596"
     },
     {
       "id": "E2E-CONTRACT-OP-members",
@@ -588,7 +584,7 @@
         "OAS listMembers/setMember/removeMember"
       ],
       "status": "pass",
-      "ms": 17,
+      "ms": 16,
       "defects": []
     },
     {
@@ -599,7 +595,7 @@
         "OAS createRealtimeTicket"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 4,
       "defects": []
     },
     {
@@ -611,7 +607,7 @@
         "docs/10 §7"
       ],
       "status": "pass",
-      "ms": 5,
+      "ms": 4,
       "defects": []
     },
     {
@@ -623,7 +619,7 @@
         "OAS createWebhook/listWebhooks/createImport/getImport"
       ],
       "status": "pass",
-      "ms": 8,
+      "ms": 7,
       "defects": []
     },
     {
@@ -635,7 +631,7 @@
         "OAS createWebhook/listWebhooks/createImport/getImport"
       ],
       "status": "pass",
-      "ms": 3,
+      "ms": 2,
       "defects": []
     },
     {
@@ -651,7 +647,7 @@
       "defects": []
     },
     {
-      "id": "E2E-CONTRACT-501-GETimportsbcc",
+      "id": "E2E-CONTRACT-501-GETimportseae",
       "suite": "CONTRACT",
       "title": "GET /imports/{id} -> 501 problem+json NOT_IMPLEMENTED",
       "refs": [
@@ -659,7 +655,7 @@
         "OAS createWebhook/listWebhooks/createImport/getImport"
       ],
       "status": "pass",
-      "ms": 2,
+      "ms": 1,
       "defects": []
     },
     {
@@ -670,7 +666,7 @@
         "docs/07 §5 UNAUTHENTICATED"
       ],
       "status": "pass",
-      "ms": 2,
+      "ms": 1,
       "defects": []
     },
     {
@@ -681,7 +677,7 @@
         "docs/07 §5 UNAUTHENTICATED"
       ],
       "status": "pass",
-      "ms": 2,
+      "ms": 1,
       "defects": []
     },
     {
@@ -692,12 +688,11 @@
         "docs/07 §1.5 keyset pagination",
         "OAS Cursor/Limit"
       ],
-      "status": "fail",
-      "ms": 35,
+      "status": "pass",
+      "ms": 47,
       "defects": [
         "PF-026"
-      ],
-      "message": "no duplicates\n\n5 !== 23\n"
+      ]
     },
     {
       "id": "E2E-CONTRACT-PAGE-002",
@@ -707,12 +702,11 @@
         "OAS Limit (1..500)",
         "docs/07 §1.5"
       ],
-      "status": "fail",
-      "ms": 3,
+      "status": "pass",
+      "ms": 16,
       "defects": [
         "PF-026"
-      ],
-      "message": "limit=0 expected HTTP 400, got 200\n  request:  GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/tasks?limit=0\n  response: HTTP 200 {\"items\":[{\"id\":\"f6e2efe1-ede8-402f-96be-6ad92530e8cc\",\"parentId\":null,\"wbs\":\"1\",\"sortKey\":\"i\",\"name\":\"A\",\"durationMin\":480,\"mode\":\"AUTO\",\"kind\":\"FIXED_UNITS\",\"effortDriven\":false,\"constraint\":{\"type\":\"ASAP\"},\"calendarId\":null,\"percentComplete\":0,\"priority\":500,\"levelingDelayMin\":0,\"workMin\":null,\"custom\":{},\"schedule\":{\"es\":\"2026-11-09T08:00:00\",\"ef\":\"2026-11-09T17:00:00\",\"ls\":\"2026-11-09T08:00:00\",\"lf\":\"2026-11-09T17:00:00\",\"totalFloatMin\":0,\"freeFloatMin\":0,\"critical\":true,\"nearCritical\":false,\"isSummary\":false,\"state\":\"OPEN\",\"driver\":{\"kind\":\"PROJECT_START\"}},\"fixedCost\":0},{\"id\":\"4a6c5605-e172-42bc-98b6-279cdd7d2556\",\"parentId\":null,\"wbs\":\"2\",\"sortKey\":\"r\",\"name\":\"B\",\"durationMin\":960,\"...(1249 chars)"
+      ]
     },
     {
       "id": "E2E-CONTRACT-PAGE-003",
@@ -723,7 +717,7 @@
         "OAS Limit"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 8,
       "defects": []
     },
     {
@@ -734,12 +728,11 @@
         "OAS parameters (uuid / date-time formats)",
         "docs/07 §5 VALIDATION_FAILED"
       ],
-      "status": "fail",
-      "ms": 39,
+      "status": "pass",
+      "ms": 16,
       "defects": [
         "PF-030"
-      ],
-      "message": "accepted malformed parameters: /audit-events?actorId=not-a-uuid -> 200; /audit-events?from=yesterday -> 200; /audit-events?to=2026-99-99T00:00:00Z -> 200; /projects?portfolioId=not-a-uuid -> 200; /resources/eeb9a8e5-4c8b-413c-95eb-d5d9f480ce61/load?from=2026-02-30&to=2026-03-01 -> 200; /resources/eeb9a8e5-4c8b-413c-95eb-d5d9f480ce61/load?from=2026-03-02&to=2026-03-01 -> 200; /resources/eeb9a8e5-4c8b-413c-95eb-d5d9f480ce61/load -> 200\n\n7 !== 0\n"
+      ]
     },
     {
       "id": "E2E-CONTRACT-IDEMP-001",
@@ -749,12 +742,11 @@
         "docs/07 §1.6 Idempotency-Key",
         "OAS IdempotencyKey"
       ],
-      "status": "fail",
-      "ms": 10,
+      "status": "pass",
+      "ms": 9,
       "defects": [
         "PF-027"
-      ],
-      "message": "replay returns the original project id\n+ actual - expected\n\n+ '50ff280d-6e62-42e6-891e-2f37971d0dd1'\n- 'bd310911-41e2-4e60-8ddd-b6ee8f71cf00'\n"
+      ]
     },
     {
       "id": "E2E-CONTRACT-IDEMP-002",
@@ -763,12 +755,11 @@
       "refs": [
         "docs/07 §1.6 Idempotency-Key"
       ],
-      "status": "fail",
-      "ms": 10,
+      "status": "pass",
+      "ms": 6,
       "defects": [
         "PF-027"
-      ],
-      "message": "different body under same key must be refused, got 201\n  request:  POST /projects {\"name\":\"I2 fa924d38-5bf6-4ccd-a60e-e7b9f14588be\",\"startDate\":\"2026-11-09T08:00:00\",\"calendarId\":\"ca000000-0000-4000-8000-000000000001\"}\n  response: HTTP 201 {\"id\":\"79dfbea9-fcbc-41f4-8220-fd8f0f817264\",\"name\":\"I2 fa924d38-5bf6-4ccd-a60e-e7b9f14588be\",\"startDate\":\"2026-11-09T08:00:00\",\"calendarId\":\"ca000000-0000-4000-8000-000000000001\",\"currency\":\"USD\",\"planVersion\":0,\"status\":\"ACTIVE\"}"
+      ]
     },
     {
       "id": "E2E-CONTRACT-IFMATCH-001",
@@ -778,12 +769,11 @@
         "OAS updateProject (If-Match required)",
         "docs/07 §1.7"
       ],
-      "status": "fail",
-      "ms": 11,
+      "status": "pass",
+      "ms": 18,
       "defects": [
         "PF-024"
-      ],
-      "message": "missing If-Match must be refused (400/428), got 200\n  request:  PATCH /projects/b806d871-b61a-44e4-a759-a86c9502c0f2 {\"name\":\"no-etag\"}\n  response: HTTP 200 {\"id\":\"b806d871-b61a-44e4-a759-a86c9502c0f2\",\"name\":\"no-etag\",\"startDate\":\"2026-11-09T08:00:00\",\"calendarId\":\"ca000000-0000-4000-8000-000000000001\",\"currency\":\"USD\",\"planVersion\":0,\"status\":\"ACTIVE\"}"
+      ]
     },
     {
       "id": "E2E-CONTRACT-HDR-001",
@@ -794,7 +784,7 @@
         "RFC 9457"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 4,
       "defects": []
     },
     {
@@ -806,7 +796,7 @@
         "OAS Project"
       ],
       "status": "pass",
-      "ms": 17,
+      "ms": 12,
       "defects": []
     },
     {
@@ -817,12 +807,11 @@
         "docs/07 §5 principles",
         "docs/10 §3 T6"
       ],
-      "status": "fail",
-      "ms": 558,
+      "status": "pass",
+      "ms": 703,
       "defects": [
         "PF-012"
-      ],
-      "message": "11/352 fuzz inputs produced 5xx:\n[26] POST /resources {\"name\":\"\\u0000\"} -> 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\n[152] PATCH /projects/f77a538f-e743-4e82-b669-c83544d4f567 {\"name\":\"\\u0000\"} -> 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\n[209] GET /projects/% -> 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\n[210] GET /projects/%/plan -> 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\n[211] GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/tasks/% -> 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\n[212] GET /resources/%/load?from=2026-01-01&to=2026-01-02 -> 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\n[213] GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/risk-runs/% -> 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\n[214] DELETE /projects/% -> 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\n[216] DELETE /projects/f77a538f-e743-4e82-b669-c83544d4f567/members/% -> 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\n[217] GET /imports/% -> 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\n[322] POST /projects {\"name\":\"n\",\"startDate\":\"2026-02-31T08:00:00\",\"calendarId\":\"ca000000-0000-4000-8000-000000000001\"} -> 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\n\n11 !== 0\n"
+      ]
     },
     {
       "id": "E2E-CONTRACT-ERR-003",
@@ -832,12 +821,11 @@
         "docs/07 §1.4 RFC 9457",
         "OAS Problem"
       ],
-      "status": "fail",
+      "status": "pass",
       "ms": 1,
       "defects": [
         "PF-029"
-      ],
-      "message": "11 malformed error responses:\n[161] GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/members/not-a-uuid -> 405: problem.status 400 != HTTP 405 (code VALIDATION_FAILED)\n[170] GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/members/00000000-0000-0000-0000-000000000000 -> 405: problem.status 400 != HTTP 405 (code VALIDATION_FAILED)\n[179] GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/members/1'; DROP TABLE pf.task;-- -> 405: problem.status 400 != HTTP 405 (code VALIDATION_FAILED)\n[188] GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/members/%00 -> 405: problem.status 400 != HTTP 405 (code VALIDATION_FAILED)\n[197] GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/members/..%2f..%2fetc%2fpasswd -> 405: problem.status 400 != HTTP 405 (code VALIDATION_FAILED)\n[206] GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/members/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n[215] GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/members/% -> 405: problem.status 400 != HTTP 405 (code VALIDATION_FAILED)\n[224] GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/members/{{7*7}} -> 405: problem.status 400 != HTTP 405 (code VALIDATION_FAILED)\n[233] GET /projects/f77a538f-e743-4e82-b669-c83544d4f567/members/494c2bd7-70e0-477c-a2ac-d1aa3d5c71e8 -> 405: problem.status 400 != HTTP 405 (code VALIDATION_FAILED)\n[350] PUT /projects {} -> 405: problem.status 400 != HTTP 405 (code VALIDATION_FAILED)\n[351] DELETE /projects -> 405: problem.status 400 != HTTP 405 (code VALIDATION_FAILED)\n\n11 !== 0\n"
+      ]
     },
     {
       "id": "E2E-CONTRACT-ERR-004",
@@ -859,12 +847,11 @@
         "docs/07 §5 VALIDATION_FAILED",
         "RFC 9110 15.5.6"
       ],
-      "status": "fail",
+      "status": "pass",
       "ms": 2,
       "defects": [
         "PF-029"
-      ],
-      "message": "Allow header required on 405"
+      ]
     },
     {
       "id": "E2E-CONTRACT-ERR-002",
@@ -875,7 +862,7 @@
         "OAS Problem.code enum"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 10,
       "defects": []
     },
     {
@@ -887,7 +874,7 @@
         "docs/10 T1"
       ],
       "status": "pass",
-      "ms": 300,
+      "ms": 291,
       "defects": []
     },
     {
@@ -898,12 +885,11 @@
         "docs/10 T1",
         "RFC 6750 3"
       ],
-      "status": "fail",
+      "status": "pass",
       "ms": 3,
       "defects": [
         "PF-009"
-      ],
-      "message": "WWW-Authenticate header required on 401"
+      ]
     },
     {
       "id": "E2E-AUTH-003",
@@ -913,7 +899,7 @@
         "docs/10 T1"
       ],
       "status": "pass",
-      "ms": 17,
+      "ms": 15,
       "defects": []
     },
     {
@@ -924,7 +910,7 @@
         "docs/10 T1"
       ],
       "status": "pass",
-      "ms": 5,
+      "ms": 6,
       "defects": []
     },
     {
@@ -935,7 +921,7 @@
         "docs/10 T1"
       ],
       "status": "pass",
-      "ms": 15,
+      "ms": 12,
       "defects": []
     },
     {
@@ -946,7 +932,7 @@
         "docs/10 T1"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 11,
       "defects": []
     },
     {
@@ -957,7 +943,7 @@
         "docs/10 T1 (iss/aud)"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 11,
       "defects": []
     },
     {
@@ -968,7 +954,7 @@
         "docs/10 T1 (exp, skew <= 60 s)"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 13,
       "defects": []
     },
     {
@@ -979,7 +965,7 @@
         "docs/10 T1 (nbf, skew <= 60 s)"
       ],
       "status": "pass",
-      "ms": 10,
+      "ms": 9,
       "defects": []
     },
     {
@@ -991,7 +977,7 @@
         "docs/07 §5"
       ],
       "status": "pass",
-      "ms": 19,
+      "ms": 22,
       "defects": []
     },
     {
@@ -1027,7 +1013,7 @@
         "docs/07 §5 NOT_FOUND"
       ],
       "status": "pass",
-      "ms": 35,
+      "ms": 33,
       "defects": []
     },
     {
@@ -1038,7 +1024,7 @@
         "docs/10 T15"
       ],
       "status": "pass",
-      "ms": 4,
+      "ms": 3,
       "defects": []
     },
     {
@@ -1049,7 +1035,7 @@
         "docs/10 T1"
       ],
       "status": "pass",
-      "ms": 126,
+      "ms": 110,
       "defects": []
     },
     {
@@ -1060,7 +1046,7 @@
         "docs/10 T17"
       ],
       "status": "pass",
-      "ms": 4,
+      "ms": 2,
       "defects": []
     },
     {
@@ -1071,7 +1057,7 @@
         "docs/12 health probes"
       ],
       "status": "pass",
-      "ms": 4,
+      "ms": 3,
       "defects": []
     },
     {
@@ -1083,7 +1069,7 @@
         "docs/10 T20"
       ],
       "status": "pass",
-      "ms": 381,
+      "ms": 344,
       "defects": []
     },
     {
@@ -1094,7 +1080,7 @@
         "docs/07 §1.10"
       ],
       "status": "pass",
-      "ms": 10731,
+      "ms": 10700,
       "defects": []
     },
     {
@@ -1106,7 +1092,7 @@
         "docs/10 T20"
       ],
       "status": "fail",
-      "ms": 335,
+      "ms": 261,
       "defects": [
         "PF-010"
       ],
@@ -1122,7 +1108,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 390,
+      "ms": 317,
       "defects": []
     },
     {
@@ -1135,7 +1121,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 6,
       "defects": []
     },
     {
@@ -1148,7 +1134,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 9,
       "defects": []
     },
     {
@@ -1161,7 +1147,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 13,
+      "ms": 5,
       "defects": []
     },
     {
@@ -1187,7 +1173,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 5,
       "defects": []
     },
     {
@@ -1200,7 +1186,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 7,
+      "ms": 6,
       "defects": []
     },
     {
@@ -1213,7 +1199,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 9,
       "defects": []
     },
     {
@@ -1226,7 +1212,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 9,
       "defects": []
     },
     {
@@ -1239,7 +1225,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 13,
+      "ms": 9,
       "defects": []
     },
     {
@@ -1252,7 +1238,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 6,
       "defects": []
     },
     {
@@ -1265,7 +1251,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 10,
       "defects": []
     },
     {
@@ -1278,7 +1264,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 7,
       "defects": []
     },
     {
@@ -1291,7 +1277,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 15,
       "defects": []
     },
     {
@@ -1317,7 +1303,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 5,
+      "ms": 8,
       "defects": []
     },
     {
@@ -1330,7 +1316,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 5,
+      "ms": 8,
       "defects": []
     },
     {
@@ -1343,7 +1329,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 5,
+      "ms": 9,
       "defects": []
     },
     {
@@ -1356,7 +1342,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 4,
+      "ms": 9,
       "defects": []
     },
     {
@@ -1369,7 +1355,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 7,
+      "ms": 10,
       "defects": []
     },
     {
@@ -1396,7 +1382,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 10,
       "defects": []
     },
     {
@@ -1424,7 +1410,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 7,
       "defects": []
     },
     {
@@ -1438,7 +1424,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 7,
+      "ms": 5,
       "defects": []
     },
     {
@@ -1480,7 +1466,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 5,
+      "ms": 4,
       "defects": []
     },
     {
@@ -1493,7 +1479,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 13,
+      "ms": 11,
       "defects": []
     },
     {
@@ -1506,7 +1492,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 17,
+      "ms": 11,
       "defects": []
     },
     {
@@ -1519,7 +1505,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 19,
+      "ms": 12,
       "defects": []
     },
     {
@@ -1532,7 +1518,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 21,
+      "ms": 15,
       "defects": []
     },
     {
@@ -1545,7 +1531,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 17,
+      "ms": 13,
       "defects": []
     },
     {
@@ -1558,7 +1544,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 18,
+      "ms": 12,
       "defects": []
     },
     {
@@ -1571,7 +1557,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 13,
+      "ms": 7,
       "defects": []
     },
     {
@@ -1584,7 +1570,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 32,
+      "ms": 28,
       "defects": []
     },
     {
@@ -1597,7 +1583,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 28,
+      "ms": 23,
       "defects": []
     },
     {
@@ -1636,7 +1622,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 31,
+      "ms": 18,
       "defects": []
     },
     {
@@ -1649,7 +1635,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 36,
+      "ms": 20,
       "defects": []
     },
     {
@@ -1662,7 +1648,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 32,
+      "ms": 20,
       "defects": []
     },
     {
@@ -1675,7 +1661,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 30,
+      "ms": 21,
       "defects": []
     },
     {
@@ -1688,7 +1674,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 27,
+      "ms": 21,
       "defects": []
     },
     {
@@ -1701,7 +1687,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 34,
+      "ms": 29,
       "defects": []
     },
     {
@@ -1714,7 +1700,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 25,
+      "ms": 17,
       "defects": []
     },
     {
@@ -1727,7 +1713,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 22,
+      "ms": 17,
       "defects": []
     },
     {
@@ -1740,7 +1726,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 21,
+      "ms": 24,
       "defects": []
     },
     {
@@ -1753,7 +1739,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 20,
+      "ms": 25,
       "defects": []
     },
     {
@@ -1766,7 +1752,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 29,
+      "ms": 27,
       "defects": []
     },
     {
@@ -1779,7 +1765,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 30,
+      "ms": 27,
       "defects": []
     },
     {
@@ -1792,7 +1778,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 31,
+      "ms": 33,
       "defects": []
     },
     {
@@ -1805,7 +1791,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 20,
+      "ms": 29,
       "defects": []
     },
     {
@@ -1818,7 +1804,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 19,
+      "ms": 25,
       "defects": []
     },
     {
@@ -1831,7 +1817,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 28,
+      "ms": 32,
       "defects": []
     },
     {
@@ -1857,7 +1843,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 21,
+      "ms": 17,
       "defects": []
     },
     {
@@ -1883,7 +1869,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 17,
       "defects": []
     },
     {
@@ -1896,7 +1882,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 19,
+      "ms": 18,
       "defects": []
     },
     {
@@ -1909,7 +1895,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 17,
       "defects": []
     },
     {
@@ -1922,7 +1908,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 25,
+      "ms": 27,
       "defects": []
     },
     {
@@ -1935,7 +1921,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 13,
+      "ms": 16,
       "defects": []
     },
     {
@@ -1948,7 +1934,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 23,
+      "ms": 28,
       "defects": []
     },
     {
@@ -1961,7 +1947,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 24,
+      "ms": 29,
       "defects": []
     },
     {
@@ -1974,7 +1960,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 25,
+      "ms": 24,
       "defects": []
     },
     {
@@ -1987,7 +1973,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 25,
+      "ms": 24,
       "defects": []
     },
     {
@@ -2000,7 +1986,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 27,
+      "ms": 31,
       "defects": []
     },
     {
@@ -2013,7 +1999,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 36,
+      "ms": 35,
       "defects": []
     },
     {
@@ -2026,7 +2012,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 26,
+      "ms": 24,
       "defects": []
     },
     {
@@ -2039,7 +2025,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 38,
+      "ms": 30,
       "defects": []
     },
     {
@@ -2052,7 +2038,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 35,
+      "ms": 37,
       "defects": []
     },
     {
@@ -2065,7 +2051,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 36,
+      "ms": 28,
       "defects": []
     },
     {
@@ -2078,7 +2064,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 35,
+      "ms": 24,
       "defects": []
     },
     {
@@ -2091,7 +2077,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 34,
+      "ms": 26,
       "defects": []
     },
     {
@@ -2104,7 +2090,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 39,
+      "ms": 25,
       "defects": []
     },
     {
@@ -2117,7 +2103,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 37,
+      "ms": 31,
       "defects": []
     },
     {
@@ -2130,7 +2116,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 36,
+      "ms": 22,
       "defects": []
     },
     {
@@ -2143,7 +2129,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 39,
+      "ms": 26,
       "defects": []
     },
     {
@@ -2156,7 +2142,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 39,
+      "ms": 27,
       "defects": []
     },
     {
@@ -2169,7 +2155,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 43,
+      "ms": 25,
       "defects": []
     },
     {
@@ -2182,7 +2168,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 70,
+      "ms": 42,
       "defects": []
     },
     {
@@ -2195,7 +2181,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 39,
+      "ms": 24,
       "defects": []
     },
     {
@@ -2208,7 +2194,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 51,
+      "ms": 26,
       "defects": []
     },
     {
@@ -2221,7 +2207,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2234,7 +2220,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2247,7 +2233,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 13,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2260,7 +2246,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 8,
       "defects": []
     },
     {
@@ -2273,7 +2259,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 9,
       "defects": []
     },
     {
@@ -2286,7 +2272,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 15,
+      "ms": 9,
       "defects": []
     },
     {
@@ -2299,7 +2285,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2312,7 +2298,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 21,
+      "ms": 14,
       "defects": []
     },
     {
@@ -2325,7 +2311,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 20,
+      "ms": 15,
       "defects": []
     },
     {
@@ -2338,7 +2324,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 19,
+      "ms": 16,
       "defects": []
     },
     {
@@ -2351,7 +2337,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 23,
+      "ms": 20,
       "defects": []
     },
     {
@@ -2364,7 +2350,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 24,
+      "ms": 14,
       "defects": []
     },
     {
@@ -2377,7 +2363,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 21,
+      "ms": 16,
       "defects": []
     },
     {
@@ -2390,7 +2376,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 18,
+      "ms": 13,
       "defects": []
     },
     {
@@ -2403,7 +2389,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2416,7 +2402,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 9,
       "defects": []
     },
     {
@@ -2429,7 +2415,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2442,7 +2428,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 10,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2455,7 +2441,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 8,
       "defects": []
     },
     {
@@ -2468,7 +2454,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 10,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2481,7 +2467,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 6,
       "defects": []
     },
     {
@@ -2495,7 +2481,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 13,
+      "ms": 9,
       "defects": []
     },
     {
@@ -2509,7 +2495,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2523,7 +2509,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 10,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2537,7 +2523,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 13,
+      "ms": 9,
       "defects": []
     },
     {
@@ -2551,7 +2537,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 6,
       "defects": []
     },
     {
@@ -2565,7 +2551,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 6,
       "defects": []
     },
     {
@@ -2579,7 +2565,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 8,
+      "ms": 5,
       "defects": []
     },
     {
@@ -2592,7 +2578,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 71,
+      "ms": 102,
       "defects": []
     },
     {
@@ -2605,7 +2591,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 8,
+      "ms": 4,
       "defects": []
     },
     {
@@ -2618,7 +2604,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 25,
+      "ms": 108,
       "defects": []
     },
     {
@@ -2631,7 +2617,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 39,
+      "ms": 104,
       "defects": []
     },
     {
@@ -2644,7 +2630,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 8,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2670,7 +2656,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 21,
+      "ms": 10,
       "defects": []
     },
     {
@@ -2683,7 +2669,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2696,7 +2682,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 4,
       "defects": []
     },
     {
@@ -2709,7 +2695,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 5,
       "defects": []
     },
     {
@@ -2722,7 +2708,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 7,
+      "ms": 6,
       "defects": []
     },
     {
@@ -2735,7 +2721,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 7,
+      "ms": 4,
       "defects": []
     },
     {
@@ -2748,7 +2734,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 5,
       "defects": []
     },
     {
@@ -2761,7 +2747,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 3,
       "defects": []
     },
     {
@@ -2774,7 +2760,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 11,
       "defects": []
     },
     {
@@ -2787,7 +2773,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 8,
       "defects": []
     },
     {
@@ -2800,7 +2786,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 8,
+      "ms": 5,
       "defects": []
     },
     {
@@ -2826,7 +2812,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 15,
+      "ms": 10,
       "defects": []
     },
     {
@@ -2839,7 +2825,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 9,
       "defects": []
     },
     {
@@ -2852,7 +2838,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 7,
       "defects": []
     },
     {
@@ -2865,7 +2851,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 10,
+      "ms": 6,
       "defects": []
     },
     {
@@ -2878,7 +2864,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 8,
+      "ms": 5,
       "defects": []
     },
     {
@@ -2891,7 +2877,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 8,
+      "ms": 6,
       "defects": []
     },
     {
@@ -2904,7 +2890,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 8,
+      "ms": 5,
       "defects": []
     },
     {
@@ -2917,7 +2903,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 4,
       "defects": []
     },
     {
@@ -2930,7 +2916,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 7,
+      "ms": 4,
       "defects": []
     },
     {
@@ -2943,7 +2929,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 4,
+      "ms": 3,
       "defects": []
     },
     {
@@ -2956,7 +2942,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 5,
       "defects": []
     },
     {
@@ -2969,7 +2955,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 5,
       "defects": []
     },
     {
@@ -2982,7 +2968,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 8,
+      "ms": 6,
       "defects": []
     },
     {
@@ -2995,7 +2981,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 4,
       "defects": []
     },
     {
@@ -3021,7 +3007,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 7,
       "defects": []
     },
     {
@@ -3047,7 +3033,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 10,
+      "ms": 11,
       "defects": []
     },
     {
@@ -3060,7 +3046,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 13,
       "defects": []
     },
     {
@@ -3073,7 +3059,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 12,
       "defects": []
     },
     {
@@ -3086,7 +3072,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 10,
       "defects": []
     },
     {
@@ -3099,7 +3085,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 10,
+      "ms": 9,
       "defects": []
     },
     {
@@ -3112,7 +3098,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 10,
+      "ms": 6,
       "defects": []
     },
     {
@@ -3125,7 +3111,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 7,
+      "ms": 5,
       "defects": []
     },
     {
@@ -3139,7 +3125,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 5,
+      "ms": 4,
       "defects": []
     },
     {
@@ -3153,7 +3139,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 5,
+      "ms": 3,
       "defects": []
     },
     {
@@ -3167,7 +3153,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 3,
       "defects": []
     },
     {
@@ -3181,7 +3167,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 4,
+      "ms": 3,
       "defects": []
     },
     {
@@ -3195,7 +3181,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 4,
+      "ms": 3,
       "defects": []
     },
     {
@@ -3209,7 +3195,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 3,
       "defects": []
     },
     {
@@ -3223,7 +3209,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 4,
+      "ms": 3,
       "defects": []
     },
     {
@@ -3237,7 +3223,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 13,
+      "ms": 7,
       "defects": []
     },
     {
@@ -3251,7 +3237,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 5,
+      "ms": 3,
       "defects": []
     },
     {
@@ -3265,7 +3251,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 4,
+      "ms": 3,
       "defects": []
     },
     {
@@ -3279,7 +3265,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 4,
+      "ms": 3,
       "defects": []
     },
     {
@@ -3293,7 +3279,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 5,
+      "ms": 3,
       "defects": []
     },
     {
@@ -3307,7 +3293,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 10,
+      "ms": 8,
       "defects": []
     },
     {
@@ -3333,7 +3319,7 @@
         "FR-GV-01"
       ],
       "status": "pass",
-      "ms": 21,
+      "ms": 18,
       "defects": []
     },
     {
@@ -3345,7 +3331,7 @@
         "FR-GV-01"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 8,
       "defects": []
     },
     {
@@ -3357,7 +3343,7 @@
         "FR-GV-01"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 27,
       "defects": []
     },
     {
@@ -3369,7 +3355,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 15,
+      "ms": 11,
       "defects": []
     },
     {
@@ -3381,7 +3367,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 16,
+      "ms": 11,
       "defects": []
     },
     {
@@ -3393,7 +3379,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 15,
+      "ms": 14,
       "defects": []
     },
     {
@@ -3405,7 +3391,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 18,
+      "ms": 12,
       "defects": []
     },
     {
@@ -3417,7 +3403,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 11,
       "defects": []
     },
     {
@@ -3429,7 +3415,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 11,
       "defects": []
     },
     {
@@ -3441,7 +3427,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 11,
       "defects": []
     },
     {
@@ -3453,7 +3439,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 18,
+      "ms": 13,
       "defects": []
     },
     {
@@ -3465,7 +3451,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 16,
+      "ms": 11,
       "defects": []
     },
     {
@@ -3477,7 +3463,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 16,
+      "ms": 12,
       "defects": []
     },
     {
@@ -3489,7 +3475,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 16,
+      "ms": 13,
       "defects": []
     },
     {
@@ -3501,7 +3487,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 38,
+      "ms": 19,
       "defects": []
     },
     {
@@ -3512,7 +3498,7 @@
         "docs/10 §4 Update own task progress (assigned only)"
       ],
       "status": "pass",
-      "ms": 10,
+      "ms": 19,
       "defects": []
     },
     {
@@ -3523,7 +3509,7 @@
         "docs/10 §4 (assignment requires a resource whose user_id is that user)"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 9,
       "defects": []
     },
     {
@@ -3534,7 +3520,7 @@
         "docs/10 §4 (assignment requires a resource whose user_id is that user)"
       ],
       "status": "pass",
-      "ms": 24,
+      "ms": 16,
       "defects": []
     },
     {
@@ -3557,7 +3543,7 @@
         "docs/10 §4"
       ],
       "status": "pass",
-      "ms": 38,
+      "ms": 27,
       "defects": []
     },
     {
@@ -3568,7 +3554,7 @@
         "docs/10 §4 (assigned only)"
       ],
       "status": "pass",
-      "ms": 34,
+      "ms": 25,
       "defects": []
     },
     {
@@ -3579,7 +3565,7 @@
         "docs/10 §4 Update own task progress (Viewer: no)"
       ],
       "status": "pass",
-      "ms": 28,
+      "ms": 22,
       "defects": []
     },
     {
@@ -3591,7 +3577,7 @@
         "FR-GV-01"
       ],
       "status": "pass",
-      "ms": 44,
+      "ms": 40,
       "defects": []
     },
     {
@@ -3603,7 +3589,7 @@
         "FR-GV-01"
       ],
       "status": "pass",
-      "ms": 18,
+      "ms": 14,
       "defects": []
     },
     {
@@ -3615,7 +3601,7 @@
         "FR-GV-01"
       ],
       "status": "pass",
-      "ms": 15,
+      "ms": 14,
       "defects": []
     },
     {
@@ -3626,7 +3612,7 @@
         "docs/10 §4 See rates/costs"
       ],
       "status": "pass",
-      "ms": 9,
+      "ms": 3,
       "defects": []
     },
     {
@@ -3648,7 +3634,7 @@
         "docs/10 §4 See rates/costs"
       ],
       "status": "pass",
-      "ms": 3,
+      "ms": 2,
       "defects": []
     },
     {
@@ -3660,7 +3646,7 @@
         "FR-GV-01"
       ],
       "status": "pass",
-      "ms": 26,
+      "ms": 29,
       "defects": []
     },
     {
@@ -3671,7 +3657,7 @@
         "docs/10 §4 See rates/costs"
       ],
       "status": "pass",
-      "ms": 18,
+      "ms": 15,
       "defects": []
     },
     {
@@ -3683,7 +3669,7 @@
         "docs/10 §4"
       ],
       "status": "pass",
-      "ms": 56,
+      "ms": 58,
       "defects": []
     },
     {
@@ -3694,7 +3680,7 @@
         "OAS removeMember (project must keep at least one project manager)"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 12,
       "defects": []
     },
     {
@@ -3705,12 +3691,11 @@
         "OAS removeMember (project must keep at least one project manager)",
         "docs/05 §3 invariants"
       ],
-      "status": "fail",
-      "ms": 8,
+      "status": "pass",
+      "ms": 5,
       "defects": [
         "PF-006"
-      ],
-      "message": "demoting the only PM must be refused, got 200\n  request:  PUT /projects/f5404ea4-cbab-4c76-baca-fb045a50fc36/members/a1000000-0000-4000-8000-000000000003 {\"role\":\"VIEWER\"}\n  response: HTTP 200 {\"userId\":\"a1000000-0000-4000-8000-000000000003\",\"role\":\"VIEWER\"}"
+      ]
     },
     {
       "id": "E2E-AUTHZ-MEM-004",
@@ -3721,7 +3706,7 @@
         "docs/07 §5 NOT_FOUND"
       ],
       "status": "pass",
-      "ms": 11,
+      "ms": 7,
       "defects": []
     },
     {
@@ -3733,7 +3718,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 35,
+      "ms": 22,
       "defects": []
     },
     {
@@ -3745,7 +3730,7 @@
         "docs/10 T4"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 7,
       "defects": []
     },
     {
@@ -3757,7 +3742,7 @@
         "docs/10 T3"
       ],
       "status": "pass",
-      "ms": 25,
+      "ms": 13,
       "defects": []
     },
     {
@@ -3769,11 +3754,11 @@
         "docs/10 T3"
       ],
       "status": "fail",
-      "ms": 51,
+      "ms": 41,
       "defects": [
         "PF-007"
       ],
-      "message": "PM must not be able to strip an ORG_ADMIN: PUT->200, DELETE->204\n  request:  PUT /projects/c28f13e8-e8d5-4448-95df-b1afd20ff385/members/a1000000-0000-4000-8000-000000000001 {\"role\":\"VIEWER\"}\n  response: HTTP 200 {\"userId\":\"a1000000-0000-4000-8000-000000000001\",\"role\":\"VIEWER\"}\n  request:  DELETE /projects/c28f13e8-e8d5-4448-95df-b1afd20ff385/members/a1000000-0000-4000-8000-000000000001\n  response: HTTP 204 "
+      "message": "PM must not be able to strip an ORG_ADMIN: PUT->200, DELETE->204\n  request:  PUT /projects/21e5b040-4d04-4ce7-b351-d4a827c90dbc/members/a1000000-0000-4000-8000-000000000001 {\"role\":\"VIEWER\"}\n  response: HTTP 200 {\"userId\":\"a1000000-0000-4000-8000-000000000001\",\"role\":\"VIEWER\"}\n  request:  DELETE /projects/21e5b040-4d04-4ce7-b351-d4a827c90dbc/members/a1000000-0000-4000-8000-000000000001\n  response: HTTP 204 "
     },
     {
       "id": "E2E-AUTHZ-AUDIT-001",
@@ -3785,7 +3770,7 @@
         "docs/10 T13"
       ],
       "status": "pass",
-      "ms": 88,
+      "ms": 60,
       "defects": []
     },
     {
@@ -3796,7 +3781,7 @@
         "docs/10 §7 (failed authorisation logged)"
       ],
       "status": "fail",
-      "ms": 99,
+      "ms": 71,
       "defects": [
         "PF-008"
       ],
@@ -3810,7 +3795,7 @@
         "docs/10 §4 Read audit trail"
       ],
       "status": "pass",
-      "ms": 16,
+      "ms": 15,
       "defects": []
     },
     {
@@ -3821,7 +3806,7 @@
         "docs/10 §4 (actions not in the matrix)"
       ],
       "status": "pass",
-      "ms": 703,
+      "ms": 458,
       "defects": []
     },
     {
@@ -3834,7 +3819,7 @@
         "docs/07 §5 NOT_FOUND"
       ],
       "status": "pass",
-      "ms": 565,
+      "ms": 367,
       "defects": []
     },
     {
@@ -3846,7 +3831,7 @@
         "docs/10 T2"
       ],
       "status": "pass",
-      "ms": 69,
+      "ms": 35,
       "defects": []
     },
     {
@@ -3859,7 +3844,7 @@
         "docs/07 §5"
       ],
       "status": "pass",
-      "ms": 235,
+      "ms": 148,
       "defects": []
     },
     {
@@ -3870,12 +3855,11 @@
         "NFR-SEC-01",
         "docs/10 T2"
       ],
-      "status": "fail",
-      "ms": 14,
+      "status": "pass",
+      "ms": 8,
       "defects": [
         "PF-004"
-      ],
-      "message": "a tenant-A calendar id must never be bound to a tenant-B resource (cross-tenant reference accepted: resource.calendarId=ca000000-0000-4000-8000-000000000001)"
+      ]
     },
     {
       "id": "E2E-TENANT-API-004b",
@@ -3885,12 +3869,11 @@
         "NFR-SEC-01",
         "docs/07 §5 NOT_FOUND (never reveal existence)"
       ],
-      "status": "fail",
-      "ms": 19,
+      "status": "pass",
+      "ms": 6,
       "defects": [
         "PF-004"
-      ],
-      "message": "foreign calendar id -> 201, random id -> 400: tenant B can probe which calendar ids exist in tenant A\n\n201 !== 400\n"
+      ]
     },
     {
       "id": "E2E-TENANT-API-005",
@@ -3900,7 +3883,7 @@
         "NFR-SEC-01"
       ],
       "status": "pass",
-      "ms": 17,
+      "ms": 19,
       "defects": []
     },
     {
@@ -3912,7 +3895,7 @@
         "docs/10 §7"
       ],
       "status": "pass",
-      "ms": 19,
+      "ms": 14,
       "defects": []
     },
     {
@@ -3924,7 +3907,7 @@
         "docs/07 §1 Idempotency"
       ],
       "status": "pass",
-      "ms": 43,
+      "ms": 16,
       "defects": []
     },
     {
@@ -3936,7 +3919,7 @@
         "NFR-SEC-01"
       ],
       "status": "pass",
-      "ms": 550,
+      "ms": 357,
       "defects": []
     },
     {
@@ -3947,12 +3930,11 @@
         "NFR-SEC-01",
         "docs/05 §5.1"
       ],
-      "status": "fail",
-      "ms": 40,
+      "status": "pass",
+      "ms": 30,
       "defects": [
         "PF-003"
-      ],
-      "message": "tables without enforced RLS: assignment_timephase_p0(rls=false,force=false,policies=0), assignment_timephase_p1(rls=false,force=false,policies=0), assignment_timephase_p2(rls=false,force=false,policies=0), assignment_timephase_p3(rls=false,force=false,policies=0)\n\n4 !== 0\n"
+      ]
     },
     {
       "id": "E2E-TENANT-SQL-001",
@@ -3963,7 +3945,7 @@
         "docs/05 §5.1"
       ],
       "status": "pass",
-      "ms": 1291,
+      "ms": 1062,
       "defects": []
     },
     {
@@ -3975,7 +3957,7 @@
         "docs/05 §5.1"
       ],
       "status": "pass",
-      "ms": 417,
+      "ms": 256,
       "defects": []
     },
     {
@@ -3986,12 +3968,11 @@
         "NFR-SEC-01",
         "docs/05 §5.1"
       ],
-      "status": "fail",
-      "ms": 262,
+      "status": "pass",
+      "ms": 170,
       "defects": [
         "PF-003"
-      ],
-      "message": "cross-tenant rows readable via partition tables:\nassignment_timephase_p0: 1 rows (1 tenants) visible with no tenant; 1 tenant-A rows visible as tenant B\nassignment_timephase_p1: 1 rows (1 tenants) visible with no tenant; 0 tenant-A rows visible as tenant B\n\n2 !== 0\n"
+      ]
     },
     {
       "id": "E2E-TENANT-SQL-004",
@@ -4002,7 +3983,7 @@
         "docs/05 §5.1"
       ],
       "status": "fail",
-      "ms": 112,
+      "ms": 76,
       "defects": [
         "PF-005"
       ],
@@ -4016,7 +3997,7 @@
         "NFR-SEC-01"
       ],
       "status": "pass",
-      "ms": 80,
+      "ms": 67,
       "defects": []
     },
     {
@@ -4028,7 +4009,7 @@
         "FR-GV-02"
       ],
       "status": "pass",
-      "ms": 525,
+      "ms": 383,
       "defects": []
     },
     {
@@ -4040,7 +4021,7 @@
         "docs/10 T13"
       ],
       "status": "pass",
-      "ms": 84,
+      "ms": 64,
       "defects": []
     },
     {
@@ -4052,7 +4033,7 @@
         "docs/05 §5.1"
       ],
       "status": "pass",
-      "ms": 7,
+      "ms": 5,
       "defects": []
     },
     {
@@ -4063,7 +4044,7 @@
         "NFR-SEC-01"
       ],
       "status": "pass",
-      "ms": 7,
+      "ms": 4,
       "defects": []
     },
     {
@@ -4076,7 +4057,7 @@
         "docs/05 §5.4"
       ],
       "status": "pass",
-      "ms": 532,
+      "ms": 510,
       "defects": []
     },
     {
@@ -4088,7 +4069,7 @@
         "FR-PL-03"
       ],
       "status": "pass",
-      "ms": 122,
+      "ms": 102,
       "defects": []
     },
     {
@@ -4100,7 +4081,7 @@
         "docs/07 §3"
       ],
       "status": "pass",
-      "ms": 193,
+      "ms": 182,
       "defects": []
     },
     {
@@ -4112,7 +4093,7 @@
         "I7 planVersion +1 per batch"
       ],
       "status": "pass",
-      "ms": 62,
+      "ms": 58,
       "defects": []
     },
     {
@@ -4125,7 +4106,7 @@
         "OAS applyCommands"
       ],
       "status": "pass",
-      "ms": 133,
+      "ms": 116,
       "defects": []
     },
     {
@@ -4137,7 +4118,7 @@
         "docs/07 §5"
       ],
       "status": "pass",
-      "ms": 32,
+      "ms": 29,
       "defects": []
     },
     {
@@ -4150,7 +4131,7 @@
         "FR-CO-01 (no lost updates)"
       ],
       "status": "pass",
-      "ms": 89,
+      "ms": 59,
       "defects": []
     },
     {
@@ -4162,7 +4143,7 @@
         "FR-CO-01"
       ],
       "status": "pass",
-      "ms": 61,
+      "ms": 40,
       "defects": []
     },
     {
@@ -4174,7 +4155,7 @@
         "docs/07 §1.6"
       ],
       "status": "pass",
-      "ms": 65,
+      "ms": 45,
       "defects": []
     },
     {
@@ -4187,7 +4168,7 @@
         "OAS CommandResult.replayed"
       ],
       "status": "pass",
-      "ms": 45,
+      "ms": 31,
       "defects": []
     },
     {
@@ -4198,7 +4179,7 @@
         "docs/07 §5 DUPLICATE_CLIENT_OP"
       ],
       "status": "pass",
-      "ms": 119,
+      "ms": 89,
       "defects": []
     },
     {
@@ -4210,7 +4191,7 @@
         "docs/07 §1.6"
       ],
       "status": "pass",
-      "ms": 38,
+      "ms": 29,
       "defects": []
     },
     {
@@ -4221,7 +4202,7 @@
         "docs/07 §1.6 (same body)"
       ],
       "status": "pass",
-      "ms": 30,
+      "ms": 22,
       "defects": []
     },
     {
@@ -4233,7 +4214,7 @@
         "docs/10 T5"
       ],
       "status": "pass",
-      "ms": 41,
+      "ms": 27,
       "defects": []
     },
     {
@@ -4245,7 +4226,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 271,
+      "ms": 216,
       "defects": []
     },
     {
@@ -4257,7 +4238,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 265,
+      "ms": 231,
       "defects": []
     },
     {
@@ -4269,7 +4250,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 285,
+      "ms": 218,
       "defects": []
     },
     {
@@ -4281,7 +4262,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 291,
+      "ms": 232,
       "defects": []
     },
     {
@@ -4293,7 +4274,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 307,
+      "ms": 239,
       "defects": []
     },
     {
@@ -4305,7 +4286,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 384,
+      "ms": 267,
       "defects": []
     },
     {
@@ -4317,7 +4298,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 372,
+      "ms": 221,
       "defects": []
     },
     {
@@ -4329,7 +4310,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 410,
+      "ms": 232,
       "defects": []
     },
     {
@@ -4341,7 +4322,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 299,
+      "ms": 246,
       "defects": []
     },
     {
@@ -4353,7 +4334,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 329,
+      "ms": 232,
       "defects": []
     },
     {
@@ -4365,7 +4346,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 327,
+      "ms": 230,
       "defects": []
     },
     {
@@ -4377,7 +4358,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 280,
+      "ms": 245,
       "defects": []
     },
     {
@@ -4389,7 +4370,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 280,
+      "ms": 244,
       "defects": []
     },
     {
@@ -4401,7 +4382,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 262,
+      "ms": 233,
       "defects": []
     },
     {
@@ -4413,7 +4394,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 250,
+      "ms": 249,
       "defects": []
     },
     {
@@ -4425,7 +4406,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 252,
+      "ms": 258,
       "defects": []
     },
     {
@@ -4437,7 +4418,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 242,
+      "ms": 283,
       "defects": []
     },
     {
@@ -4449,7 +4430,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 242,
+      "ms": 243,
       "defects": []
     },
     {
@@ -4461,7 +4442,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 233,
+      "ms": 229,
       "defects": []
     },
     {
@@ -4473,7 +4454,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 237,
+      "ms": 242,
       "defects": []
     },
     {
@@ -4484,7 +4465,7 @@
         "docs/10 T4"
       ],
       "status": "pass",
-      "ms": 20,
+      "ms": 18,
       "defects": []
     },
     {
@@ -4497,7 +4478,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 85,
+      "ms": 84,
       "defects": []
     },
     {
@@ -4510,7 +4491,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 99,
+      "ms": 115,
       "defects": []
     },
     {
@@ -4523,7 +4504,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 99,
+      "ms": 90,
       "defects": []
     },
     {
@@ -4536,7 +4517,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 81,
+      "ms": 102,
       "defects": []
     },
     {
@@ -4549,7 +4530,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 84,
+      "ms": 95,
       "defects": []
     },
     {
@@ -4562,7 +4543,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 85,
+      "ms": 84,
       "defects": []
     },
     {
@@ -4575,7 +4556,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 90,
+      "ms": 94,
       "defects": []
     },
     {
@@ -4588,7 +4569,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 94,
+      "ms": 93,
       "defects": []
     },
     {
@@ -4601,7 +4582,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 86,
+      "ms": 89,
       "defects": []
     },
     {
@@ -4614,7 +4595,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 88,
+      "ms": 85,
       "defects": []
     },
     {
@@ -4627,7 +4608,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 84,
+      "ms": 91,
       "defects": []
     },
     {
@@ -4640,7 +4621,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 77,
+      "ms": 93,
       "defects": []
     },
     {
@@ -4653,7 +4634,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 81,
+      "ms": 82,
       "defects": []
     },
     {
@@ -4666,7 +4647,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 85,
+      "ms": 107,
       "defects": []
     },
     {
@@ -4679,7 +4660,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 91,
+      "ms": 81,
       "defects": []
     },
     {
@@ -4692,7 +4673,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 117,
+      "ms": 78,
       "defects": []
     },
     {
@@ -4705,7 +4686,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 104,
+      "ms": 81,
       "defects": []
     },
     {
@@ -4718,7 +4699,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 90,
+      "ms": 83,
       "defects": []
     },
     {
@@ -4731,7 +4712,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 100,
+      "ms": 75,
       "defects": []
     },
     {
@@ -4744,7 +4725,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 117,
+      "ms": 83,
       "defects": []
     },
     {
@@ -4757,7 +4738,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 103,
+      "ms": 90,
       "defects": []
     },
     {
@@ -4770,7 +4751,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 93,
+      "ms": 74,
       "defects": []
     },
     {
@@ -4783,7 +4764,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 91,
+      "ms": 80,
       "defects": []
     },
     {
@@ -4796,7 +4777,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 92,
+      "ms": 79,
       "defects": []
     },
     {
@@ -4809,7 +4790,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 96,
+      "ms": 71,
       "defects": []
     },
     {
@@ -4821,12 +4802,11 @@
         "docs/05 §3 I3-I6",
         "OAS Task/Link/Assignment constraints"
       ],
-      "status": "fail",
-      "ms": 58,
+      "status": "pass",
+      "ms": 73,
       "defects": [
         "PF-012"
-      ],
-      "message": "fixedWork-without-work expected HTTP 400, got 500\n  request:  POST /projects/486a431c-4c9e-46c9-92e7-3c2e2b50ad4c/commands {\"clientOpId\":\"e2dbab66-20f0-46b2-8279-304c4f0122ec\",\"expectedPlanVersion\":1,\"commands\":[{\"op\":\"addTask\",\"task\":{\"id\":\"29a623dc-5cdc-4120-a5d4-a1092f2f64ae\",\"name\":\"v\",\"durationMin\":60,\"kind\":\"FIXED_WORK\"}}]}\n  response: HTTP 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\":\"An unexpected error occurred. Quote the traceId when contacting support.\",\"instance\":\"/projects/486a431c-4c9e-46c9-92e7-3c2e2b50ad4c/commands\",\"traceId\":\"cbb05520-341a-4190-a483-01f9c2cbdb27\"}"
+      ]
     },
     {
       "id": "E2E-CMD-VAL-manual-without-start",
@@ -4838,7 +4818,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 107,
+      "ms": 76,
       "defects": []
     },
     {
@@ -4851,7 +4831,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 101,
+      "ms": 70,
       "defects": []
     },
     {
@@ -4864,7 +4844,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 110,
+      "ms": 71,
       "defects": []
     },
     {
@@ -4877,7 +4857,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 111,
+      "ms": 73,
       "defects": []
     },
     {
@@ -4890,7 +4870,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 117,
+      "ms": 72,
       "defects": []
     },
     {
@@ -4902,12 +4882,11 @@
         "docs/05 §3 I3-I6",
         "OAS Task/Link/Assignment constraints"
       ],
-      "status": "fail",
-      "ms": 61,
+      "status": "pass",
+      "ms": 73,
       "defects": [
         "PF-012"
-      ],
-      "message": "date-month-13 expected HTTP 400, got 500\n  request:  POST /projects/5f2ff3ca-2de4-4abf-a69a-60211e3c0a8c/commands {\"clientOpId\":\"17adf144-0e48-4964-af51-403950a6cf15\",\"expectedPlanVersion\":1,\"commands\":[{\"op\":\"addTask\",\"task\":{\"id\":\"6d116772-83cf-4733-aee5-9f0701a01e08\",\"name\":\"v\",\"durationMin\":60,\"constraint\":{\"type\":\"SNET\",\"date\":\"2026-13-09T08:00:00\"}}}]}\n  response: HTTP 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\":\"An unexpected error occurred. Quote the traceId when contacting support.\",\"instance\":\"/projects/5f2ff3ca-2de4-4abf-a69a-60211e3c0a8c/commands\",\"traceId\":\"d76be185-afa2-4c15-94b6-19d08f3dc99d\"}"
+      ]
     },
     {
       "id": "E2E-CMD-VAL-date-feb-30",
@@ -4918,12 +4897,11 @@
         "docs/05 §3 I3-I6",
         "OAS Task/Link/Assignment constraints"
       ],
-      "status": "fail",
-      "ms": 64,
+      "status": "pass",
+      "ms": 77,
       "defects": [
         "PF-013"
-      ],
-      "message": "date-feb-30 expected HTTP 400, got 200\n  request:  POST /projects/f43838c2-dea0-4294-856e-f6cbfa3f0305/commands {\"clientOpId\":\"2d83f136-400b-4dfe-a783-ae035f963435\",\"expectedPlanVersion\":1,\"commands\":[{\"op\":\"addTask\",\"task\":{\"id\":\"c19379fd-2365-41f8-ac16-43943f8c3865\",\"name\":\"v\",\"durationMin\":60,\"constraint\":{\"type\":\"SNET\",\"date\":\"2026-02-30T08:00:00\"}}}]}\n  response: HTTP 200 {\"planVersion\":2,\"schedule\":{\"start\":\"2026-11-09T08:00:00\",\"finish\":\"2026-11-09T17:00:00\",\"tasks\":{\"c19379fd-2365-41f8-ac16-43943f8c3865\":{\"es\":\"2026-11-09T08:00:00\",\"ef\":\"2026-11-09T09:00:00\",\"ls\":\"2026-11-09T16:00:00\",\"lf\":\"2026-11-09T17:00:00\",\"totalFloatMin\":420,\"freeFloatMin\":420,\"critical\":false,\"nearCritical\":true,\"isSummary\":false,\"state\":\"OPEN\",\"driver\":{\"kind\":\"PROJECT_START\"}}},\"criticalPath\":[\"3dacc4d9-8a55-487e-8397-5dab67f10074\",\"5fd18388-db07-4abe-8d33-2a31fc0fe678\"],\"conflicts\":[]},\"changedTaskIds\":[\"c19379fd-2365-41f8-ac16-43943f8c3865\"],\"stats\":{\"forwardVisited\":1,\"backwardVisited\":1,\"fullBackward\":false}}"
+      ]
     },
     {
       "id": "E2E-CMD-VAL-date-hour-25",
@@ -4934,12 +4912,11 @@
         "docs/05 §3 I3-I6",
         "OAS Task/Link/Assignment constraints"
       ],
-      "status": "fail",
-      "ms": 63,
+      "status": "pass",
+      "ms": 79,
       "defects": [
         "PF-012"
-      ],
-      "message": "date-hour-25 expected HTTP 400, got 500\n  request:  POST /projects/48e8c965-5558-478d-a314-d33554d2e0c2/commands {\"clientOpId\":\"1289c8cc-7b95-4456-9f4c-934a21bfe8f3\",\"expectedPlanVersion\":1,\"commands\":[{\"op\":\"addTask\",\"task\":{\"id\":\"6c1f14ee-f075-416e-b3a2-c67d29cc9832\",\"name\":\"v\",\"durationMin\":60,\"constraint\":{\"type\":\"SNET\",\"date\":\"2026-11-09T25:00:00\"}}}]}\n  response: HTTP 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\":\"An unexpected error occurred. Quote the traceId when contacting support.\",\"instance\":\"/projects/48e8c965-5558-478d-a314-d33554d2e0c2/commands\",\"traceId\":\"17830a95-b160-4e92-9bf0-c398b113c1a0\"}"
+      ]
     },
     {
       "id": "E2E-CMD-VAL-date-zulu",
@@ -4951,7 +4928,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 93,
+      "ms": 78,
       "defects": []
     },
     {
@@ -4964,7 +4941,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 104,
+      "ms": 76,
       "defects": []
     },
     {
@@ -4977,7 +4954,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 98,
+      "ms": 73,
       "defects": []
     },
     {
@@ -4990,7 +4967,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 111,
+      "ms": 74,
       "defects": []
     },
     {
@@ -5003,7 +4980,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 102,
+      "ms": 73,
       "defects": []
     },
     {
@@ -5016,7 +4993,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 98,
+      "ms": 72,
       "defects": []
     },
     {
@@ -5028,12 +5005,11 @@
         "docs/05 §3 I3-I6",
         "OAS Task/Link/Assignment constraints"
       ],
-      "status": "fail",
-      "ms": 80,
+      "status": "pass",
+      "ms": 72,
       "defects": [
         "PF-012"
-      ],
-      "message": "estimate-order expected HTTP 400, got 500\n  request:  POST /projects/3eafbaa9-cdc4-458e-9ba5-5d8adf806c6c/commands {\"clientOpId\":\"0acf38b4-174f-4bc0-a255-3493d027ced7\",\"expectedPlanVersion\":1,\"commands\":[{\"op\":\"addTask\",\"task\":{\"id\":\"1da2b8b9-3eb0-43cc-9f3b-875dc5988f39\",\"name\":\"v\",\"durationMin\":60,\"estimate\":{\"optimisticMin\":10,\"likelyMin\":5,\"pessimisticMin\":20}}}]}\n  response: HTTP 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\":\"An unexpected error occurred. Quote the traceId when contacting support.\",\"instance\":\"/projects/3eafbaa9-cdc4-458e-9ba5-5d8adf806c6c/commands\",\"traceId\":\"e282b29c-dedc-4379-998c-8e27f1677a75\"}"
+      ]
     },
     {
       "id": "E2E-CMD-VAL-estimate-partial",
@@ -5045,7 +5021,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 142,
+      "ms": 75,
       "defects": []
     },
     {
@@ -5058,7 +5034,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 106,
+      "ms": 74,
       "defects": []
     },
     {
@@ -5071,7 +5047,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 92,
+      "ms": 70,
       "defects": []
     },
     {
@@ -5084,7 +5060,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 100,
+      "ms": 71,
       "defects": []
     },
     {
@@ -5097,7 +5073,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 100,
+      "ms": 85,
       "defects": []
     },
     {
@@ -5110,7 +5086,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 87,
+      "ms": 74,
       "defects": []
     },
     {
@@ -5123,7 +5099,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 87,
+      "ms": 74,
       "defects": []
     },
     {
@@ -5136,7 +5112,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 88,
+      "ms": 75,
       "defects": []
     },
     {
@@ -5149,7 +5125,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 102,
+      "ms": 70,
       "defects": []
     },
     {
@@ -5162,7 +5138,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 113,
+      "ms": 78,
       "defects": []
     },
     {
@@ -5175,7 +5151,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 96,
+      "ms": 73,
       "defects": []
     },
     {
@@ -5188,7 +5164,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 149,
+      "ms": 75,
       "defects": []
     },
     {
@@ -5201,7 +5177,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 122,
+      "ms": 88,
       "defects": []
     },
     {
@@ -5214,7 +5190,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 96,
+      "ms": 81,
       "defects": []
     },
     {
@@ -5227,7 +5203,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 94,
+      "ms": 79,
       "defects": []
     },
     {
@@ -5240,7 +5216,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 95,
+      "ms": 82,
       "defects": []
     },
     {
@@ -5253,7 +5229,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 90,
+      "ms": 79,
       "defects": []
     },
     {
@@ -5266,7 +5242,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 93,
+      "ms": 79,
       "defects": []
     },
     {
@@ -5279,7 +5255,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 86,
+      "ms": 95,
       "defects": []
     },
     {
@@ -5292,7 +5268,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 88,
+      "ms": 85,
       "defects": []
     },
     {
@@ -5305,7 +5281,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 91,
+      "ms": 84,
       "defects": []
     },
     {
@@ -5318,7 +5294,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 92,
+      "ms": 86,
       "defects": []
     },
     {
@@ -5331,7 +5307,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 93,
+      "ms": 72,
       "defects": []
     },
     {
@@ -5344,7 +5320,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 86,
+      "ms": 77,
       "defects": []
     },
     {
@@ -5357,7 +5333,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 113,
+      "ms": 79,
       "defects": []
     },
     {
@@ -5370,7 +5346,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 113,
+      "ms": 84,
       "defects": []
     },
     {
@@ -5383,7 +5359,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 90,
+      "ms": 89,
       "defects": []
     },
     {
@@ -5396,7 +5372,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 99,
+      "ms": 87,
       "defects": []
     },
     {
@@ -5409,7 +5385,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 80,
+      "ms": 78,
       "defects": []
     },
     {
@@ -5422,7 +5398,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 81,
+      "ms": 82,
       "defects": []
     },
     {
@@ -5435,7 +5411,7 @@
         "OAS Task/Link/Assignment constraints"
       ],
       "status": "pass",
-      "ms": 88,
+      "ms": 83,
       "defects": []
     },
     {
@@ -5447,12 +5423,11 @@
         "docs/07 §5 PLAN_TOO_LARGE",
         "OAS CommandBatch.maxItems"
       ],
-      "status": "fail",
-      "ms": 53,
+      "status": "pass",
+      "ms": 121,
       "defects": [
         "PF-014"
-      ],
-      "message": " expected HTTP 413, got 400\n  request:  POST /projects/79cf5a9a-e3bb-4b86-98e8-edc3175ec146/commands {\"clientOpId\":\"6a8ccb4b-4bac-4237-905d-722fca137575\",\"expectedPlanVersion\":1,\"commands\":[{\"op\":\"addTask\",\"task\":{\"id\":\"5faede53-f2ca-43e5-834d-3c8c6178c362\",\"name\":\"big0\",\"durationMin\":1}},{\"op\":\"addTask\",\"task\":{\"id\":\"a72518fd-2433-4632-92a3-4be2404bbadd\",\"name\":\"big1\",\"durationMin\":1}},{\"op\":\"addT\n  response: HTTP 400 {\"type\":\"https://docs.planforge.example/errors/VALIDATION_FAILED\",\"title\":\"Validation failed\",\"status\":400,\"code\":\"VALIDATION_FAILED\",\"detail\":\"request body failed validation\",\"instance\":\"/projects/79cf5a9a-e3bb-4b86-98e8-edc3175ec146/commands\",\"traceId\":\"5068708d-2121-4080-9ed3-0cc0f72f304a\",\"errors\":[{\"path\":\"/commands\",\"message\":\"Array must contain at most 1000 element(s)\"}]}"
+      ]
     },
     {
       "id": "E2E-CMD-VAL-limits-1000",
@@ -5462,7 +5437,7 @@
         "docs/07 §3 (<= 1000 commands)"
       ],
       "status": "pass",
-      "ms": 363,
+      "ms": 328,
       "defects": []
     },
     {
@@ -5473,12 +5448,11 @@
         "docs/07 §3 (2 MB)",
         "docs/07 §5 PLAN_TOO_LARGE"
       ],
-      "status": "fail",
-      "ms": 53,
+      "status": "pass",
+      "ms": 52,
       "defects": [
         "PF-014"
-      ],
-      "message": "body >2MB must be 413 \n  request:  POST /projects/26ceefa2-26aa-419d-a886-791bf6c4be41/commands {\"clientOpId\":\"2179a79c-45f9-450d-92ae-398a57501d20\",\"expectedPlanVersion\":1,\"commands\":[{\"op\":\"addTask\",\"task\":{\"id\":\"cc1ca79a-db21-4f63-a01d-9cd9e5f3b387\",\"name\":\"v\",\"durationMin\":60,\"notes\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n400 !== 413\n"
+      ]
     },
     {
       "id": "E2E-CMD-VAL-contenttype",
@@ -5489,7 +5463,7 @@
         "OAS requestBody application/json"
       ],
       "status": "pass",
-      "ms": 31,
+      "ms": 40,
       "defects": []
     },
     {
@@ -5500,12 +5474,11 @@
         "NFR-I18N-01",
         "docs/05 task.name"
       ],
-      "status": "fail",
-      "ms": 101,
+      "status": "pass",
+      "ms": 141,
       "defects": [
         "PF-012"
-      ],
-      "message": "NUL byte in name must be a clean 4xx, got 500\n  request:  POST /projects/f270d09a-351a-40fc-9851-f7a0f1da5430/commands {\"clientOpId\":\"a4f2c3e0-2f28-4a1b-b063-5009af6504eb\",\"expectedPlanVersion\":12,\"commands\":[{\"op\":\"addTask\",\"task\":{\"id\":\"d5bb462b-0ad8-4be9-89c8-a4517ed0cbfd\",\"name\":\"nul\\u0000byte\",\"durationMin\":60}}]}\n  response: HTTP 500 {\"type\":\"https://docs.planforge.example/errors/INTERNAL\",\"title\":\"Internal error\",\"status\":500,\"code\":\"INTERNAL\",\"detail\":\"An unexpected error occurred. Quote the traceId when contacting support.\",\"instance\":\"/projects/f270d09a-351a-40fc-9851-f7a0f1da5430/commands\",\"traceId\":\"b161e504-5ec4-43e6-af5f-935fee2e218f\"}"
+      ]
     },
     {
       "id": "E2E-CMD-VAL-timeoffset",
@@ -5515,7 +5488,7 @@
         "docs/07 §1.8"
       ],
       "status": "pass",
-      "ms": 215,
+      "ms": 249,
       "defects": []
     },
     {
@@ -5528,7 +5501,7 @@
         "docs/05 sort_key"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 15,
       "defects": []
     },
     {
@@ -5541,7 +5514,7 @@
         "FR-PL-01"
       ],
       "status": "pass",
-      "ms": 19,
+      "ms": 21,
       "defects": []
     },
     {
@@ -5553,7 +5526,7 @@
         "docs/07 §5 DUPLICATE_ID"
       ],
       "status": "pass",
-      "ms": 187,
+      "ms": 167,
       "defects": []
     },
     {
@@ -5564,7 +5537,7 @@
         "docs/07 §3 updateTask (partial patch)"
       ],
       "status": "pass",
-      "ms": 24,
+      "ms": 20,
       "defects": []
     },
     {
@@ -5576,7 +5549,7 @@
         "FR-PL-02"
       ],
       "status": "pass",
-      "ms": 28,
+      "ms": 32,
       "defects": []
     },
     {
@@ -5588,7 +5561,7 @@
         "docs/07 §3 moveTask"
       ],
       "status": "pass",
-      "ms": 151,
+      "ms": 177,
       "defects": []
     },
     {
@@ -5600,7 +5573,7 @@
         "docs/07 §5 LINK_TO_SUMMARY"
       ],
       "status": "pass",
-      "ms": 87,
+      "ms": 84,
       "defects": []
     },
     {
@@ -5635,7 +5608,7 @@
         "docs/07 §5 LINK_TO_SUMMARY"
       ],
       "status": "pass",
-      "ms": 232,
+      "ms": 242,
       "defects": []
     },
     {
@@ -5649,7 +5622,7 @@
         "OAS Problem.cycle"
       ],
       "status": "pass",
-      "ms": 67,
+      "ms": 66,
       "defects": []
     },
     {
@@ -5660,7 +5633,7 @@
         "docs/05 I6 unique (pred,succ,type)"
       ],
       "status": "pass",
-      "ms": 32,
+      "ms": 24,
       "defects": []
     },
     {
@@ -5671,7 +5644,7 @@
         "docs/07 §3 updateLink/removeLink"
       ],
       "status": "pass",
-      "ms": 43,
+      "ms": 41,
       "defects": []
     },
     {
@@ -5683,12 +5656,11 @@
         "OAS Assignment",
         "FR-RS-02"
       ],
-      "status": "fail",
-      "ms": 12,
+      "status": "pass",
+      "ms": 38,
       "defects": [
         "PF-015"
-      ],
-      "message": " expected HTTP 200, got 400\n  request:  POST /projects/7109462f-ca65-41a7-8f59-7f17357d7db2/commands {\"clientOpId\":\"e0d28bcd-f530-4acf-87d8-62d38cbabc5f\",\"expectedPlanVersion\":1,\"commands\":[{\"op\":\"addAssignment\",\"assignment\":{\"id\":\"9a3ddf31-6f62-49a5-a63d-e7dedfc858dc\",\"taskId\":\"19203717-9787-4d2b-82fd-d54a5d6adb0c\",\"resourceId\":\"4ee2c73c-5394-456c-b4a1-0884aa5c285e\"}}]}\n  response: HTTP 400 {\"type\":\"https://docs.planforge.example/errors/VALIDATION_FAILED\",\"title\":\"Validation failed\",\"status\":400,\"code\":\"VALIDATION_FAILED\",\"detail\":\"unknown resource 4ee2c73c-5394-456c-b4a1-0884aa5c285e\",\"instance\":\"/projects/7109462f-ca65-41a7-8f59-7f17357d7db2/commands\",\"traceId\":\"b0a3301b-4821-4ba4-a907-53ed7173396f\"}"
+      ]
     },
     {
       "id": "E2E-CMD-ASSIGN-FRESHRES",
@@ -5699,12 +5671,11 @@
         "FR-RS-01/02",
         "docs/04 caching"
       ],
-      "status": "fail",
-      "ms": 12,
+      "status": "pass",
+      "ms": 15,
       "defects": [
         "PF-015"
-      ],
-      "message": "first attempt after creating the resource expected HTTP 200, got 400\n  request:  POST /projects/d9a73913-562b-4733-a69b-ac9ebd3be0df/commands {\"clientOpId\":\"68d14fea-4353-44ad-9b24-419870379111\",\"expectedPlanVersion\":1,\"commands\":[{\"op\":\"addAssignment\",\"assignment\":{\"id\":\"e99b4be5-7f62-423a-991d-2d09611f07ac\",\"taskId\":\"20e33d56-8ac0-411c-8c17-120df50c91ff\",\"resourceId\":\"510dc614-5795-47c1-b1a5-a337f961b319\"}}]}\n  response: HTTP 400 {\"type\":\"https://docs.planforge.example/errors/VALIDATION_FAILED\",\"title\":\"Validation failed\",\"status\":400,\"code\":\"VALIDATION_FAILED\",\"detail\":\"unknown resource 510dc614-5795-47c1-b1a5-a337f961b319\",\"instance\":\"/projects/d9a73913-562b-4733-a69b-ac9ebd3be0df/commands\",\"traceId\":\"71e6dd26-75f0-43ae-a0c3-bab949921dee\"}"
+      ]
     },
     {
       "id": "E2E-CMD-PROJ-001",
@@ -5715,7 +5686,7 @@
         "FR-PL-08"
       ],
       "status": "pass",
-      "ms": 26,
+      "ms": 32,
       "defects": []
     },
     {
@@ -5728,7 +5699,7 @@
         "OAS applyCommands (schedule.tasks only changed)"
       ],
       "status": "pass",
-      "ms": 31,
+      "ms": 26,
       "defects": []
     },
     {
@@ -5739,7 +5710,7 @@
         "docs/05 I7 planVersion +1 per batch"
       ],
       "status": "pass",
-      "ms": 27,
+      "ms": 23,
       "defects": []
     },
     {
@@ -5762,7 +5733,7 @@
         "FR-SC-01"
       ],
       "status": "pass",
-      "ms": 235,
+      "ms": 256,
       "defects": []
     },
     {
@@ -5773,7 +5744,7 @@
         "docs/06 §2 calendar arithmetic"
       ],
       "status": "pass",
-      "ms": 17,
+      "ms": 21,
       "defects": []
     },
     {
@@ -5784,7 +5755,7 @@
         "docs/06 §3.1 SS"
       ],
       "status": "pass",
-      "ms": 18,
+      "ms": 19,
       "defects": []
     },
     {
@@ -5806,7 +5777,7 @@
         "docs/06 §3.1 SF"
       ],
       "status": "pass",
-      "ms": 13,
+      "ms": 15,
       "defects": []
     },
     {
@@ -5829,7 +5800,7 @@
         "OAS Link.lagBasis"
       ],
       "status": "pass",
-      "ms": 25,
+      "ms": 23,
       "defects": []
     },
     {
@@ -5841,7 +5812,7 @@
         "FR-SC-04"
       ],
       "status": "pass",
-      "ms": 15,
+      "ms": 18,
       "defects": []
     },
     {
@@ -5853,7 +5824,7 @@
         "seed calendar CAL_A (2026-12-25 holiday)"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 13,
       "defects": []
     },
     {
@@ -5864,7 +5835,7 @@
         "docs/06 §2"
       ],
       "status": "pass",
-      "ms": 20,
+      "ms": 11,
       "defects": []
     },
     {
@@ -5875,7 +5846,7 @@
         "docs/06 §3.2 SNET"
       ],
       "status": "pass",
-      "ms": 30,
+      "ms": 33,
       "defects": []
     },
     {
@@ -5886,7 +5857,7 @@
         "docs/06 §3.2 FNET"
       ],
       "status": "pass",
-      "ms": 12,
+      "ms": 15,
       "defects": []
     },
     {
@@ -5897,7 +5868,7 @@
         "docs/06 §3.2 MSO"
       ],
       "status": "pass",
-      "ms": 38,
+      "ms": 36,
       "defects": []
     },
     {
@@ -5908,7 +5879,7 @@
         "docs/06 §3.2 MFO"
       ],
       "status": "pass",
-      "ms": 31,
+      "ms": 39,
       "defects": []
     },
     {
@@ -5919,7 +5890,7 @@
         "docs/06 §3.2 SNLT"
       ],
       "status": "pass",
-      "ms": 26,
+      "ms": 42,
       "defects": []
     },
     {
@@ -5930,7 +5901,7 @@
         "docs/06 §3.2 FNLT"
       ],
       "status": "pass",
-      "ms": 26,
+      "ms": 31,
       "defects": []
     },
     {
@@ -5942,7 +5913,7 @@
         "docs/06 §3 (ALAP free float 0)"
       ],
       "status": "pass",
-      "ms": 14,
+      "ms": 27,
       "defects": []
     },
     {
@@ -5953,12 +5924,11 @@
         "docs/06 §3.2",
         "FR-SC-03"
       ],
-      "status": "fail",
-      "ms": 265,
+      "status": "pass",
+      "ms": 328,
       "defects": [
         "PF-034"
-      ],
-      "message": "MSO 2026-11-11T17:00:00 conflicts\n+ actual - expected\n\n+ [\n+   'MSO_VIOLATED'\n+ ]\n- []\n"
+      ]
     },
     {
       "id": "E2E-SCHED-DEADLINE",
@@ -5969,7 +5939,7 @@
         "FR-SC-07"
       ],
       "status": "pass",
-      "ms": 30,
+      "ms": 23,
       "defects": []
     },
     {
@@ -5980,12 +5950,11 @@
         "docs/06 §3 float",
         "FR-SC-05"
       ],
-      "status": "fail",
-      "ms": 21,
+      "status": "pass",
+      "ms": 36,
       "defects": [
         "PF-032"
-      ],
-      "message": "threshold 240 < 480\n\ntrue !== false\n"
+      ]
     },
     {
       "id": "E2E-SCHED-CRITPATH",
@@ -5996,7 +5965,7 @@
         "OAS ScheduleResult.criticalPath"
       ],
       "status": "pass",
-      "ms": 15,
+      "ms": 14,
       "defects": []
     },
     {
@@ -6007,7 +5976,7 @@
         "docs/06 §3 roll-up"
       ],
       "status": "pass",
-      "ms": 17,
+      "ms": 20,
       "defects": []
     },
     {
@@ -6019,7 +5988,7 @@
         "FR-SC-08"
       ],
       "status": "pass",
-      "ms": 17,
+      "ms": 24,
       "defects": []
     },
     {
@@ -6031,7 +6000,7 @@
         "FR-SC-09"
       ],
       "status": "pass",
-      "ms": 32,
+      "ms": 28,
       "defects": []
     },
     {
@@ -6044,7 +6013,7 @@
         "FR-SC-10"
       ],
       "status": "pass",
-      "ms": 30,
+      "ms": 28,
       "defects": []
     },
     {
@@ -6055,7 +6024,7 @@
         "docs/06 §4 explainability"
       ],
       "status": "pass",
-      "ms": 15,
+      "ms": 27,
       "defects": []
     },
     {
@@ -6068,7 +6037,7 @@
         "NFR-QUAL-01"
       ],
       "status": "pass",
-      "ms": 557,
+      "ms": 694,
       "defects": []
     },
     {
@@ -6081,7 +6050,7 @@
         "NFR-QUAL-01"
       ],
       "status": "pass",
-      "ms": 539,
+      "ms": 604,
       "defects": []
     },
     {
@@ -6094,7 +6063,7 @@
         "NFR-QUAL-01"
       ],
       "status": "pass",
-      "ms": 580,
+      "ms": 581,
       "defects": []
     },
     {
@@ -6107,7 +6076,7 @@
         "NFR-QUAL-01"
       ],
       "status": "pass",
-      "ms": 502,
+      "ms": 539,
       "defects": []
     },
     {
@@ -6119,12 +6088,11 @@
         "FR-SC-01/03/05",
         "NFR-QUAL-01"
       ],
-      "status": "fail",
-      "ms": 100,
+      "status": "pass",
+      "ms": 656,
       "defects": [
         "PF-033"
-      ],
-      "message": "seed 5004: task 63f3ec99-d402-491f-8815-a62fb53e09f4 field nearCritical (server tf=0 summary=true critical=true; oracle tf=0 near=false)\n\ntrue !== false\n"
+      ]
     },
     {
       "id": "E2E-SCHED-RAND-freefloat",
@@ -6134,7 +6102,7 @@
         "docs/06 §3 (free float formula)"
       ],
       "status": "pass",
-      "ms": 341,
+      "ms": 351,
       "defects": []
     },
     {
@@ -6158,7 +6126,7 @@
         "OAS Task.calendarId"
       ],
       "status": "pass",
-      "ms": 57,
+      "ms": 55,
       "defects": []
     },
     {
@@ -6170,7 +6138,7 @@
         "docs/07 §2"
       ],
       "status": "pass",
-      "ms": 92,
+      "ms": 79,
       "defects": []
     },
     {
@@ -6181,12 +6149,11 @@
         "OAS previewSchedule requestBody",
         "docs/07 §2"
       ],
-      "status": "fail",
+      "status": "pass",
       "ms": 13,
       "defects": [
         "PF-017"
-      ],
-      "message": "previewSchedule is documented to take a CommandBatch: \n  request:  POST /projects/5145cc61-ef6f-4417-a296-70db3f93060f/schedule {\"clientOpId\":\"30fbbb12-0df4-40ac-a64a-ca953a6602d8\",\"expectedPlanVersion\":1,\"commands\":[{\"op\":\"updateTask\",\"id\":\"81a9dd94-89a6-4c6a-ab8c-f4f6cba8db6c\",\"patch\":{\"durationMin\":60}}]}\n  response: HTTP 400 {\"type\":\"https://docs.p"
+      ]
     },
     {
       "id": "E2E-RES-KIND-UNITS",
@@ -6197,7 +6164,7 @@
         "FR-RS-02"
       ],
       "status": "pass",
-      "ms": 254,
+      "ms": 278,
       "defects": []
     },
     {
@@ -6209,7 +6176,7 @@
         "FR-RS-02"
       ],
       "status": "pass",
-      "ms": 19,
+      "ms": 21,
       "defects": []
     },
     {
@@ -6220,7 +6187,7 @@
         "docs/06 §6.1 FIXED_WORK"
       ],
       "status": "pass",
-      "ms": 60,
+      "ms": 91,
       "defects": []
     },
     {
@@ -6231,7 +6198,7 @@
         "docs/06 §6.1 FIXED_UNITS + effortDriven"
       ],
       "status": "pass",
-      "ms": 40,
+      "ms": 64,
       "defects": []
     },
     {
@@ -6242,7 +6209,7 @@
         "docs/06 §6.1 FIXED_DURATION"
       ],
       "status": "pass",
-      "ms": 22,
+      "ms": 40,
       "defects": []
     },
     {
@@ -6253,7 +6220,7 @@
         "docs/05 assignment cascade"
       ],
       "status": "pass",
-      "ms": 27,
+      "ms": 37,
       "defects": []
     },
     {
@@ -6265,7 +6232,7 @@
         "FR-RS-04"
       ],
       "status": "pass",
-      "ms": 24,
+      "ms": 28,
       "defects": []
     },
     {
@@ -6277,7 +6244,7 @@
         "FR-RS-04"
       ],
       "status": "pass",
-      "ms": 36,
+      "ms": 46,
       "defects": []
     },
     {
@@ -6288,12 +6255,11 @@
         "OAS getResourceLoad params",
         "docs/07 §1.5"
       ],
-      "status": "fail",
-      "ms": 19,
+      "status": "pass",
+      "ms": 22,
       "defects": [
         "PF-030"
-      ],
-      "message": "these must be 400 VALIDATION_FAILED\n+ actual - expected\n\n+ [\n+   'from=2026-11-10&to=2026-11-09 -> 200',\n+   'to=2026-11-09 -> 200',\n+   'from=2026-11-09 -> 200',\n+   'from=2026-02-31&to=2026-03-01 -> 200'\n+ ]\n- []\n"
+      ]
     },
     {
       "id": "E2E-RES-LOAD-004",
@@ -6304,7 +6270,7 @@
         "FR-RS-04"
       ],
       "status": "pass",
-      "ms": 6,
+      "ms": 11,
       "defects": []
     },
     {
@@ -6316,7 +6282,7 @@
         "FR-RS-05"
       ],
       "status": "pass",
-      "ms": 97,
+      "ms": 140,
       "defects": []
     },
     {
@@ -6329,7 +6295,7 @@
         "FR-RS-05"
       ],
       "status": "pass",
-      "ms": 48,
+      "ms": 45,
       "defects": []
     },
     {
@@ -6342,7 +6308,7 @@
         "FR-RS-05"
       ],
       "status": "pass",
-      "ms": 36,
+      "ms": 44,
       "defects": []
     },
     {
@@ -6354,7 +6320,7 @@
         "docs/06 levelling"
       ],
       "status": "pass",
-      "ms": 24,
+      "ms": 29,
       "defects": []
     },
     {
@@ -6366,7 +6332,7 @@
         "docs/06 §6"
       ],
       "status": "pass",
-      "ms": 21,
+      "ms": 25,
       "defects": []
     },
     {
@@ -6378,7 +6344,7 @@
         "docs/06 §6 (never hidden)"
       ],
       "status": "pass",
-      "ms": 18,
+      "ms": 26,
       "defects": []
     },
     {
@@ -6390,7 +6356,7 @@
         "docs/07 §4"
       ],
       "status": "pass",
-      "ms": 30,
+      "ms": 33,
       "defects": []
     },
     {
@@ -6402,7 +6368,7 @@
         "FR-AU-01"
       ],
       "status": "pass",
-      "ms": 39,
+      "ms": 46,
       "defects": []
     },
     {
@@ -6414,7 +6380,7 @@
         "docs/06 (iteration cap)"
       ],
       "status": "pass",
-      "ms": 102,
+      "ms": 91,
       "defects": []
     },
     {
@@ -6425,12 +6391,11 @@
         "OAS saveBaseline",
         "FR-BL-01"
       ],
-      "status": "fail",
-      "ms": 22,
+      "status": "pass",
+      "ms": 37,
       "defects": [
         "PF-021"
-      ],
-      "message": " expected HTTP 409, got 201\n  request:  POST /projects/f61ee5bd-df35-4ad5-bb68-62c5c731f2b6/baselines {\"number\":0}\n  response: HTTP 201 {\"id\":\"f2909c0b-5795-4678-840e-a433337b4bea\",\"number\":0,\"label\":null,\"planVersion\":1,\"taskCount\":1,\"finish\":\"2026-11-09T17:00:00\"}"
+      ]
     },
     {
       "id": "E2E-RES-BASE-EMPTY",
@@ -6440,12 +6405,11 @@
         "OAS saveBaseline/listBaselines",
         "FR-BL-01"
       ],
-      "status": "fail",
-      "ms": 10,
+      "status": "pass",
+      "ms": 12,
       "defects": [
         "PF-022"
-      ],
-      "message": "saved baseline missing from the list: {\"items\":[]}\n\n0 !== 1\n"
+      ]
     },
     {
       "id": "E2E-RES-BASE-IMMUTABLE",
@@ -6455,12 +6419,11 @@
         "OAS saveBaseline (immutable once saved)",
         "FR-BL-02"
       ],
-      "status": "fail",
-      "ms": 87,
+      "status": "pass",
+      "ms": 106,
       "defects": [
         "PF-021"
-      ],
-      "message": " expected HTTP 409, got 201\n  request:  POST /projects/9305e9b8-a444-434a-b4c0-3078811b4d51/baselines {\"number\":1}\n  response: HTTP 201 {\"id\":\"26c81ab2-0a8a-4775-8270-a1f31a28b439\",\"number\":1,\"label\":null,\"planVersion\":2,\"taskCount\":1,\"finish\":\"2026-11-20T17:00:00\"}"
+      ]
     },
     {
       "id": "E2E-RES-BASE-AUTHZ",
@@ -6470,7 +6433,7 @@
         "docs/10 §4 Save baseline (ADMIN, PM only)"
       ],
       "status": "pass",
-      "ms": 37,
+      "ms": 57,
       "defects": []
     },
     {
@@ -6483,7 +6446,7 @@
         "FR-EV-01"
       ],
       "status": "pass",
-      "ms": 17,
+      "ms": 20,
       "defects": []
     },
     {
@@ -6494,12 +6457,11 @@
         "OAS getEarnedValue.statusDate (optional)",
         "FR-EV-01"
       ],
-      "status": "fail",
-      "ms": 11,
+      "status": "pass",
+      "ms": 15,
       "defects": [
         "PF-019"
-      ],
-      "message": "statusDate omitted expected HTTP 200, got 400\n  request:  GET /projects/fcda87ec-7fde-46b7-9f93-3538a59146a4/evm\n  response: HTTP 400 {\"type\":\"https://docs.planforge.example/errors/VALIDATION_FAILED\",\"title\":\"Validation failed\",\"status\":400,\"code\":\"VALIDATION_FAILED\",\"detail\":\"statusDate query parameter (or a project status date) is required\",\"instance\":\"/projects/fcda87ec-7fde-46b7-9f93-3538a59146a4/evm\",\"traceId\":\"bb6ab464-5371-43b7-be11-54fb52b0a390\"}"
+      ]
     },
     {
       "id": "E2E-RES-EVM-004",
@@ -6510,7 +6472,7 @@
         "FR-EV-01"
       ],
       "status": "fail",
-      "ms": 14,
+      "ms": 19,
       "defects": [
         "PF-019"
       ],
@@ -6524,12 +6486,11 @@
         "OAS getEarnedValue.baseline",
         "FR-BL-03"
       ],
-      "status": "fail",
-      "ms": 14,
+      "status": "pass",
+      "ms": 16,
       "defects": [
         "PF-020"
-      ],
-      "message": "baseline 7 does not exist expected HTTP 404, got 200\n  request:  GET /projects/01a7bb03-0635-4528-b90e-d9a6167ba882/evm?statusDate=2026-11-10&baseline=7\n  response: HTTP 200 {\"statusDate\":\"2026-11-10T00:00:00\",\"bac\":1000,\"pv\":1000,\"ev\":0,\"sv\":-1000,\"spi\":0,\"pvBasis\":\"cost of working days before the status date\",\"ac\":null,\"cpi\":null,\"cv\":null,\"note\":\"actual cost is not tracked by the reference server; pass ?ac= to compute cost indices\"}"
+      ]
     },
     {
       "id": "E2E-RES-EVM-005",
@@ -6539,12 +6500,11 @@
         "OAS getEarnedValue.baseline",
         "FR-BL-03"
       ],
-      "status": "fail",
-      "ms": 19,
+      "status": "pass",
+      "ms": 31,
       "defects": [
         "PF-020"
-      ],
-      "message": "baseline BAC\n\n5000 !== 1000\n"
+      ]
     },
     {
       "id": "E2E-RES-EVM-COST",
@@ -6555,7 +6515,7 @@
         "FR-RS-03"
       ],
       "status": "pass",
-      "ms": 61,
+      "ms": 80,
       "defects": []
     },
     {
@@ -6567,7 +6527,7 @@
         "FR-RK-01"
       ],
       "status": "pass",
-      "ms": 71,
+      "ms": 148,
       "defects": []
     },
     {
@@ -6579,7 +6539,7 @@
         "FR-RK-02 (same seed + plan version = identical result)"
       ],
       "status": "pass",
-      "ms": 161,
+      "ms": 897,
       "defects": []
     },
     {
@@ -6591,7 +6551,7 @@
         "FR-RK-03"
       ],
       "status": "pass",
-      "ms": 13,
+      "ms": 79,
       "defects": []
     },
     {
@@ -6602,7 +6562,7 @@
         "OAS startRiskRun.iterations (100..20000 reference)"
       ],
       "status": "pass",
-      "ms": 29,
+      "ms": 110,
       "defects": []
     },
     {
@@ -6614,7 +6574,7 @@
         "T12"
       ],
       "status": "pass",
-      "ms": 13019,
+      "ms": 3381,
       "defects": []
     },
     {
@@ -6625,7 +6585,7 @@
         "docs/10 §4 Run risk (not TEAM_MEMBER/VIEWER/PORTFOLIO)"
       ],
       "status": "pass",
-      "ms": 73,
+      "ms": 137,
       "defects": []
     },
     {
@@ -6637,7 +6597,7 @@
         "FR-SN-01"
       ],
       "status": "pass",
-      "ms": 32,
+      "ms": 30,
       "defects": []
     },
     {
@@ -6648,7 +6608,7 @@
         "OAS ScenarioCreate"
       ],
       "status": "pass",
-      "ms": 121,
+      "ms": 103,
       "defects": []
     },
     {
@@ -6660,7 +6620,7 @@
         "FR-CA-01"
       ],
       "status": "pass",
-      "ms": 7,
+      "ms": 8,
       "defects": []
     },
     {
@@ -6672,12 +6632,11 @@
         "NFR-QUAL-01",
         "FR-SC-06"
       ],
-      "status": "fail",
-      "ms": 2786,
+      "status": "pass",
+      "ms": 4459,
       "defects": [
         "PF-032"
-      ],
-      "message": "project 5 after edit 20 (addLink SS): incremental != full replay at /tasks/0/schedule/nearCritical: false != true\n+ actual - expected\n\n+ '/tasks/0/schedule/nearCritical: false != true'\n- null\n"
+      ]
     },
     {
       "id": "E2E-INCR-RANDOM-CORE",
@@ -6689,7 +6648,7 @@
         "FR-SC-06"
       ],
       "status": "pass",
-      "ms": 3906,
+      "ms": 4007,
       "defects": []
     },
     {
@@ -6702,7 +6661,7 @@
         "docs/06 §7"
       ],
       "status": "pass",
-      "ms": 276,
+      "ms": 295,
       "defects": []
     },
     {
@@ -6714,7 +6673,7 @@
         "NFR-REL-02"
       ],
       "status": "pass",
-      "ms": 80,
+      "ms": 60,
       "defects": []
     },
     {
@@ -6726,7 +6685,7 @@
         "docs/07 §3"
       ],
       "status": "pass",
-      "ms": 562,
+      "ms": 604,
       "defects": []
     },
     {
@@ -6738,7 +6697,7 @@
         "docs/07 §3"
       ],
       "status": "pass",
-      "ms": 2870,
+      "ms": 2605,
       "defects": []
     },
     {
@@ -6749,12 +6708,11 @@
         "OAS createRealtimeTicket",
         "docs/07 §6.1"
       ],
-      "status": "fail",
-      "ms": 223,
+      "status": "pass",
+      "ms": 272,
       "defects": [
         "PF-036"
-      ],
-      "message": "OAS and docs/07 say a 60-second ticket; observed 30 s"
+      ]
     },
     {
       "id": "E2E-RT-HELLO",
@@ -6764,7 +6722,7 @@
         "docs/07 §6.2 hello {lastSeq}"
       ],
       "status": "fail",
-      "ms": 60,
+      "ms": 44,
       "defects": [
         "PF-035"
       ],
@@ -6779,7 +6737,7 @@
         "asyncapi plan.changed"
       ],
       "status": "pass",
-      "ms": 117,
+      "ms": 129,
       "defects": []
     },
     {
@@ -6791,7 +6749,7 @@
         "docs/07 §6.3"
       ],
       "status": "fail",
-      "ms": 103,
+      "ms": 111,
       "defects": [
         "PF-035"
       ],
@@ -6806,7 +6764,7 @@
         "asyncapi ScheduleDelta"
       ],
       "status": "fail",
-      "ms": 635,
+      "ms": 643,
       "defects": [
         "PF-035"
       ],
@@ -6820,7 +6778,7 @@
         "NFR-PERF-04 (push latency)"
       ],
       "status": "pass",
-      "ms": 388,
+      "ms": 392,
       "defects": []
     },
     {
@@ -6832,7 +6790,7 @@
         "FR-AU-02"
       ],
       "status": "pass",
-      "ms": 333,
+      "ms": 329,
       "defects": []
     },
     {
@@ -6843,7 +6801,7 @@
         "docs/10 T2/T10"
       ],
       "status": "pass",
-      "ms": 32,
+      "ms": 38,
       "defects": []
     },
     {
@@ -6855,7 +6813,7 @@
         "docs/10 T10"
       ],
       "status": "pass",
-      "ms": 34,
+      "ms": 54,
       "defects": []
     },
     {
@@ -6867,7 +6825,7 @@
         "docs/10 T10"
       ],
       "status": "pass",
-      "ms": 110,
+      "ms": 119,
       "defects": []
     },
     {
@@ -6891,7 +6849,7 @@
         "docs/07 §6"
       ],
       "status": "pass",
-      "ms": 63,
+      "ms": 71,
       "defects": []
     },
     {
@@ -6902,7 +6860,7 @@
         "docs/10 T10 (membership re-checked on role change)"
       ],
       "status": "pass",
-      "ms": 337,
+      "ms": 360,
       "defects": []
     },
     {
@@ -6914,7 +6872,7 @@
         "docs/07 §3 atomic"
       ],
       "status": "pass",
-      "ms": 551,
+      "ms": 572,
       "defects": []
     },
     {
@@ -6926,7 +6884,7 @@
         "T3"
       ],
       "status": "pass",
-      "ms": 47,
+      "ms": 43,
       "defects": []
     },
     {
@@ -6938,7 +6896,7 @@
         "NFR-SEC"
       ],
       "status": "pass",
-      "ms": 394,
+      "ms": 366,
       "defects": []
     },
     {
@@ -6949,12 +6907,11 @@
         "docs/10 T11 (send-buffer caps)",
         "NFR-AVAIL"
       ],
-      "status": "fail",
-      "ms": 795,
+      "status": "pass",
+      "ms": 802,
       "defects": [
         "PF-001"
-      ],
-      "message": "oversize frame: the server process died (exit=1) after one client misbehaved. Log tail: s:519:28) at emitErrorNT (node:internal/streams/destroy:170:8) at emitErrorCloseNT (node:internal/streams/destroy:129:3) at process.processTicksAndRejections (node:internal/process/task_queues:89:21) { code: 'WS_ERR_UNSUPPORTED_MESSAGE_LENGTH', [Symbol(status-code)]: 1009}Node.js v22.23.4\n\nfalse !== true\n"
+      ]
     },
     {
       "id": "E2E-RT-ABUSE-BINARY",
@@ -6964,7 +6921,7 @@
         "docs/10 T11"
       ],
       "status": "pass",
-      "ms": 817,
+      "ms": 789,
       "defects": []
     },
     {
@@ -6975,7 +6932,7 @@
         "docs/10 T11 (connection flood / slowloris)"
       ],
       "status": "pass",
-      "ms": 846,
+      "ms": 808,
       "defects": []
     },
     {
@@ -6987,7 +6944,7 @@
         "NFR-PERF-04"
       ],
       "status": "pass",
-      "ms": 408,
+      "ms": 372,
       "defects": []
     },
     {
@@ -6999,7 +6956,7 @@
         "FR-GV-02"
       ],
       "status": "pass",
-      "ms": 463,
+      "ms": 546,
       "defects": []
     },
     {
@@ -7011,7 +6968,7 @@
         "docs/05 audit_event"
       ],
       "status": "pass",
-      "ms": 19,
+      "ms": 18,
       "defects": []
     },
     {
@@ -7023,7 +6980,7 @@
         "OAS listAuditEvents (cursor paging)"
       ],
       "status": "pass",
-      "ms": 91,
+      "ms": 86,
       "defects": []
     },
     {
@@ -7035,7 +6992,7 @@
         "FR-AU-02"
       ],
       "status": "pass",
-      "ms": 97,
+      "ms": 100,
       "defects": []
     },
     {
@@ -7047,7 +7004,7 @@
         "T13"
       ],
       "status": "pass",
-      "ms": 97,
+      "ms": 99,
       "defects": []
     },
     {
@@ -7058,7 +7015,7 @@
         "docs/10 §7 verification endpoint"
       ],
       "status": "pass",
-      "ms": 39,
+      "ms": 32,
       "defects": []
     },
     {
@@ -7070,7 +7027,7 @@
         "T13"
       ],
       "status": "pass",
-      "ms": 370,
+      "ms": 385,
       "defects": []
     },
     {
@@ -7082,7 +7039,7 @@
         "T13"
       ],
       "status": "pass",
-      "ms": 374,
+      "ms": 381,
       "defects": []
     },
     {
@@ -7094,7 +7051,7 @@
         "T13"
       ],
       "status": "pass",
-      "ms": 406,
+      "ms": 451,
       "defects": []
     },
     {
@@ -7106,7 +7063,7 @@
         "T13"
       ],
       "status": "pass",
-      "ms": 1226,
+      "ms": 1030,
       "defects": [
         "PF-002"
       ]
@@ -7120,7 +7077,7 @@
         "T13"
       ],
       "status": "pass",
-      "ms": 376,
+      "ms": 390,
       "defects": []
     },
     {
@@ -7132,7 +7089,7 @@
         "T13"
       ],
       "status": "pass",
-      "ms": 326,
+      "ms": 291,
       "defects": []
     },
     {
@@ -7143,7 +7100,7 @@
         "docs/10 T13 (DB role has no UPDATE/DELETE)"
       ],
       "status": "pass",
-      "ms": 363,
+      "ms": 305,
       "defects": []
     },
     {
@@ -7155,7 +7112,7 @@
         "NFR-SEC"
       ],
       "status": "pass",
-      "ms": 390,
+      "ms": 281,
       "defects": []
     },
     {
@@ -7166,7 +7123,7 @@
         "docs/10 §7 (\"Logged: authentication\")"
       ],
       "status": "fail",
-      "ms": 28,
+      "ms": 24,
       "defects": [
         "PF-011"
       ],
@@ -7181,7 +7138,7 @@
         "OAS levelResources apply"
       ],
       "status": "pass",
-      "ms": 48,
+      "ms": 42,
       "defects": []
     },
     {
@@ -7193,7 +7150,7 @@
         "docs/07 §3 (batch <= 1000 commands)"
       ],
       "status": "pass",
-      "ms": 2884,
+      "ms": 2716,
       "defects": []
     },
     {
@@ -7204,7 +7161,7 @@
         "NFR-PERF-02"
       ],
       "status": "pass",
-      "ms": 1080,
+      "ms": 973,
       "defects": []
     },
     {
@@ -7215,7 +7172,7 @@
         "NFR-PERF-02 (p95 command round-trip < 300 ms for <= 10k tasks)"
       ],
       "status": "pass",
-      "ms": 1487,
+      "ms": 1481,
       "defects": []
     },
     {
@@ -7227,7 +7184,7 @@
         "v0.2 measured 1.4 ms off-critical)"
       ],
       "status": "pass",
-      "ms": 2170,
+      "ms": 2183,
       "defects": []
     },
     {
@@ -7239,7 +7196,7 @@
         "NFR-SCAL"
       ],
       "status": "pass",
-      "ms": 2928,
+      "ms": 3168,
       "defects": []
     },
     {
@@ -7251,7 +7208,7 @@
         "docs/04 stateless recovery"
       ],
       "status": "pass",
-      "ms": 522,
+      "ms": 636,
       "defects": []
     },
     {
@@ -7263,7 +7220,7 @@
         "NFR-PERF"
       ],
       "status": "pass",
-      "ms": 383,
+      "ms": 388,
       "defects": []
     },
     {
@@ -7276,7 +7233,7 @@
         "T20 (one tenant must not degrade others)"
       ],
       "status": "pass",
-      "ms": 24069,
+      "ms": 63164,
       "defects": []
     },
     {
@@ -7287,12 +7244,11 @@
         "docs/10 T12 (per-tenant concurrency bulkhead)",
         "T20 (noisy neighbour)"
       ],
-      "status": "fail",
-      "ms": 22688,
+      "status": "pass",
+      "ms": 63686,
       "defects": [
         "PF-037"
-      ],
-      "message": "tenant B request failed at transport level: ECONNRESET\n\n'ECONNRESET' !== ''\n"
+      ]
     },
     {
       "id": "E2E-ROBUST-JSON",
@@ -7303,7 +7259,7 @@
         "docs/10 §8 (input validation on every boundary)"
       ],
       "status": "fail",
-      "ms": 903,
+      "ms": 849,
       "defects": [
         "PF-031"
       ],
@@ -7318,7 +7274,7 @@
         "docs/05 I3"
       ],
       "status": "pass",
-      "ms": 594,
+      "ms": 567,
       "defects": []
     },
     {
@@ -7329,12 +7285,11 @@
         "NFR-I18N-01",
         "docs/05"
       ],
-      "status": "fail",
-      "ms": 147,
+      "status": "pass",
+      "ms": 115,
       "defects": [
         "PF-012"
-      ],
-      "message": "lone surrogate in project name -> 500"
+      ]
     },
     {
       "id": "E2E-ROBUST-RAWHTTP",
@@ -7345,7 +7300,7 @@
         "NFR-SEC"
       ],
       "status": "pass",
-      "ms": 1721,
+      "ms": 1715,
       "defects": []
     },
     {
@@ -7357,7 +7312,7 @@
         "NFR-REL"
       ],
       "status": "pass",
-      "ms": 969,
+      "ms": 966,
       "defects": []
     },
     {
@@ -7369,7 +7324,7 @@
         "docs/07 §1.6 idempotency"
       ],
       "status": "pass",
-      "ms": 1447,
+      "ms": 1436,
       "defects": []
     },
     {
@@ -7381,7 +7336,7 @@
         "T20"
       ],
       "status": "pass",
-      "ms": 319,
+      "ms": 311,
       "defects": []
     },
     {
@@ -7393,7 +7348,7 @@
         "T20"
       ],
       "status": "pass",
-      "ms": 2846,
+      "ms": 3086,
       "defects": []
     },
     {
@@ -7404,7 +7359,7 @@
         "docs/10 T4"
       ],
       "status": "pass",
-      "ms": 29,
+      "ms": 38,
       "defects": []
     },
     {
@@ -7415,12 +7370,11 @@
         "NFR-REL (DB connection loss)",
         "NFR-AVAIL"
       ],
-      "status": "fail",
-      "ms": 10177,
+      "status": "pass",
+      "ms": 1632,
       "defects": [
         "PF-038"
-      ],
-      "message": "unexpected: -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1"
+      ]
     },
     {
       "id": "E2E-ROBUST-PGKILL-LOAD",
@@ -7431,12 +7385,11 @@
         "docs/07 §3 atomic",
         "docs/07 §1.6"
       ],
-      "status": "fail",
-      "ms": 1,
+      "status": "pass",
+      "ms": 2735,
       "defects": [
         "PF-038"
-      ],
-      "message": "server process already exited (code 1). Log tail: ) at Socket.<anonymous> (/home/claude/planforge/server/node_modules/pg/lib/connection.js:64:12) at Socket.emit (node:events:519:28) at TCP.<anonymous> (node:net:347:12)Emitted 'error' event on Client instance at: at Client._handleErrorEvent (/home/claude/planforge/server/node_modules/pg/lib/client.js:422:10) at Connection.<anonymous> (/home/claude/planforge/server/node_modules/pg/lib/client.js:222:16) at Object.onceWrapper (node:events:633:28) at Connection.emit (node:events:519:28) at Socket.<anonymous> (/home/claude/planforge/server/node_modules/pg/lib/connection.js:64:12) at Socket.emit (node:events:519:28) at TCP.<anonymous> (node:net:347:12)Node.js v22.23.4"
+      ]
     },
     {
       "id": "E2E-ROBUST-PGKILL-WS",
@@ -7445,12 +7398,11 @@
       "refs": [
         "NFR-REL"
       ],
-      "status": "fail",
-      "ms": 0,
+      "status": "pass",
+      "ms": 382,
       "defects": [
         "PF-038"
-      ],
-      "message": "server process already exited (code 1). Log tail: ) at Socket.<anonymous> (/home/claude/planforge/server/node_modules/pg/lib/connection.js:64:12) at Socket.emit (node:events:519:28) at TCP.<anonymous> (node:net:347:12)Emitted 'error' event on Client instance at: at Client._handleErrorEvent (/home/claude/planforge/server/node_modules/pg/lib/client.js:422:10) at Connection.<anonymous> (/home/claude/planforge/server/node_modules/pg/lib/client.js:222:16) at Object.onceWrapper (node:events:633:28) at Connection.emit (node:events:519:28) at Socket.<anonymous> (/home/claude/planforge/server/node_modules/pg/lib/connection.js:64:12) at Socket.emit (node:events:519:28) at TCP.<anonymous> (node:net:347:12)Node.js v22.23.4"
+      ]
     },
     {
       "id": "E2E-ROBUST-DBDOWN",
@@ -7460,12 +7412,11 @@
         "NFR-REL",
         "NFR-AVAIL"
       ],
-      "status": "fail",
-      "ms": 1,
+      "status": "pass",
+      "ms": 356,
       "defects": [
         "PF-038"
-      ],
-      "message": "server process already exited (code 1). Log tail: ) at Socket.<anonymous> (/home/claude/planforge/server/node_modules/pg/lib/connection.js:64:12) at Socket.emit (node:events:519:28) at TCP.<anonymous> (node:net:347:12)Emitted 'error' event on Client instance at: at Client._handleErrorEvent (/home/claude/planforge/server/node_modules/pg/lib/client.js:422:10) at Connection.<anonymous> (/home/claude/planforge/server/node_modules/pg/lib/client.js:222:16) at Object.onceWrapper (node:events:633:28) at Connection.emit (node:events:519:28) at Socket.<anonymous> (/home/claude/planforge/server/node_modules/pg/lib/connection.js:64:12) at Socket.emit (node:events:519:28) at TCP.<anonymous> (node:net:347:12)Node.js v22.23.4"
+      ]
     },
     {
       "id": "E2E-ROBUST-SIGTERM",
@@ -7475,7 +7426,7 @@
         "NFR-REL (graceful shutdown)"
       ],
       "status": "pass",
-      "ms": 247,
+      "ms": 216,
       "defects": []
     }
   ],
@@ -7492,7 +7443,7 @@
       "expected": "The offending socket is closed (1009) and every other connection and tenant keeps being served.",
       "actual": "The ws library emits an unhandled \"error\" event (WS_ERR_UNSUPPORTED_MESSAGE_LENGTH, maxPayload 4096), the Node process exits with code 1, and every tenant loses service. Any authenticated user of any tenant can do this. Evidence: server stderr tail captured in the failing test.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-002",
@@ -7521,7 +7472,7 @@
       "expected": "Zero rows (RLS forced on every tenant table).",
       "actual": "All rows of all tenants are returned from the partitions (the parent table is protected, the child partitions are not). Latent: the current server populates no timephase rows and queries only the parent, so it is not reachable through the API today.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-004",
@@ -7536,7 +7487,7 @@
       "expected": "Both are rejected identically (400 unknown calendar / 404), nothing is stored.",
       "actual": "The foreign id is accepted (201) and stored, the random id gets 400, so tenant B can test whether a given uuid is a tenant-A calendar (FK checks bypass RLS).",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-005",
@@ -7564,7 +7515,7 @@
       "expected": "409/422: a project must keep a project manager.",
       "actual": "200: the project is left without anyone who can manage it.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-007",
@@ -7606,7 +7557,7 @@
       "expected": "WWW-Authenticate: Bearer ...",
       "actual": "Header absent.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-010",
@@ -7654,7 +7605,7 @@
       "expected": "400 VALIDATION_FAILED for each.",
       "actual": "INTERNAL 500 (database check-constraint, invalid-date and encoding errors leak through as 500). No stack or SQL is exposed, but clients cannot distinguish them from outages.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-013",
@@ -7668,7 +7619,7 @@
       "expected": "400 VALIDATION_FAILED.",
       "actual": "200: the date is normalised (rolls into March) without notice.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-014",
@@ -7683,7 +7634,7 @@
       "expected": "413 PLAN_TOO_LARGE for both.",
       "actual": "1001 commands -> 400 VALIDATION_FAILED (\"at most 1000\"); a 3 MB body is parsed and validated field by field (no 413 at all).",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-015",
@@ -7698,7 +7649,7 @@
       "expected": "200.",
       "actual": "400 \"unknown resource\" on the first attempt; a retry succeeds. Every client that creates a resource and assigns it hits this.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-016",
@@ -7728,7 +7679,7 @@
       "expected": "200 with a schedule preview.",
       "actual": "400 VALIDATION_FAILED (unknown keys clientOpId/expectedPlanVersion); only a bare {commands} body works.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-018",
@@ -7779,7 +7730,7 @@
       "expected": "baseline=1 uses the saved snapshot; baseline=7 (absent) -> 404.",
       "actual": "Both answered from the live plan (BAC 5000 instead of 1000; baseline=7 returns 200).",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-021",
@@ -7794,7 +7745,7 @@
       "expected": "409 on the second save; the first snapshot stays.",
       "actual": "201 again with a new planVersion/finish: the earlier baseline is replaced, destroying the reference for variance reporting.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-022",
@@ -7808,7 +7759,7 @@
       "expected": "One baseline listed.",
       "actual": "{\"items\":[]}.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-023",
@@ -7836,7 +7787,7 @@
       "expected": "428/400.",
       "actual": "200.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-025",
@@ -7867,7 +7818,7 @@
       "expected": "Three tasks and a nextCursor; limit=0 -> 400.",
       "actual": "All tasks, no nextCursor; limit=0 -> 200. (The performance suite shows the cost: GET /tasks?limit=100 returns 2,000 tasks.)",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-027",
@@ -7882,7 +7833,7 @@
       "expected": "Same project returned; different body -> 409.",
       "actual": "Two projects created / second accepted.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-028",
@@ -7912,7 +7863,7 @@
       "expected": "405 + Allow + problem.status 405.",
       "actual": "405 with body status 400 / VALIDATION_FAILED and no Allow header.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-030",
@@ -7927,7 +7878,7 @@
       "expected": "400 VALIDATION_FAILED.",
       "actual": "200 (filters silently ignored or empty result).",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-031",
@@ -7956,7 +7907,7 @@
       "expected": "nearCritical false (480 > 240); identical to what a fresh replay of the same plan produces.",
       "actual": "nearCritical stays true until the process restarts and the plan is reloaded; the replay oracle shows the difference after a random edit sequence containing nearCriticalMin changes.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-033",
@@ -7970,7 +7921,7 @@
       "expected": "nearCritical false when totalFloatMin = 0.",
       "actual": "nearCritical true (rolled up as any(child.nearCritical)) while totalFloatMin 0 and critical true.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-034",
@@ -7984,7 +7935,7 @@
       "expected": "No conflict: the pinned start (next working minute) is not earlier than the predecessor push.",
       "actual": "MSO_VIOLATED reported although the task is exactly where it was pinned (raw wall-clock compare against the normalised start). Dates are right; only the conflict list is wrong.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-035",
@@ -8014,7 +7965,7 @@
       "expected": "60 s.",
       "actual": "30 s (documentation and implementation disagree).",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-037",
@@ -8028,7 +7979,7 @@
       "expected": "Tenant B answered < 5 s; the risk run is queued/limited per tenant.",
       "actual": "The risk run executes synchronously on the event loop for 20-50 s; tenant B request fails with ECONNRESET (the server drops the connection once its own header timeout elapses while the loop is blocked). Keep-alive connections were also reset. The server recovers afterwards.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     },
     {
       "id": "PF-038",
@@ -8045,7 +7996,7 @@
       "expected": "In-flight requests fail with 503 DEPENDENCY_UNAVAILABLE; the process stays up and recovers.",
       "actual": "Intermittent (a race: it needs the backend to die while a client is checked out between queries): the process exits with code 1 on an unhandled \"error\" event emitted by a pg Client (server/src/db.ts tx(): pool.on(\"error\") covers only idle clients; the checked-out PoolClient has no listener). All tenants lose service until a supervisor restarts it. Reproduced in 1 of 3 full runs; earlier runs passed.",
       "kind": "defect",
-      "reproduced": true
+      "reproduced": false
     }
   ],
   "metrics": [],
@@ -8055,147 +8006,147 @@
       "id": "E2E-CONTRACT-ERR-001",
       "key": "observation",
       "value": "fuzz corpus: 352 requests executed",
-      "at": "2026-11-08T14:12:09.660Z"
+      "at": "2026-11-08T14:26:50.960Z"
     },
     {
       "kind": "obs",
       "id": "E2E-AUTH-011",
       "key": "observation",
       "value": "unknown subject -> HTTP 403 FORBIDDEN; unknown tenant -> HTTP 403 FORBIDDEN",
-      "at": "2026-11-08T14:12:10.224Z"
+      "at": "2026-11-08T14:26:51.496Z"
     },
     {
       "kind": "obs",
       "id": "E2E-AUTH-RL-001",
       "key": "observation",
       "value": "rate limit 20/min: first 429 at request #21; Retry-After=10s",
-      "at": "2026-11-08T14:12:10.773Z"
+      "at": "2026-11-08T14:26:51.988Z"
     },
     {
       "kind": "obs",
       "id": "E2E-AUTHZ-OBS-001",
       "key": "observation",
-      "value": "ORG_ADMIN: PATCH:200 scenario:400 preview:400 ticket:201 resource:201 archive:204",
-      "at": "2026-11-08T14:12:26.799Z"
+      "value": "ORG_ADMIN: PATCH:428 scenario:400 preview:200 ticket:201 resource:201 archive:204",
+      "at": "2026-11-08T14:27:07.059Z"
     },
     {
       "kind": "obs",
       "id": "E2E-AUTHZ-OBS-001",
       "key": "observation",
-      "value": "PORTFOLIO_MANAGER: PATCH:403 scenario:400 preview:400 ticket:201 resource:403 archive:403",
-      "at": "2026-11-08T14:12:26.799Z"
+      "value": "PORTFOLIO_MANAGER: PATCH:428 scenario:400 preview:200 ticket:201 resource:403 archive:403",
+      "at": "2026-11-08T14:27:07.060Z"
     },
     {
       "kind": "obs",
       "id": "E2E-AUTHZ-OBS-001",
       "key": "observation",
-      "value": "PROJECT_MANAGER: PATCH:200 scenario:400 preview:400 ticket:201 resource:201 archive:204",
-      "at": "2026-11-08T14:12:26.799Z"
+      "value": "PROJECT_MANAGER: PATCH:428 scenario:400 preview:200 ticket:201 resource:201 archive:204",
+      "at": "2026-11-08T14:27:07.060Z"
     },
     {
       "kind": "obs",
       "id": "E2E-AUTHZ-OBS-001",
       "key": "observation",
-      "value": "SCHEDULER: PATCH:200 scenario:400 preview:400 ticket:201 resource:201 archive:403",
-      "at": "2026-11-08T14:12:26.799Z"
+      "value": "SCHEDULER: PATCH:428 scenario:400 preview:200 ticket:201 resource:201 archive:403",
+      "at": "2026-11-08T14:27:07.060Z"
     },
     {
       "kind": "obs",
       "id": "E2E-AUTHZ-OBS-001",
       "key": "observation",
-      "value": "TEAM_MEMBER: PATCH:403 scenario:400 preview:400 ticket:201 resource:403 archive:403",
-      "at": "2026-11-08T14:12:26.800Z"
+      "value": "TEAM_MEMBER: PATCH:428 scenario:400 preview:200 ticket:201 resource:403 archive:403",
+      "at": "2026-11-08T14:27:07.060Z"
     },
     {
       "kind": "obs",
       "id": "E2E-AUTHZ-OBS-001",
       "key": "observation",
-      "value": "VIEWER: PATCH:403 scenario:400 preview:400 ticket:201 resource:403 archive:403",
-      "at": "2026-11-08T14:12:26.800Z"
+      "value": "VIEWER: PATCH:428 scenario:400 preview:200 ticket:201 resource:403 archive:403",
+      "at": "2026-11-08T14:27:07.060Z"
     },
     {
       "kind": "obs",
       "id": "E2E-AUTHZ-OBS-001",
       "key": "observation",
-      "value": "(non-member): PATCH:404 scenario:400 preview:400 ticket:404 resource:403 archive:404",
-      "at": "2026-11-08T14:12:26.800Z"
+      "value": "(non-member): PATCH:428 scenario:400 preview:404 ticket:404 resource:403 archive:404",
+      "at": "2026-11-08T14:27:07.060Z"
     },
     {
       "kind": "obs",
       "id": "E2E-TENANT-SQL-000",
       "key": "observation",
       "value": "tables with tenant_id: 28",
-      "at": "2026-11-08T14:12:28.542Z"
+      "at": "2026-11-08T14:27:08.193Z"
     },
     {
       "kind": "obs",
       "id": "E2E-TENANT-SQL-009",
       "key": "observation",
       "value": "pf_app sees 2 tenant rows while acting as tenant A (tenant table is outside RLS)",
-      "at": "2026-11-08T14:12:31.329Z"
+      "at": "2026-11-08T14:27:10.282Z"
     },
     {
       "kind": "obs",
       "id": "E2E-CMD-VER-002",
       "key": "observation",
       "value": "stale-but-commuting batch: 409 VERSION_CONFLICT (docs/07 section 4 describes rebase; not implemented)",
-      "at": "2026-11-08T14:12:32.712Z"
+      "at": "2026-11-08T14:27:11.512Z"
     },
     {
       "kind": "obs",
       "id": "E2E-CMD-ARCH-001",
       "key": "observation",
       "value": "command on archived project -> HTTP 403 FORBIDDEN",
-      "at": "2026-11-08T14:12:47.852Z"
+      "at": "2026-11-08T14:27:24.597Z"
     },
     {
       "kind": "obs",
       "id": "E2E-SCHED-PREVIEW-BATCH",
       "key": "observation",
-      "value": "preview with CommandBatch body -> 400",
-      "at": "2026-11-08T14:12:52.613Z"
+      "value": "preview with CommandBatch body -> 200",
+      "at": "2026-11-08T14:27:30.265Z"
     },
     {
       "kind": "obs",
       "id": "E2E-RT-TICKET-001",
       "key": "observation",
-      "value": "ticket TTL observed: 30 s (spec: 60 s)",
-      "at": "2026-11-08T14:13:18.522Z"
+      "value": "ticket TTL observed: 60 s (spec: 60 s)",
+      "at": "2026-11-08T14:27:49.318Z"
     },
     {
       "kind": "obs",
       "id": "E2E-RT-REVOKE-ROLE",
       "key": "observation",
       "value": "socket after role change SCHEDULER->VIEWER: closed 4403",
-      "at": "2026-11-08T14:13:20.726Z"
+      "at": "2026-11-08T14:27:51.643Z"
     },
     {
       "kind": "obs",
       "id": "E2E-AUDIT-TAMPER-TRAILINGDELETE",
       "key": "observation",
       "value": "trailing delete: verify ok=true. docs/10 T13 relies on an anchored head hash (WORM storage) that the reference server does not implement; the chain alone cannot detect truncation.",
-      "at": "2026-11-08T14:13:28.610Z"
+      "at": "2026-11-08T14:27:59.347Z"
     },
     {
       "kind": "obs",
       "id": "E2E-AUDIT-AUTHN",
       "key": "observation",
       "value": "events after one authenticated read and one invalid-token request: none",
-      "at": "2026-11-08T14:13:29.423Z"
+      "at": "2026-11-08T14:27:59.985Z"
     },
     {
       "kind": "obs",
       "id": "E2E-PERF-CONC",
       "key": "observation",
-      "value": "200 concurrent reads: p50 1690 ms, p95 2830 ms (no read-latency target exists in the specification)",
-      "at": "2026-11-08T14:13:40.238Z"
+      "value": "200 concurrent reads: p50 1653 ms, p95 3049 ms (no read-latency target exists in the specification)",
+      "at": "2026-11-08T14:28:10.771Z"
     },
     {
       "kind": "obs",
       "id": "E2E-ROBUST-PGKILL-IDLE",
       "key": "observation",
       "value": "backends terminated: 20",
-      "at": "2026-11-08T14:14:37.095Z"
+      "at": "2026-11-08T14:30:27.943Z"
     }
   ],
   "hookFailures": [],
@@ -8266,7 +8217,7 @@
     },
     {
       "rid": "FR-PL-04",
-      "status": "FAIL",
+      "status": "PASS",
       "ids": [
         "E2E-SCHED-CON-SNET",
         "E2E-SCHED-CON-FNET",
@@ -8323,7 +8274,7 @@
     },
     {
       "rid": "FR-PL-09",
-      "status": "FAIL",
+      "status": "PASS",
       "ids": [
         "E2E-SCHED-DEADLINE",
         "E2E-SCHED-FLOAT",
@@ -8355,7 +8306,7 @@
     },
     {
       "rid": "FR-RS-02",
-      "status": "FAIL",
+      "status": "PASS",
       "ids": [
         "E2E-CMD-ASG-001",
         "E2E-RES-KIND-UNITS",
@@ -8377,7 +8328,7 @@
     },
     {
       "rid": "FR-RS-04",
-      "status": "FAIL",
+      "status": "PASS",
       "ids": [
         "E2E-RES-LOAD-001",
         "E2E-RES-LOAD-002",
@@ -8399,7 +8350,7 @@
     },
     {
       "rid": "FR-RS-06",
-      "status": "FAIL",
+      "status": "PASS",
       "ids": [
         "E2E-RES-LOAD-001",
         "E2E-RES-LOAD-002",
@@ -8410,7 +8361,7 @@
     },
     {
       "rid": "FR-CT-01",
-      "status": "FAIL",
+      "status": "PASS",
       "ids": [
         "E2E-AUTHZ-BASELINE-ORGADMIN",
         "E2E-AUTHZ-BASELINE-PORTFOLIO",
@@ -8451,7 +8402,7 @@
     },
     {
       "rid": "FR-CT-04",
-      "status": "FAIL",
+      "status": "PASS",
       "ids": [
         "E2E-CONTRACT-OP-startRiskRun",
         "E2E-RES-RISK-001",
@@ -8852,7 +8803,7 @@
     },
     {
       "rid": "NFR-PERF-03",
-      "status": "FAIL",
+      "status": "PASS",
       "ids": [
         "E2E-INCR-RANDOM",
         "E2E-INCR-RANDOM-CORE",
@@ -9166,7 +9117,7 @@
     },
     {
       "rid": "NFR-OBS-01",
-      "status": "FAIL",
+      "status": "PASS",
       "ids": [
         "E2E-CONTRACT-ERR-001",
         "E2E-CONTRACT-ERR-003",

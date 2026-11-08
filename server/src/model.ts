@@ -247,7 +247,7 @@ export class PlanModel {
         if (p.statusDate !== undefined) { if (p.statusDate === null) delete pr.statusDate; else pr.statusDate = toMs(p.statusDate); }
         if (p.nearCriticalMin !== undefined) pr.nearCriticalMin = p.nearCriticalMin;
         rows.push({ t: 'project.update' });
-        edits.push({ op: 'setProject', patch: { startDate: pr.startDate, deadline: pr.deadline ?? null, statusDate: pr.statusDate ?? null } });
+        edits.push({ op: 'setProject', patch: { startDate: pr.startDate, deadline: pr.deadline ?? null, statusDate: pr.statusDate ?? null, nearCriticalMin: pr.nearCriticalMin } });
         return edits;
       }
     }
